@@ -1,0 +1,41 @@
+{
+    "name": "haleydev/haley",
+    "type": "project",
+    "description": "The Haley framework",
+    "keywords": ["framework", "haley", "php"],
+    "license": "MIT",
+    "authors": [
+        {            
+            "name": "Warley Rodrigues de Moura",            
+            "email": "haleytrader@hotmail.com",          
+            "role": "Developer"             
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {          
+            "App\\": "app/", 
+            "Database\\": "database/"            
+        }
+    },
+
+    "scripts": {
+        "post-autoload-dump": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""           
+        ]     
+    },
+    
+    "require": {
+        "php": "^8.1.0",
+        "haleydev/haley-framework": "dev-master"
+    },
+
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+
+    "minimum-stability": "dev",
+    "prefer-stable": true  
+}

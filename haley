@@ -1,0 +1,13 @@
+<?php
+
+use Haley\Kernel;
+
+define('ROOT', __DIR__);
+
+!file_exists(ROOT . '/vendor/autoload.php') ? die('Autoload not found!' . PHP_EOL) : require ROOT . '/vendor/autoload.php';
+
+$kernel = new Kernel;
+
+$kernel->run()->console();
+
+$kernel->terminate();

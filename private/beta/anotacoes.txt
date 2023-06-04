@@ -1,0 +1,59 @@
+aprimorarar instalacao - ok
+aprimorar migrations - ok
+validator value function - ok
+request $_FILES e uploads - ok
+aprimorar like de where colocando % % altomaticamente - descartado ok
+adicionar opcao de desabilitar erros das querys - errors foram para o log ok
+adicionar log das querys ao invez de exibir erro - ok
+colocar `` nas colunas - resolvido - nao necessario ok
+filtro aprimorado verificar se nome da tabela ou coluna tem nome invalido (where delete table etc..) - ok
+adicionar colunas varias vezes - ok
+ROUTER TALVEZ PRECISA SER REESCRITO NOVAMENTE - ok route reescrito
+where bettwhm apenas (nao pode conter outros where) - ok
+funcao token()-> - ok
+env() deve retornar boleano - ok
+refaturamento do console - ok {
+    refaturar comandos mcquery - ok
+}
+
+APP_KEY
+
+
+
+criar funcao log de erro
+
+mysql {
+https://www.w3schools.com/sql/sql_foreignkey.asp
+
+// $variables = get_defined_vars();
+        // $constants = get_defined_constants(); 
+
+
+        // $query = "ALTER TABLE $table CHANGE ". $name['old'] . " " . $name['new'] . str_replace($name['old'],'',$new_coluns[$name['old']]);    
+}
+
+query {
+    addSelect,
+    colunRaw
+}
+
+cookie
+aprimorar cronjob
+request session class
+
+
+exibir erros de migrations no console
+
+iniciar modulo testes no framework - pendente
+
+
+match() {
+
+};
+cep  url: "https://viacep.com.br/ws/" + cep + "/json/",
+processo de finalizacao {
+    todo codigo sera comentado em pt-br
+    classe Bootstrap sera movida para / - ok
+    app tera uma pasta de configuracoes
+    a pasta core se tornara uma dependencia do composer
+}
