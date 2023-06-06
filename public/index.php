@@ -2,9 +2,9 @@
 
 use Haley\Kernel;
 
-define('ROOT', dirname(__DIR__));
+define('DIRECTORY_ROOT', dirname(__DIR__));
 
-!file_exists(ROOT . '/vendor/autoload.php') ? die('Autoload not found') : require ROOT . '/vendor/autoload.php';
+!file_exists(DIRECTORY_ROOT . '/vendor/autoload.php') ? die('Autoload not found') : require DIRECTORY_ROOT . '/vendor/autoload.php';
 
 $kernel = new Kernel;
 
