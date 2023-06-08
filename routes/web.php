@@ -1,6 +1,5 @@
 <?php
 
-use Doctrine\DBAL\DriverManager;
 use Haley\Database\Query\DB;
 use Haley\Router\Route;
 
@@ -18,9 +17,7 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
         $select = DB::table('filmes')->where('id',500)->first();
         dd($select);
 
-        dd(DB::table('filmes')->where('id',500)->update([
-            'titulo' => 'Helo word'
-        ]));
+        dd(DB::table('filmes')->where('id',500));
        
     })->name('home');
 
