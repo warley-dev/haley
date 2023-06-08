@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\clientes;
-use App\Models\filmes;
 use Haley\Database\Query\DB;
 use Haley\Router\Route;
 
@@ -12,19 +10,12 @@ use Haley\Router\Route;
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
     Route::get('/', function () {
-       dd();
+      
+   
 
+    $query = DB::table('filmes')->where('id','>',16)->limit(15)->all();
 
-
-
-
-
-
-
-
-
-
-
+    dd($query);
 
 
 
