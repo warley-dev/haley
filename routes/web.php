@@ -1,7 +1,8 @@
 <?php
 
+use App\Models\clientes;
+use App\Models\filmes;
 use Haley\Database\Query\DB;
-use Haley\Http\Route as HttpRoute;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
@@ -10,7 +11,8 @@ use Haley\Router\Route;
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
-    Route::view('/','view',['filmes' => DB::table('filmes')->limit(20)->all()])->name('view');
+    Route::get('/', function () {
+       dd();
 
 
 
@@ -27,11 +29,31 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
 
 
-    // Route::get('/','HomeController@index')->name('home');
 
-    // Route::get('/', function () {
-        
-    // })->name('home');
+    })->name('home');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
 
 
     Route::get('files/teste/{name?}/{test?}', function () {
