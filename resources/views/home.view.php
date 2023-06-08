@@ -12,13 +12,13 @@
 </head>
 
 <body>
-    @section('h1') Helo Word @endsection
-    @extends('include.teste')
+    {{-- @section('h1') Helo Word @endsection
+    @extends('include.teste') --}}
 
     
   
 
-    {{-- <main>
+    <main>
         <div class="box-img">
             <img class="logo" src="assets/img/haley.png" alt="Logo">
         </div>
@@ -58,7 +58,7 @@
         body {
             background-color: #282828;
         }
-    </style> --}}
+    </style>
 </body>
 
 </html>

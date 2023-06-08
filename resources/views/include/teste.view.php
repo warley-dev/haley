@@ -2,7 +2,6 @@
 
 @php
     echo 'aaaaa <br>';
-
 @endphp
 
 @if($url = request()->url())
@@ -14,8 +13,6 @@
 @else
     <h1>else</h1>
 @endif
-
-
 
 @foreach($filmes as $value)
     <p>{{ $value->titulo }}</p>

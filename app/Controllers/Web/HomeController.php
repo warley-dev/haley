@@ -11,16 +11,11 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $filmes = DB::table('filmes')->limit('15')->all();     
-        
-        $array = [15,31,54];
-
-
-        
-        dd(in_array(150,$array));
+        // $filmes = DB::table('filmes')->limit('15')->all();     
+     
 
         return view('home', [
-            'filmes' => $filmes
+            // 'filmes' => $filmes
         ]);
     }
 }

@@ -7,8 +7,14 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::error('App\Controllers\Api\ErrorController::response')->group(function () {
+    Route::unlock('method',function() {
+        return [
+            'a' => 1,
+            'b' => 2
+        ];
+    }); 
 
     Route::name('api')->namespace('App\Controllers\Api')->group(function () {
-        Route::get('/', 'WelcomeController::welcome')->name('welcome');
+        Route::get('/dgfh', 'WelcomeController::welcome')->name('welcome');
     });
 });
