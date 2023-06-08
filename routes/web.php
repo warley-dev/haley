@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\DBAL\DriverManager;
 use Haley\Database\Query\DB;
 use Haley\Router\Route;
 
@@ -11,39 +12,17 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
     Route::get('/', function () {
 
+
         // dd(DB::query('SELECT * FROM `filmes` WHERE `id` = 5 OR (`id` = 1 OR `id` = 2 ) LIMIT 15')->fetchAll());
 
-        $query = DB::table('filmes');
+        $select = DB::table('filmes')->where('id',500)->first();
+        dd($select);
 
-        $query->where('genero', 'LIKE', '%terror%');
-
-        $query->whereCompact(function () use ($query) {
-            $query->where('id', 1);
-            $query->orWhere('titulo', 'A Carruagem Fantasma');
-
-            $query->whereCompact(function() use ($query) {
-                $query->where('id', 1);
-            });
-        });
-
-
-        dd($query->limit(15)->getQuery());
+        dd(DB::table('filmes')->where('id',500)->update([
+            'titulo' => 'Helo word'
+        ]));
+       
     })->name('home');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
