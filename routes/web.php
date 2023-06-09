@@ -8,38 +8,22 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
+    Route::get('/', 'HomeController@index')->name('home');    
+});
 
-    Route::get('/', function () {
+Route::prefix('test')->group(function() {
 
+    Route::get('/',function() {
+        dd(DB::helper());
 
-        // dd(DB::query('SELECT * FROM `filmes` WHERE `id` = 5 OR (`id` = 1 OR `id` = 2 ) LIMIT 15')->fetchAll());
+        // dd(DB::helper()->createTable('teste',['id INT NOT NULL AUTO_INCREMENT PRIMARY KEY']));
 
-        $select = DB::table('filmes')->where('id',500)->first();
-        dd($select);
+        // dd(DB::helper()->setPrimaryKey('teste','id'));
 
-        dd(DB::table('filmes')->where('id',500));
-       
-    })->name('home');
+        // dd(DB::helper()->getColumnSchema('teste','id'));
 
+        // dd(DB::helper()->changeColumn('teste','helo','new_helo','int'));
 
-
-
-
-
-
-
-
-
-    Route::get('files/teste/{name?}/{test?}', function () {
-        // return response()->file(directoryPrivate('haley.png'));
-        dd(route()->now());
-    })->name('files');
-
-    Route::name('teste')->middleware('Auth::admin')->group(function () {
-        Route::get(
-            'teste',
-            function () {
-            }
-        )->name('1');
+        dd(DB::helper()->renameTable('rename','teste'));
     });
 });

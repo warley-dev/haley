@@ -4,38 +4,35 @@ use Haley\Database\Migrations\Builder\Seeder;
 use Haley\Database\Migrations\Builder\Table;
 
 /**
- * Created at 20/05/2023 - 01:51:02
+ * Created at 09/06/2023 - 13:33:43
  */ 
-class sessions_20230520015102
+class test_1_20230609133343
 {
     public bool $active = true;
 
     public function migrate(Table $table)
     {  
-        $table->definitions('sessions');       
+        $table->definitions('test_1');       
         $table->primary('id');  
 
-        $table->int('id_usuario');
-        $table->varchar('token');
+        $table->int('id_2')->comment('foreing');
+        $table->int('id_3')->comment('foreing');
 
-        $table->boolean('ativo');
-        $table->boolean('sucesso');
+        // $table->foreign('id_2','test_2','id');
+        // $table->foreign('id_3','test_2','id')->onDelete()->onUpdate();
 
-        $table->varchar('ip');
-        $table->varchar('firebase');
-        $table->varchar('latitude');
-        $table->varchar('longitude');
+        // $table->index('id_2');
+    
         
-        $table->date('online_at');        
+        // $table->dropColumn('id');
+
         $table->updateDate();
         $table->createdDate();
-
-        $table->index('token');
     }
 
     public function seeder(Seeder $seeder)
     {
-        $seeder->definitions('sessions'); 
+        $seeder->definitions('test_1'); 
 
         $seeder->values([
             [

@@ -7,7 +7,7 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::error('App\Controllers\Api\ErrorController::response')->group(function () {
-    Route::unlock('method',function() {
+    Route::patch('method',function() {
         return [
             'a' => 1,
             'b' => 2

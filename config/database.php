@@ -6,7 +6,7 @@
 return [
     'default' => env('DB_CONNECTION', 'mysql'),
 
-    'connections' => [ 
+    'connections' => [
         'mysql' => [
             'driver' => env('DB_DRIVE', 'mysql'),
             'host' => env('DB_HOST', 'localhost'),

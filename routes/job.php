@@ -1,5 +1,6 @@
 <?php
 
+use Haley\Collections\Log;
 use Haley\Jobs\Job;
 
 // --------------------------------------------------------------------------|
@@ -7,9 +8,15 @@ use Haley\Jobs\Job;
 // --------------------------------------------------------------------------|
 
 Job::namespace('App\Jobs')->name('test')->group(function () {
+
+    Job::everyMinute(1, function () {
+        Log::clean(['jobs', 'database', 'connection', 'migration']);      
+    })->description('Clean logs');
+
+
     Job::everyMinute(1, 'Test::one')->description('every 1 minute');
     Job::everyMinute(6, 'Um::one')->description('every 6 minute');
 
-  
+
     Job::date('00:05 08/06/2023')->name('date')->description('especific date');
 });
