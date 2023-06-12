@@ -27,8 +27,10 @@ Route::prefix('test')->group(function () {
         $build_primary = BuilderMemory::$primary;
         $build_table = BuilderMemory::$table;
         $build_rename = BuilderMemory::$rename;
+        $build_constraint = BuilderMemory::$constraints;
 
         $columns = [];
+        $columns_names = [];
 
         // create table
         if (!$helper->table()->has($build_table)) {
@@ -53,10 +55,12 @@ Route::prefix('test')->group(function () {
                 $type = trim(str_replace(['[CL:NAME]', '[CL:TYPE]'], ['', $value['type']], $value['query']));
 
                 if ($helper->column()->has($build_table, $value['name'])) {
-                    $helper->column()->change($build_table, $value['name'], $type, $rename);
+                    $helper->column()->change($build_table, $value['name'], $type);
                 } else {
                     $helper->column()->create($build_table, $value['name'], $type);
                 }
+
+                $columns_names[] = $value['name'];             
             }
         }
 
@@ -75,6 +79,37 @@ Route::prefix('test')->group(function () {
                     $helper->Constraint()->setPrimaryKey($build_table, $build_primary);
                 }
             }
+        }  
+
+        // set constraints   
+        $constraints_active = [];
+
+        foreach ($build_constraint as $value) {
+            $constraints_active[] = $value['name'];
+
+            if (!$helper->constraint()->has($build_table, $value['name'])) {
+                $helper->constraint()->create($build_table, $value['name'], $value['type'], $value['value']);
+            }
         }
+
+        // drop constraints if not in the build
+        foreach ($columns_names as $name) {
+            $constraints_check = $helper->constraint()->getNamesByColumn($build_table, $name);
+
+            if($constraints_check !== null) {
+                foreach($constraints_check as $value) {
+                    if(!in_array($value, $constraints_active)) {
+                        $helper->constraint()->drop($build_table,$value);
+                    }
+                }
+            }    
+        }
+
+
+
+
+
+
+
     });
 });
