@@ -16,9 +16,9 @@ function example()
  */
 function urlActive(string $path)
 {   
-    if (env('APP_URL') . $path == request()->url($path)) {
+    if (request()->urlFull() == request()->url($path)) {
         return true;
-    } else {
-        return false;
     }
+
+    return false;    
 }

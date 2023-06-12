@@ -13,7 +13,7 @@ class test_1_20230609133343
     public function migrate(Table $table)
     {  
         $table->definitions('test_1');       
-        $table->primary('id');  
+        $table->primary('ighd');  
 
         $table->int('id_2')->comment('foreing');
         $table->int('id_3')->comment('foreing');

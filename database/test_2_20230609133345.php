@@ -9,7 +9,7 @@ use Haley\Database\Migrations\Builder\Table;
 class test_2_20230609133345
 {
     public bool $active = true;
-
+  
     public function migrate(Table $table)
     {  
         $table->definitions('test_2');       

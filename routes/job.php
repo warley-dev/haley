@@ -9,9 +9,9 @@ use Haley\Jobs\Job;
 
 Job::namespace('App\Jobs')->name('test')->group(function () {
 
-    Job::everyMinute(1, function () {
-        Log::clean(['jobs', 'database', 'connection', 'migration']);      
-    })->description('Clean logs');
+    Job::everyHour(1, function () {
+        Log::clean(['jobs', 'database', 'connection', 'migration']);
+    })->description('Clean logs')->name('test');
 
 
     Job::everyMinute(1, 'Test::one')->description('every 1 minute');
