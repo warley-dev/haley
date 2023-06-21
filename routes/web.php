@@ -14,27 +14,7 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
     Route::view('/', 'test')->name('test');
     Route::post('/method', function () {
-        dd(DB::table('filmes')->limit('1000')->get());
-
-
-        // dd($_REQUEST, $_ENV, $_SERVER, $_COOKIE, $_SESSION, [
-        //     'string' => 'dfgdfg',
-        //     'number' => [
-        //         0 => 1,
-        //         1 => 1.5
-        //     ],
-
-        //     'function' => [
-        //         0 => function () {
-        //         }
-        //     ],
-
-        //     'request' => request()->all(),
-        //     'db' => HomeController::class,
-        //     'test' => []
-
-
-        // ], DB::table('filmes')->limit('2')->get());
+       
     })->name('method');
 
     Route::get('teste/{helo?}', function ($helo) {
