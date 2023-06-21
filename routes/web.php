@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\Web\HomeController;
 use Haley\Database\Migration\Builder\BuilderMemory;
 use Haley\Database\Query\DB;
 use Haley\Router\Route;
@@ -9,20 +10,51 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
-    Route::get('/', 'HomeController@index')->name('home');
+    // Route::get('/', 'HomeController@index')->name('home');
+
+    Route::view('/', 'test')->name('test');
+    Route::post('/method', function () {
+        dd(DB::table('filmes')->limit('1000')->get());
+
+
+        // dd($_REQUEST, $_ENV, $_SERVER, $_COOKIE, $_SESSION, [
+        //     'string' => 'dfgdfg',
+        //     'number' => [
+        //         0 => 1,
+        //         1 => 1.5
+        //     ],
+
+        //     'function' => [
+        //         0 => function () {
+        //         }
+        //     ],
+
+        //     'request' => request()->all(),
+        //     'db' => HomeController::class,
+        //     'test' => []
+
+
+        // ], DB::table('filmes')->limit('2')->get());
+    })->name('method');
+
+    Route::get('teste/{helo?}', function ($helo) {
+        dd(DB::table('filmes')->limit(2)->get());
+
+        // dd(array_map(strtolower(...), ['AAA', 'BBB']));
+    })->name('home');
 });
 
 Route::prefix('test')->group(function () {
     Route::get('/', function () {
-
-
         $migration_up = require directoryRoot('database/migrations/test.php');
         $migration_up->up();
 
         $connection = BuilderMemory::$connection;
         $helper = DB::helper($connection);
 
+        BuilderMemory::compileForeigns();
         $build_columns = BuilderMemory::getColumns();
+
         $build_id = BuilderMemory::$id;
         $build_primary = BuilderMemory::$primary;
         $build_table = BuilderMemory::$table;
@@ -40,6 +72,8 @@ Route::prefix('test')->group(function () {
 
             $helper->table()->create($build_table, $columns);
         }
+
+
 
         // modifi columns 
         else {
@@ -60,7 +94,7 @@ Route::prefix('test')->group(function () {
                     $helper->column()->create($build_table, $value['name'], $type);
                 }
 
-                $columns_names[] = $value['name'];             
+                $columns_names[] = $value['name'];
             }
         }
 
@@ -79,7 +113,7 @@ Route::prefix('test')->group(function () {
                     $helper->Constraint()->setPrimaryKey($build_table, $build_primary);
                 }
             }
-        }  
+        }
 
         // set constraints   
         $constraints_active = [];
@@ -89,27 +123,25 @@ Route::prefix('test')->group(function () {
 
             if (!$helper->constraint()->has($build_table, $value['name'])) {
                 $helper->constraint()->create($build_table, $value['name'], $value['type'], $value['value']);
+            } else {
+                // change only foreign
+                if ($value['type'] == 'FOREIGN KEY') $helper->constraint()->change($build_table, $value['name'], $value['type'], $value['value']);
             }
         }
 
         // drop constraints if not in the build
+        // colocar if para apenas modo altomatico
         foreach ($columns_names as $name) {
             $constraints_check = $helper->constraint()->getNamesByColumn($build_table, $name);
 
-            if($constraints_check !== null) {
-                foreach($constraints_check as $value) {
-                    if(!in_array($value, $constraints_active)) {
-                        $helper->constraint()->drop($build_table,$value);
+            if ($constraints_check !== null) {
+                foreach ($constraints_check as $value) {
+                    if (!in_array($value, $constraints_active)) {
+                        dd($value);
+                        $helper->constraint()->drop($build_table, $value);
                     }
                 }
-            }    
+            }
         }
-
-
-
-
-
-
-
     });
 });

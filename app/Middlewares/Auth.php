@@ -13,7 +13,7 @@ class Auth extends Middleware
 
     public function admin()
     {
-        if (request()->session()->isset('admin')) {            
+        if (request()->session()->has('admin')) {            
             return $this->continue();           
         }   
 
@@ -22,7 +22,7 @@ class Auth extends Middleware
 
     public function adminFile()
     {
-        if (request()->session()->isset('admin')) {            
+        if (request()->session()->has('admin')) {            
             return $this->continue();           
         }     
             
@@ -31,7 +31,7 @@ class Auth extends Middleware
 
     public function user()
     {
-        if (request()->session()->isset('user')) {
+        if (request()->session()->has('user')) {
             return $this->continue();
         } 
      
@@ -40,7 +40,7 @@ class Auth extends Middleware
 
     public function userFile()
     {
-        if (request()->session()->isset('user')) {            
+        if (request()->session()->has('user')) {            
             return $this->continue();           
         }
        

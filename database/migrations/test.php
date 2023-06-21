@@ -14,9 +14,16 @@ return new class
     {
         (new Migration)->up('haley', function (Builder $build) {
             $build->id('id', 'dfg');
-            $build->varchar('mudou')->comment('helo word')->notNull();
-            $build->varchar('teste')->default('helo word');
+            $build->varchar('mudou')->comment('helo word')->nullable(true);
+        
 
+
+
+
+
+            $build->int('fore')->nullable(false)->comment('foreing test');
+
+             $build->foreign('fore', 'filmes', 'id');
 
             // $build->rename('test','mudou');
 

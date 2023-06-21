@@ -6,7 +6,7 @@ namespace App\Jobs;
  */        
 class Test 
 {
-    public function job()
+    public function one()
     {
       // ...
     }

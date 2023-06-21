@@ -6,7 +6,7 @@ class Test extends Middleware
 {
     public function example()
     {
-        if(request()->session()->isset('example')) {
+        if(request()->session()->has('example')) {
             return $this->continue();
         }
 

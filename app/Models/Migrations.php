@@ -7,5 +7,5 @@ class Migrations extends Model
     public static string $connection = 'mysql';
     public static string $table = 'migrations';
     public static string|null $primary = 'id';
-    public static array $columns = ['id','migration','batch']; 
+    public static array $columns = ['batch','id','migration']; 
 }
