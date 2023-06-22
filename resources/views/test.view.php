@@ -9,11 +9,11 @@
 </head>
 
 <body>
-    <form action="@route('web.method')" method="post">
+    <form action="@route('web.method')" method="post" enctype="multipart/form-data" aria-multiline="true">
         <input type="text" hidden name="_token" value="@csrf">
         <input type="text" name="nome" value="">
         <input type="text" name="email" value="">
-
+        <input type="file" multiple id="file" name="file[]">
         <input type="text" name="m[0]" value="">
         <input type="text" name="m[1]" value="">
         <input type="text" name="m[2]" value="">
