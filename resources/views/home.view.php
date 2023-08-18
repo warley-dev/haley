@@ -16,14 +16,23 @@
     @extends('include.teste') --}}
 
     
-  
 
-    <main>
+    {{-- <main>
         <div class="box-img">
             <img class="logo" src="assets/img/haley.png" alt="Logo">
         </div>
 
-    </main>
+    </main> --}}
+
+    <script>
+        var socket = new WebSocket('ws://http://framework/socket');
+
+        socket.onmessage = function(e) {
+           console.log(e)
+        };
+
+        console.log(socket)
+    </script>
 
     <style>
         * {

@@ -16,6 +16,7 @@ Job::namespace('App\Jobs')->name('test')->group(function () {
 
     Job::everyMinute(1, 'Test::one')->description('every 1 minute');
     Job::everyMinute(6, 'Um::one')->description('every 6 minute');
+
     
 
 

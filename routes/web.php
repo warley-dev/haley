@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\Web\HomeController;
+use Haley\Collections\Memory;
 use Haley\Database\Migration\Builder\BuilderMemory;
 use Haley\Database\Query\DB;
 use Haley\Router\Route;
@@ -10,14 +11,17 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
+
+    Route::get('/', function () {
+        return view('home');
+    })->name('home');
+
+
     // Route::get('/', 'HomeController@index')->name('home');
 
-    Route::view('/', 'test')->name('test');
-
-
-    Route::get('/helo', function () {
-        dd([
-            true,false,null,
+    Route::get('helo', function () {
+        dd([    
+            request()->url('test/1/2'),     
             request()->urlFull('word'),
             request()->urlPath(),
             request()->urlQueryReplace(request()->url(),['helo' => 51]),
@@ -29,24 +33,25 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
             request()->https(),
             request()->input('helo'),
             request()->domain(),
-            request()->origin()           
-            
-        ],$_SERVER);
+            request()->origin(),
+            request()->mobile(),
+            request()->session()
+        ]);
     })->name('home');
 
 
-    Route::post('/method', function () {
-        // $_ENV['teste'] = 'haley';
+    // Route::post('/method', function () {
+    //     dd(request()->all());
 
-        dd(request()->upload('file')->save(directoryPrivate()));
-       
-    })->name('method');
+    //     // dd(request()->upload('file')->save(directoryPrivate()));
 
-    Route::get('teste/{helo?}', function ($helo) {
-        dd(DB::table('filmes')->limit(2)->get());
+    // })->name('method');
 
-        // dd(array_map(strtolower(...), ['AAA', 'BBB']));
-    })->name('home');
+    // Route::get('teste/{helo?}', function ($helo) {
+    //     dd(DB::table('filmes')->limit(2)->get());
+
+    //     // dd(array_map(strtolower(...), ['AAA', 'BBB']));
+    // })->name('home');
 });
 
 Route::prefix('test')->group(function () {
