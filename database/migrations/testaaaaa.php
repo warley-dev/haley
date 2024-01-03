@@ -5,17 +5,16 @@ use Haley\Database\Migration\Migration;
 
 return new class
 {
-    public bool $active = true;
     public bool $single = true;
+    public bool $active = true;
 
     public function up()
     {
-        (new Migration)->up('haley', function (Builder $build) {
+        (new Migration)->up('testa', function (Builder $build) {
             $build->id('id', 'dfg');
-            // $build->int('id');
+            // $build->int('id');  
             $build->varchar('nome')->comment('helo word')->nullable(true);
             $build->varchar('email')->comment('helo word')->nullable(true);
-            $build->json('json')->comment('aff');
 
 
 
@@ -28,9 +27,9 @@ return new class
 
             $build->int('fore')->comment('foreing test');
 
-            //  $build->foreign('fore', 'teste', 'id');
+            // $build->foreign('fore', 'haley', 'id');
 
-            // $build->rename('test','mudou');
+
 
             // $build->varchar('varcfghar')->comment('test fdgsdfg')->default('sdgfsdfg sdfgsdfg')->notNull()->unique();
             // $build->varchar('varcfgr')->comment('vc')->default('v dfgdfc');

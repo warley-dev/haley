@@ -4,25 +4,35 @@
 // --------------------------------------------------------------------------|
 
 return [
-    'web' => [
-        'path' => directoryRoot('routes/web.php'),
-        'middleware' => 'Routes::web',    
-        'prefix' => null,
+    'http' => [
+        'web' => [
+            'path' => directoryRoot('routes/web.php'),
+            'middleware' => 'Routes::web',
+            'prefix' => null,
 
-        'csrf' => [
-            'active' => true,
-            'lifetime' => 1800 // 30 minutes
+            'csrf' => [
+                'active' => true,
+                'lifetime' => 1800 // 30 minutes
+            ]
+        ],
+
+        'api' => [
+            'path' => directoryRoot('routes/api.php'),
+            'middleware' => 'Routes::api',
+            'prefix' => 'api',
+
+            'csrf' => [
+                'active' => false,
+                'lifetime' => 1800 // 30 minutes
+            ]
         ]
     ],
 
-    'api' => [
-        'path' => directoryRoot('routes/api.php'),
-        'middleware' => 'Routes::api',
-        'prefix' => 'api',
+    'console' => [
+        directoryRoot('routes/console.php')
+    ],
 
-        'csrf' => [
-            'active' => false,
-            'lifetime' => 1800 // 30 minutes
-        ]
+    'job' =>  [
+        directoryRoot('routes/job.php')
     ]
 ];

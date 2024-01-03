@@ -1,10 +1,10 @@
 <?php
 
 use App\Controllers\Web\HomeController;
-use Haley\Collections\Memory;
 use Haley\Database\Migration\Builder\BuilderMemory;
-use Haley\Database\Query\DB;
+use Haley\Database\DB;
 use Haley\Router\Route;
+use Haley\Storage\FTP;
 
 // --------------------------------------------------------------------------|
 //                               WEB ROUTES                                  |
@@ -12,19 +12,30 @@ use Haley\Router\Route;
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
-    Route::get('/', function () {
-        return view('home');
-    })->name('home');
+    Route::view('websocket', 'socket');
 
+    Route::get('get', function () {
 
+        dd(get_included_files(), get_required_files(), get_include_path(), get_current_user(), formatSize(memory_get_usage()));
+    });
+
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('ftp', function () {
+        $ftp = new FTP;
+
+        // $ftp->test();
+
+        $ftp->mysqlBackup();
+    });
     // Route::get('/', 'HomeController@index')->name('home');
 
     Route::get('helo', function () {
-        dd([    
-            request()->url('test/1/2'),     
+        dd([
+            request()->url('test/1/2'),
             request()->urlFull('word'),
             request()->urlPath(),
-            request()->urlQueryReplace(request()->url(),['helo' => 51]),
+            request()->urlQueryReplace(request()->url(), ['helo' => 51]),
             request()->urlFullQuery(),
             request()->ip(),
             request()->userAgent(),
@@ -43,7 +54,7 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     // Route::post('/method', function () {
     //     dd(request()->all());
 
-    //     // dd(request()->upload('file')->save(directoryPrivate()));
+    //     // dd(request()->upload('file')->save(directoryjijiuhjPrivate()));
 
     // })->name('method');
 
@@ -54,7 +65,54 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     // })->name('home');
 });
 
+// Route::get('socket', function() {
+//     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+//     socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+//     socket_bind($socket, 0, 8020);
+//     socket_listen($socket);  
+
+//     $client = array($socket);
+
+//     $while_count = 20;   
+
+//     while($while_count !== 0) {
+//         sleep(1);
+
+//         $while_count--;
+//     }
+
+//     socket_close($socket);
+
+//     // dd($socket,$client);
+// });
+
+Route::get('a', function () {
+    // dd(Config::teste(), get_current_user(), !empty($_SERVER['USERNAME']) ? $_SERVER['USERNAME'] : '');
+
+    $t = [];
+    $max = 24;
+    $valid = false;
+    $hour = 0;
+
+    dd(date('G'));
+
+    while ($max > 0) {
+        $max -= $hour;
+
+
+
+        //    if (date('i') !== '00') break;
+
+        //    if ($max == date('G')) {
+        //        $valid = true;          
+        //        break;
+        //    };
+    }
+});
+
 Route::prefix('test')->group(function () {
+
     Route::get('/', function () {
         $migration_up = require directoryRoot('database/migrations/test.php');
         $migration_up->up();
@@ -82,8 +140,6 @@ Route::prefix('test')->group(function () {
 
             $helper->table()->create($build_table, $columns);
         }
-
-
 
         // modifi columns 
         else {
@@ -147,7 +203,7 @@ Route::prefix('test')->group(function () {
             if ($constraints_check !== null) {
                 foreach ($constraints_check as $value) {
                     if (!in_array($value, $constraints_active)) {
-                        dd($value);
+                        // dd($value);
                         $helper->constraint()->drop($build_table, $value);
                     }
                 }
