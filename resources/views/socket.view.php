@@ -75,7 +75,7 @@
 		}
 
 		$(document).ready(function() {
-			var websocket = new WebSocket("ws://15.229.66.249:9250");
+			var websocket = new WebSocket("ws://localhost:9250");
 
 			websocket.onopen = function(event) {
 				showMessage("<div class='chat-connection-ack'>Connection is established!</div>");
