@@ -1,11 +1,11 @@
 <?php
 
 
-use App\Controllers\Socket\TesteController ;
+use App\Controllers\Socket\TesteController;
 use Haley\Router\Websocket;
 
 // --------------------------------------------------------------------------|
 //                            WEBSOCKET ROUTES                               |
 // --------------------------------------------------------------------------|
 
-Websocket::ws('teste',[TesteController::class])->name('teste')->domain('google');
+Websocket::ws(8154, [TesteController::class])->host('haley.codehalley.com')->name('teste');
