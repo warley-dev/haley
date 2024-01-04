@@ -75,7 +75,7 @@
 		}
 
 		$(document).ready(function() {
-			var websocket = new WebSocket("ws://haley.codehalley.com:9215");
+			var websocket = new WebSocket("ws://haley.codehalley.com:9214");
 
 			websocket.onopen = function(event) {
 				showMessage("<div class='chat-connection-ack'>Connection is established!</div>");
