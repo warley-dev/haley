@@ -65,8 +65,28 @@
 			padding: 10px 8px;
 			color: #191919;
 		}
+
+		#online {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			text-align: center;
+			color: #26af26;
+			font-size: 16px;
+		}
+
+		#logout {
+			background: #af2626;
+			border: #af2626 1px solid;
+			border-radius: 4px;
+			color: #FFF;
+			display: block;
+			margin: 15px 0px;
+			padding: 10px 50px;
+			cursor: pointer;
+		}
 	</style>
-	
+
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 
 	<script>
@@ -74,18 +94,28 @@
 			$('#chat-box').append(messageHTML);
 		}
 
-		$(document).ready(function() {
-			var websocket = new WebSocket("ws://localhost:9250");
+		setTimeout(() => {
+			var websocket = new WebSocket("ws://localhost:9259");
 
-			websocket.onopen = function(event) {
-				showMessage("<div class='chat-connection-ack'>Connection is established!</div>");
+			websocket.onopen = function(event) {				
+				// console.log(event);
+				showMessage("<div class='chat-connection-ack'>Conectado!</div>");
+
+				$('#logout').prop('hidden', false);				
+				
 			}
 
-			websocket.onmessage = function(event) {
-                console.log(event);
-				var Data = JSON.parse(event.data);
-				showMessage("<div class='" + Data.message_type + "'>" + Data.message + "</div>");
-				$('#chat-message').val('');
+			websocket.onmessage = function(event) {            
+				var msg = JSON.parse(event.data);
+
+				if(!msg) return;
+
+				if(msg.open) document.getElementById('chat-box').innerHTML += `${msg.open}`;
+				if(msg.message) document.getElementById('chat-box').innerHTML += `<div class='chat-connection-ack'>${msg.user}: ${msg.message}</div>`;
+				if(msg.disconnect) document.getElementById('chat-box').innerHTML +=  `<div class='error'>${msg.disconnect}</div>`;
+				if(msg.online) document.getElementById('online').innerHTML =  `<div class='error'>${msg.online} usuários online</div>`;	
+				
+				
 			};
 
 			websocket.onerror = function(event) {
@@ -94,7 +124,21 @@
 
 			websocket.onclose = function(event) {
 				showMessage("<div class='chat-connection-ack'>Connection Closed</div>");
+				document.getElementById('online').innerHTML =  `<div class='error'>Desconectado</div>`;	
 			};
+
+			$('#logout').click(function(e) { 
+					e.preventDefault();
+					console.log('logout');
+
+					var logout = JSON.stringify({
+						logout: true
+					},null,0);	
+					
+					console.log(logout)
+					
+					websocket.send(logout);
+				});
 
 			$('#frmChat').on("submit", function(event) {
 				event.preventDefault();
@@ -102,25 +146,29 @@
 				$('#chat-user').attr("type", "hidden");
 				
 				var messageJSON = JSON.stringify({
-					chat_user: $('#chat-user').val(),
-					chat_message: $('#chat-message').val()
-				},null,0);
-
-				console.log(messageJSON)
+					user: $('#chat-user').val(),
+					message: $('#chat-message').val()
+				},null,0);			
 
 				websocket.send(messageJSON);
+
+			
 			});
-		});
+		},100);
 	</script>
 </head>
 
 <body>
 	<form name="frmChat" id="frmChat">
+		<div id="online"></div>
 		<div id="chat-box"></div>
 
 		<input type="text" name="chat-user" id="chat-user" placeholder="Name" class="chat-input" required />
-		<input type="text" name="chat-message" id="chat-message" placeholder="Message" class="chat-input chat-message" required />
+		<input type="text" name="chat-message" id="chat-message" placeholder="Message" class="chat-input chat-message"
+			required />
 		<input type="submit" id="btnSend" name="send-chat-message" value="Send">
+
+		<button hidden id="logout" value="1">Deslogar</button>
 	</form>
 </body>
 
