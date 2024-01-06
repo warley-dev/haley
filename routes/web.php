@@ -15,7 +15,6 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('websocket', 'socket');
 
     Route::get('get', function () {
-
         dd(get_included_files(), get_required_files(), get_include_path(), get_current_user(), formatSize(memory_get_usage()));
     });
 
@@ -32,6 +31,9 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
     Route::get('helo', function () {
         dd([
+
+            get_current_user(),
+
             request()->url('test/1/2'),
             request()->urlFull('word'),
             request()->urlPath(),
@@ -65,51 +67,6 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     // })->name('home');
 });
 
-// Route::get('socket', function() {
-//     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-
-//     socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-//     socket_bind($socket, 0, 8020);
-//     socket_listen($socket);  
-
-//     $client = array($socket);
-
-//     $while_count = 20;   
-
-//     while($while_count !== 0) {
-//         sleep(1);
-
-//         $while_count--;
-//     }
-
-//     socket_close($socket);
-
-//     // dd($socket,$client);
-// });
-
-Route::get('a', function () {
-    // dd(Config::teste(), get_current_user(), !empty($_SERVER['USERNAME']) ? $_SERVER['USERNAME'] : '');
-
-    $t = [];
-    $max = 24;
-    $valid = false;
-    $hour = 0;
-
-    dd(date('G'));
-
-    while ($max > 0) {
-        $max -= $hour;
-
-
-
-        //    if (date('i') !== '00') break;
-
-        //    if ($max == date('G')) {
-        //        $valid = true;          
-        //        break;
-        //    };
-    }
-});
 
 Route::prefix('test')->group(function () {
 

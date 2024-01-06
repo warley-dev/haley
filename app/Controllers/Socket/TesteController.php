@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Socket;
 
+use Haley\Collections\Log;
 use Haley\Console\Lines;
 use Haley\WebSocket\SocketController;
 use Throwable;
@@ -20,20 +21,20 @@ class TesteController extends Lines
     }
 
     public function onMessage(mixed $message, SocketController $socket)
-    {     
-        $message = json_decode($message, true);     
+    {
+        $message = json_decode($message, true);
 
         if ($message && $socket->id()) {
-            if(!empty($message['logout'])) {
-                $socket->close($socket->id());    
-                return;           
+            if (!empty($message['logout'])) {
+                $socket->close($socket->id());
+                return;
             }
 
             $socket->setProps($socket->id(), [
                 'user' => $message['user']
             ]);
 
-            if ($socket->ip($socket->id())) $message['user'] .= ' [' . $socket->ip($socket->id()) . ']'; 
+            if ($socket->ip($socket->id())) $message['user'] .= ' [' . $socket->ip($socket->id()) . ']';
         }
 
         $socket->send($message, $socket->ids());
@@ -61,5 +62,6 @@ class TesteController extends Lines
     public function onError(string $on, SocketController $socket, Throwable $error)
     {
         $this->red('[error on ' . $on . ' - ' . $socket->id() . '] : ' . $error->getMessage())->br();
+        Log::create('websocket', $error->getMessage());
     }
 }

@@ -113,9 +113,7 @@
 				if(msg.open) document.getElementById('chat-box').innerHTML += `${msg.open}`;
 				if(msg.message) document.getElementById('chat-box').innerHTML += `<div class='chat-connection-ack'>${msg.user}: ${msg.message}</div>`;
 				if(msg.disconnect) document.getElementById('chat-box').innerHTML +=  `<div class='error'>${msg.disconnect}</div>`;
-				if(msg.online) document.getElementById('online').innerHTML =  `<div class='error'>${msg.online} usuários online</div>`;	
-				
-				
+				if(msg.online) document.getElementById('online').innerHTML =  `<div class='error'>${msg.online} usuários online</div>`;
 			};
 
 			websocket.onerror = function(event) {
@@ -128,14 +126,11 @@
 			};
 
 			$('#logout').click(function(e) { 
-					e.preventDefault();
-					console.log('logout');
+					e.preventDefault();				
 
 					var logout = JSON.stringify({
 						logout: true
 					},null,0);	
-					
-					console.log(logout)
 					
 					websocket.send(logout);
 				});
