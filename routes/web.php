@@ -122,9 +122,7 @@ Route::prefix('test')->group(function () {
         }
 
         // column id primary key
-        if (count($build_id)) {
-            $helper->Constraint()->setId($build_table, $build_id['name'], $build_id['comment']);
-        }
+        if (count($build_id)) $helper->Constraint()->setId($build_table, $build_id['name'], $build_id['comment']);        
 
         // column primary key
         else {
@@ -166,5 +164,8 @@ Route::prefix('test')->group(function () {
                 }
             }
         }
+
+
+        
     });
 });

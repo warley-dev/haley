@@ -13,11 +13,11 @@ return new class
         (new Migration)->up('haley', function (Builder $build) {
             $build->id('id', 'dfg');
             // $build->int('id');
-            $build->varchar('nome')->comment('helo word')->nullable(true);
+            $build->varchar('nome')->comment('helo word')->nullable(false);
             $build->varchar('email')->comment('helo word')->nullable(true);
             $build->json('json')->comment('aff');
 
-
+            $build->foreign('nome','testa','nome');
 
 
 
