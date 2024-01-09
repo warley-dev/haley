@@ -95,7 +95,7 @@
 		}
 
 		setTimeout(() => {
-			var websocket = new WebSocket("ws://localhost:9051");
+			var websocket = new WebSocket("ws://15.229.66.249:9051");
 
 			websocket.onopen = function(event) {				
 				// console.log(event);
