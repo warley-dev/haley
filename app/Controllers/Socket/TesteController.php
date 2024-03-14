@@ -5,7 +5,6 @@ namespace App\Controllers\Socket;
 use Haley\Collections\Log;
 use Haley\Console\Lines;
 use Haley\WebSocket\SocketController;
-use Haley\WebSocket\SocketMemory;
 use Throwable;
 
 class TesteController extends Lines
@@ -18,6 +17,8 @@ class TesteController extends Lines
         $socket->send([
             'open' => 'Bem vindo ao chat'
         ], $socket->id());
+
+        var_dump('open');
 
         $socket->send([
             'online' => $socket->count()
@@ -35,8 +36,6 @@ class TesteController extends Lines
         if ($message && $socket->id()) {
             if ($message['message'] == 'close') {
                 $socket->close($socket->id());
-
-                var_dump('a');
 
                 return;
             }
@@ -57,11 +56,6 @@ class TesteController extends Lines
 
                 $message['login'] = false;
             }
-
-
-            $this->yellow(json_encode(SocketMemory::$props))->br()->br();
-
-            // if ($socket->ip($socket->id())) $message['user'] .= ' [' . $socket->ip($socket->id()) . ']';
         }
 
         $this->history[$id] = $message;

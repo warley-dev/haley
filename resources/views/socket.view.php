@@ -97,7 +97,7 @@
 		var login = true;
 
 		setTimeout(() => {
-			var websocket = new WebSocket("ws://framework:9058");
+			var websocket = new WebSocket("ws://framework:9060");
 
 			websocket.onopen = function(event) {
 				// console.log(event);
@@ -109,6 +109,8 @@
 
 			websocket.onmessage = function(event) {
 				var msg = JSON.parse(event.data);
+
+				console.log(msg)
 
 				if (!msg) return;
 
