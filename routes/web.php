@@ -11,6 +11,9 @@ use Haley\Storage\FTP;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
+    Route::get('a', function() {
+        dd(array_keys([]));
+    });
 
     Route::view('websocket', 'socket');
 

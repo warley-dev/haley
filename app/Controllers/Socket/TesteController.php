@@ -5,10 +5,14 @@ namespace App\Controllers\Socket;
 use Haley\Collections\Log;
 use Haley\Console\Lines;
 use Haley\WebSocket\SocketController;
+use Haley\WebSocket\SocketMemory;
 use Throwable;
 
 class TesteController extends Lines
 {
+    private array $history = [];
+    private array $users = [];
+
     public function onOpen(SocketController $socket)
     {
         $socket->send([
@@ -18,24 +22,49 @@ class TesteController extends Lines
         $socket->send([
             'online' => $socket->count()
         ]);
+
+        if (count($this->history)) foreach ($this->history as $message) {
+            $socket->send($message, $socket->id());
+        }
     }
 
-    public function onMessage(mixed $message, SocketController $socket)
+    public function onMessage(mixed $message, int $id, SocketController $socket)
     {
         $message = json_decode($message, true);
 
         if ($message && $socket->id()) {
-            if (!empty($message['logout'])) {
+            if ($message['message'] == 'close') {
                 $socket->close($socket->id());
+
+                var_dump('a');
+
                 return;
             }
 
-            $socket->setProps($socket->id(), [
-                'user' => $message['user']
-            ]);
+            if ($message['login']) {
+                if (!in_array($socket->id(), $this->users)) {
+                    $socket->setProps($socket->id(), [
+                        'user' => $message['user']
+                    ]);
 
-            if ($socket->ip($socket->id())) $message['user'] .= ' [' . $socket->ip($socket->id()) . ']';
+                    $this->users[] = $socket->id();
+                }
+
+                $socket->send([
+                    'user' => 'CHAT',
+                    'message' => $message['user'] . ' entrou!',
+                ], $socket->ids());
+
+                $message['login'] = false;
+            }
+
+
+            $this->yellow(json_encode(SocketMemory::$props))->br()->br();
+
+            // if ($socket->ip($socket->id())) $message['user'] .= ' [' . $socket->ip($socket->id()) . ']';
         }
+
+        $this->history[$id] = $message;
 
         $socket->send($message, $socket->ids());
     }
@@ -62,6 +91,7 @@ class TesteController extends Lines
     public function onError(string $on, SocketController $socket, Throwable $error)
     {
         $this->red('[error on ' . $on . ' - ' . $socket->id() . '] : ' . $error->getMessage())->br();
+
         Log::create('websocket', $error->getMessage());
     }
 }

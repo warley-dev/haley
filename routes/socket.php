@@ -8,4 +8,4 @@ use Haley\Router\Websocket;
 //                            WEBSOCKET ROUTES                               |
 // --------------------------------------------------------------------------|
 
-Websocket::ws(9051, [TesteController::class])->host('15.229.66.249')->name('teste')->usleep(100000);
+Websocket::ws(9058, [TesteController::class])->host('framework')->name('teste')->usleep(1000);

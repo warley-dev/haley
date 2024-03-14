@@ -27,6 +27,8 @@ return [
             ]
         ]
     ],
+   
+    'ws' => [],
 
     'console' => [
         directoryRoot('routes/console.php')

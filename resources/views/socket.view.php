@@ -94,26 +94,28 @@
 			$('#chat-box').append(messageHTML);
 		}
 
-		setTimeout(() => {
-			var websocket = new WebSocket("ws://15.229.66.249:9051");
+		var login = true;
 
-			websocket.onopen = function(event) {				
+		setTimeout(() => {
+			var websocket = new WebSocket("ws://framework:9058");
+
+			websocket.onopen = function(event) {
 				// console.log(event);
 				showMessage("<div class='chat-connection-ack'>Conectado!</div>");
 
-				$('#logout').prop('hidden', false);				
-				
+				$('#logout').prop('hidden', false);
+
 			}
 
-			websocket.onmessage = function(event) {            
+			websocket.onmessage = function(event) {
 				var msg = JSON.parse(event.data);
 
-				if(!msg) return;
+				if (!msg) return;
 
-				if(msg.open) document.getElementById('chat-box').innerHTML += `${msg.open}`;
-				if(msg.message) document.getElementById('chat-box').innerHTML += `<div class='chat-connection-ack'>${msg.user}: ${msg.message}</div>`;
-				if(msg.disconnect) document.getElementById('chat-box').innerHTML +=  `<div class='error'>${msg.disconnect}</div>`;
-				if(msg.online) document.getElementById('online').innerHTML =  `<div class='error'>${msg.online} usuários online</div>`;
+				if (msg.open) document.getElementById('chat-box').innerHTML += `${msg.open}`;
+				if (msg.message) document.getElementById('chat-box').innerHTML += `<div class='chat-connection-ack'>${msg.user}: ${msg.message}</div>`;
+				if (msg.disconnect) document.getElementById('chat-box').innerHTML += `<div class='error'>${msg.disconnect}</div>`;
+				if (msg.online) document.getElementById('online').innerHTML = `<div class='error'>${msg.online} usuários online</div>`;
 			};
 
 			websocket.onerror = function(event) {
@@ -122,34 +124,35 @@
 
 			websocket.onclose = function(event) {
 				showMessage("<div class='chat-connection-ack'>Connection Closed</div>");
-				document.getElementById('online').innerHTML =  `<div class='error'>Desconectado</div>`;	
+				document.getElementById('online').innerHTML = `<div class='error'>Desconectado</div>`;
 			};
 
-			$('#logout').click(function(e) { 
-					e.preventDefault();				
+			$('#logout').click(function(e) {
+				e.preventDefault();
 
-					var logout = JSON.stringify({
-						logout: true
-					},null,0);	
-					
-					websocket.send(logout);
-				});
+				var logout = JSON.stringify({
+					message: 'close'
+				}, null, 0);
+
+				websocket.send(logout);
+			});
 
 			$('#frmChat').on("submit", function(event) {
 				event.preventDefault();
 
 				$('#chat-user').attr("type", "hidden");
-				
+
 				var messageJSON = JSON.stringify({
 					user: $('#chat-user').val(),
-					message: $('#chat-message').val()
-				},null,0);			
+					message: $('#chat-message').val(),
+					login: login
+				}, null, 0);
 
 				websocket.send(messageJSON);
 
-			
+				login = false;
 			});
-		},100);
+		}, 100);
 	</script>
 </head>
 
@@ -159,8 +162,7 @@
 		<div id="chat-box"></div>
 
 		<input type="text" name="chat-user" id="chat-user" placeholder="Name" class="chat-input" required />
-		<input type="text" name="chat-message" id="chat-message" placeholder="Message" class="chat-input chat-message"
-			required />
+		<input type="text" name="chat-message" id="chat-message" placeholder="Message" class="chat-input chat-message" required />
 		<input type="submit" id="btnSend" name="send-chat-message" value="Send">
 
 		<button hidden id="logout" value="1">Deslogar</button>
