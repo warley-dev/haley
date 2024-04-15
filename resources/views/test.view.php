@@ -4,22 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Exemplo de Código Formatado</title>
+    <!-- Inclua a folha de estilo do Prism -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.min.css">
 </head>
 
 <body>
-    <form action="@route('web.method')" method="post" enctype="multipart/form-data" aria-multiline="true">
-        <input type="text" hidden name="_token" value="@csrf">
-        <input type="text" name="nome" value="">
-        <input type="text" name="email" value="">
-        <input type="file" multiple id="file" name="file[]">
-        <input type="text" name="m[0]" value="">
-        <input type="text" name="m[1]" value="">
-        <input type="text" name="m[2]" value="">
 
-        <input type="submit" value="enviar">
-    </form>
+    <h1>Exemplo de Código Formatado</h1>
+
+    <!-- Código HTML -->
+    <h2>HTML:</h2>
+    <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Página de Exemplo&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;h1&gt;Olá, Mundo!&lt;/h1&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+    <!-- Código JavaScript -->
+    <h2>JavaScript:</h2>
+    <pre><code class="language-javascript">
+console.log("Olá, Mundo!");
+</code></pre>
+    <pre>
+        @php
+            $formatted_json = json_encode(json_decode(file_get_contents(directoryRoot('storage/cache/jsons/views.json'))), JSON_PRETTY_PRINT);   
+            $formatted_json = str_replace('\/', '/',$formatted_json);
+       @endphp
+
+        <code class="language-json">{{ $formatted_json }}</code>
+    </pre>
+
+    <!-- Inclua o script do Prism -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-json.min.js"></script>
 </body>
 
 </html>

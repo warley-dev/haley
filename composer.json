@@ -27,7 +27,8 @@
         ]
     },
     "require": {
-        "php": "^8.1.0",    
+        "php": "^8.1.0",
+        "cboden/ratchet": "^0.4.4",
         "haleydev/haley-framework": "dev-master"
     },
     "config": {

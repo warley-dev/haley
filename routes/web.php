@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\Web\HomeController;
+use Haley\Collections\Password;
 use Haley\Database\Migration\Builder\BuilderMemory;
 use Haley\Database\DB;
 use Haley\Router\Route;
@@ -11,14 +12,20 @@ use Haley\Storage\FTP;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
-    Route::get('a', function() {
-        dd(array_keys([]));
+    Route::view('view', 'test');
+
+    Route::get('a', function () {
+        // dd(array_keys([]));
+        dd(Password::create('@NaoSeiaSenha123'));
     });
 
-    Route::view('websocket', 'socket');
+    Route::view('chat', 'chat');
+    Route::view('streaming', 'streaming');
 
     Route::get('get', function () {
-        dd(get_included_files(), get_required_files(), get_include_path(), get_current_user(), formatSize(memory_get_usage()));
+
+
+        // dd(get_included_files(), get_required_files(), get_include_path(), get_current_user(), formatSize(memory_get_usage()));
     });
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -101,7 +108,7 @@ Route::prefix('test')->group(function () {
             $helper->table()->create($build_table, $columns);
         }
 
-        // modifi columns 
+        // modifi columns
         else {
             // rename columns
             foreach ($build_rename as $column => $to) {
@@ -125,7 +132,7 @@ Route::prefix('test')->group(function () {
         }
 
         // column id primary key
-        if (count($build_id)) $helper->Constraint()->setId($build_table, $build_id['name'], $build_id['comment']);        
+        if (count($build_id)) $helper->Constraint()->setId($build_table, $build_id['name'], $build_id['comment']);
 
         // column primary key
         else {
@@ -139,7 +146,7 @@ Route::prefix('test')->group(function () {
             }
         }
 
-        // set constraints   
+        // set constraints
         $constraints_active = [];
 
         foreach ($build_constraint as $value) {
@@ -167,8 +174,5 @@ Route::prefix('test')->group(function () {
                 }
             }
         }
-
-
-        
     });
 });

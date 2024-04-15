@@ -9,9 +9,9 @@ use Haley\Jobs\Job;
 
 Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function () {
 
-    Job::everyMinute(1, function () {
-        // Log::clean(['jobs', 'database', 'connection', 'migration']);
-    })->description('Clean logs')->name('test');
+    Job::everyMinute(1, function () {  
+        Log::clean(['jobs', 'database', 'connection', 'migration','websocket']);
+    })->description('Clean logs')->name('test')->unique();
 
 
     // Job::everyMinute(1, function () {
@@ -23,5 +23,5 @@ Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function (
 
 
 
-    Job::date('00:05 08/06/2023')->name('date')->description('especific date');
+    Job::date('00:05 08/06/2023')->name('date')->description('especific date')->unique();
 });
