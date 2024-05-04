@@ -28,7 +28,7 @@ class Streaming extends Lines implements InterfaceSocketClient
 
         // var_dump('streaming on message: ' . $message);
 
-
+        // $this->red($message)->br()->br();
 
         // if ($message) $client->send($message, $send_ids);
         $client->send($message, $send_ids);
@@ -37,10 +37,6 @@ class Streaming extends Lines implements InterfaceSocketClient
         // $unset = array_search($client->id(), $send_ids);
 
         // if ($unset) unset($send_ids[$unset]);
-
-
-
-
     }
 
     public function onClose(SocketClient $client)

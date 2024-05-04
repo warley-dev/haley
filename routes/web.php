@@ -15,16 +15,29 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('view', 'test');
 
     Route::get('a', function () {
-        // dd(array_keys([]));
-        dd(Password::create('@NaoSeiaSenha123'));
+        $fiber = new Fiber(function (): void {
+            $value = Fiber::suspend('fiber');
+            echo "Value used to resume fiber: ", $value, PHP_EOL;
+        });
+
+        $value = $fiber->start();
+
+        echo "Value from fiber suspending: ", $value, PHP_EOL;
+
+        $fiber->resume('test');
+
+
+        // dd(Password::create('@NaoSeiaSenha123'));
     });
 
     Route::view('chat', 'chat');
     Route::view('streaming', 'streaming');
+    Route::view('webrtc', 'webrtc');
+
 
     Route::get('get', function () {
-
-
+        echo phpinfo();
+        // dd(get_loaded_extensions());
         // dd(get_included_files(), get_required_files(), get_include_path(), get_current_user(), formatSize(memory_get_usage()));
     });
 

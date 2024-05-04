@@ -1,57 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exemplo de Código Formatado</title>
-    <!-- Inclua a folha de estilo do Prism -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.min.css">
+    <title>Exibir Rota no Google Maps</title>
+
+    <script>
+        function initMap() {
+        let map = new google.maps.Map(document.getElementById('map'), {
+            center: {
+                lat: -22.9068,
+                lng: -43.1729
+            }, // Coordenadas iniciais (Rio de Janeiro, Brasil)
+            zoom: 12 // Zoom inicial
+        });
+
+
+        let directionsService = new google.maps.DirectionsService();
+
+        let directionsDisplay = new google.maps.DirectionsRenderer({
+            preserveViewport: true
+        });
+
+        directionsDisplay.setPanel(document.getElementById("sidebar"));
+
+        console.log(directionsService, directionsDisplay)
+
+
+        // Obter localização atual do usuário
+        if (navigator.geolocation) {
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                // Atualizar o centro do mapa para a localização do usuário
+                map.setCenter(userLocation);
+
+                // https://developers.google.com/maps/documentation/javascript/directions?hl=pt-br
+                directionsDisplay.setMap(map);
+
+                var request = {
+                    origin: userLocation, // Ponto de partida
+
+                    destination: {
+                        lat: -23.5349528,
+                        lng: -46.7034393
+                    },
+
+                    travelMode: 'DRIVING' // Modo de viagem (DRIVING, WALKING, BICYCLING, etc.)
+                };
+
+                directionsService.route(request, function(result, status) {
+                    if (status == 'OK') {
+                        console.log(result);
+
+                        directionsDisplay.setDirections(result);
+                    }
+                });
+            }, function() {
+                handleLocationError(true, infoWindow, map.getCenter());
+            });
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' : 'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+    }
+    </script>
 </head>
 
 <body>
-
-    <h1>Exemplo de Código Formatado</h1>
-
-    <!-- Código HTML -->
-    <h2>HTML:</h2>
-    <pre><code class="language-html">
-&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;title&gt;Página de Exemplo&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-
-&lt;h1&gt;Olá, Mundo!&lt;/h1&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-    <!-- Código JavaScript -->
-    <h2>JavaScript:</h2>
-    <pre><code class="language-javascript">
-console.log("Olá, Mundo!");
-</code></pre>
-    <pre>
-        @php
-            $formatted_json = json_encode(json_decode(file_get_contents(directoryRoot('storage/cache/jsons/views.json'))), JSON_PRETTY_PRINT);   
-            $formatted_json = str_replace('\/', '/',$formatted_json);
-       @endphp
-
-        <code class="language-json">{{ $formatted_json }}</code>
-    </pre>
-
-    <!-- Inclua o script do Prism -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-markup.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-clike.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-json.min.js"></script>
+    <div id="map" style="height: 900px;"></div>
+    <div id="sidebar"></div>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBAFX6ylTq5sDdTT1Eiw9x1DhUlMRkn7Qo&callback=initMap"></script>
 </body>
 
 </html>

@@ -8,7 +8,7 @@ use Haley\Router\Websocket;
 //                            WEBSOCKET ROUTES                               |
 // --------------------------------------------------------------------------|
 
-// Websocket::channel(9073, [Chat::class])->host('framework')->name('chat');
+Websocket::channel(6001, [Chat::class])->host('framework')->name('chat');
 
 
-Websocket::channel(2019, [Streaming::class])->host('framework')->name('streaming');
+// Websocket::channel(2030, [Streaming::class])->host('framework')->name('streaming');

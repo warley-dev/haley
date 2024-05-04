@@ -1,3 +1,6 @@
-opcao de listar rotas no terminal
+commands {
+    opcao de listar rotas no terminal
+    debug de querys em tempo real no terminal
+}
 
 sudo chmod -R a+rw storage/
