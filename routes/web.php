@@ -35,6 +35,8 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('webrtc', 'webrtc');
 
 
+
+
     Route::get('get', function () {
         echo phpinfo();
         // dd(get_loaded_extensions());

@@ -11,11 +11,11 @@
 
 <body>
     <div class="context">
-        @if($mesage)
-        <p>{{ $mesage }}</p>
-        @endif
-
         <h1>{{ $status }}</h1>
+
+        @if($mesage)
+        <p class="message">{{ $mesage }}</p>
+        @endif
     </div>
 
 
@@ -50,18 +50,26 @@
         .context {
             width: 100%;
             position: absolute;
-            top: 50vh;
+            top: calc(50vh - 101px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            color: #ffffff70;
+            width: 100%;
+            text-align: center;
         }
 
         .context h1 {
             text-align: center;
             color: #fff;
-            font-size: 50px;
+            font-size: 80px;
         }
 
         .area {
-            background: #1d1e30;
-            background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
+            /* background: #1d1e30; */
+            background: linear-gradient(to bottom, #1d1e30 8%, #404493 100%);
             width: 100%;
             height: 100vh;
         }
