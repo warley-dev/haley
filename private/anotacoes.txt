@@ -4,3 +4,7 @@ commands {
 }
 
 sudo chmod -R a+rw storage/
+
+
+terminal multipls opcoes
+--id=1 --id=2 --id=3
