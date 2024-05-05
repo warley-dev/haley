@@ -8,10 +8,14 @@ use Haley\Jobs\Job;
 // --------------------------------------------------------------------------|
 
 Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function () {
+    Job::everyMinute(5, function () {
+        // ....
+    })->description('Job example')->name('test')->unique();
 
-    Job::everyMinute(1, function () {  
-        Log::clean(['jobs', 'database', 'connection', 'migration','websocket']);
-    })->description('Clean logs')->name('test')->unique();
+
+    // Job::everyMinute(1, function () {
+    //     Log::clean(['jobs', 'database', 'connection', 'migration','websocket']);
+    // })->description('Clean logs')->name('test')->unique();
 
 
     // Job::everyMinute(1, function () {
@@ -23,5 +27,5 @@ Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function (
 
 
 
-    Job::date('00:05 08/06/2023')->name('date')->description('especific date')->unique();
+    // Job::date('01:20 05/05/2024')->name('date')->description('especific date')->unique();
 });
