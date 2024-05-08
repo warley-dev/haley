@@ -7,10 +7,17 @@ use Haley\Jobs\Job;
 //                               JOB ROUTES                                  |
 // --------------------------------------------------------------------------|
 
+// alterar modo de funcionamento para data/hora do php
+
 Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function () {
-    Job::everyMinute(5, function () {
-        // ....
+    Job::everyMinute(1, function () {
+        sleep(60 * 2);
     })->description('Job example')->name('test')->unique();
+
+
+    Job::everyMinute(10, function () {
+        sleep(60 * 30);
+    })->description('timeout 5 min')->timeout(5)->name('test')->unique();
 
 
     // Job::everyMinute(1, function () {

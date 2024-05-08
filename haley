@@ -2,6 +2,7 @@
 
 use Haley\Kernel;
 
+define('HALEY_START', microtime(true));
 define('DIRECTORY_ROOT', __DIR__);
 
 !file_exists(DIRECTORY_ROOT . '/vendor/autoload.php') ? die('Autoload not found!' . PHP_EOL) : require DIRECTORY_ROOT . '/vendor/autoload.php';

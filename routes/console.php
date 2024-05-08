@@ -8,14 +8,14 @@ use Haley\Console\Lines;
 // --------------------------------------------------------------------------|
 
 
-Console::title('Helo word')->prefix('example:')->group(function () {
-    Console::command('one', function () {
+// Console::title('Helo word')->prefix('example:')->group(function () {
+//     Console::command('one', function () {
 
-        $name = Lines::red('what is your name ?')->readline();
-        Lines::normal('your name is')->yellow($name)->br();
-    })->description('Helo word');
-});
+//         $name = Lines::red('what is your name ?')->readline();
+//         Lines::normal('your name is')->yellow($name)->br();
+//     })->description('Helo word');
+// });
 
-Console::command('test', function () {
-    
-})->description('Helo word');
+// Console::command('test', function () {
+
+// })->description('Helo word');

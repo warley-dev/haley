@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,29 +9,13 @@
 </head>
 
 <body>
-    @section('h1') Helo Word @endsection
+    {{-- @include('include.teste'); --}}
 
-
-    {{-- @include('include.teste')     --}}
-
-    
-
-    <main>
-        <div class="box-img">
-            <img class="logo" src="assets/img/haley.png" alt="Logo">
-        </div>
-
-    </main>
-
-    <script>
-        var socket = new WebSocket('ws://http://framework/socket');
-
-        socket.onmessage = function(e) {
-           console.log(e)
-        };
-
-        console.log(socket)
-    </script>
+    @foreach ($filmes as $filme)
+    <div>
+        <p>{{ $filme->titulo }}</p>
+    </div>
+    @endforeach
 
     <style>
         * {
@@ -44,6 +25,13 @@
             outline: none;
             -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
             scroll-behavior: smooth;
+            color: white;
+        }
+
+        p {
+            width: 100%;
+            text-align: center;
+            padding: 2px;
         }
 
         main {
