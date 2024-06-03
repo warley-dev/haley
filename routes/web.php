@@ -36,21 +36,21 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('view', 'test');
 
     Route::get('query', function () {
-        $query = DB::table('filmes')->select([
-            'filmes.id',
-            'filmes.titulo',
-            'filmes.descricao',
-            'filmes.elenco',
-            'filmes.img',
-            'filmes.media_votos as votos',
-            'filmes.trailer',
-            'filmes.genero',
-            'filmes.lancamento'
-        ])->where('filmes.media_votos',5)->limit(5, 2);
+        $query = DB::table('filmes', 'f')->select([
+            'f.id',
+            'f.titulo',
+            'f.descricao',
+            'f.elenco',
+            'f.img',
+            'f.media_votos as votos',
+            'f.trailer',
+            'f.genero',
+            'f.lancamento'
+        ]);
 
         // dd(DatabaseDB::query($query)->fetchAll());
 
-        dd($query->getBindparams());
+        return $query->count() . '<br>';
 
 
 

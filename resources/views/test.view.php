@@ -23,13 +23,14 @@
 
         directionsDisplay.setPanel(document.getElementById("sidebar"));
 
-        console.log(directionsService, directionsDisplay)
+        // console.log(directionsService, directionsDisplay)
 
 
         // Obter localização atual do usuário
         if (navigator.geolocation) {
 
             navigator.geolocation.getCurrentPosition(function(position) {
+
                 var userLocation = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
@@ -56,7 +57,11 @@
                     if (status == 'OK') {
                         console.log(result);
 
-                        directionsDisplay.setDirections(result);
+
+                        var t =  directionsDisplay.setDirections(result);
+
+
+                        // console.log(t,directionsDisplay)
                     }
                 });
             }, function() {
