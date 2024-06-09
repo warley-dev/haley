@@ -33,7 +33,11 @@ use Haley\Storage\FTP;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
-    Route::view('view', 'test');
+    Route::view('server-1', 'server-1');
+    Route::view('server-2', 'server-2');
+    Route::get('php', function() {
+        phpinfo();
+    });
 
     Route::get('query', function () {
         $query = DB::table('filmes', 'f')->select([
@@ -67,6 +71,7 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     });
 
     Route::get('get', function () {
+        return phpinfo();
         // return dd(DB::table('filmes')->first());
     });
 

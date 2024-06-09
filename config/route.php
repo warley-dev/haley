@@ -1,4 +1,5 @@
 <?php
+
 // --------------------------------------------------------------------------|
 //                            ROUTES CONFIGURATIONS                          |
 // --------------------------------------------------------------------------|
@@ -27,8 +28,10 @@ return [
             ]
         ]
     ],
-   
-    'ws' => [],
+
+    'server' => [
+        directoryRoot('routes/server.php')
+    ],
 
     'console' => [
         directoryRoot('routes/console.php')
