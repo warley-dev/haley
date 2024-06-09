@@ -30,7 +30,12 @@ return [
     ],
 
     'server' => [
-        directoryRoot('routes/server.php')
+        'alias' => env('SERVER_ALIAS', 'localhost'),
+        'host' => env('SERVER_HOST', 'localhost'),
+
+        'path' => [
+            directoryRoot('routes/server.php')
+        ]
     ],
 
     'console' => [

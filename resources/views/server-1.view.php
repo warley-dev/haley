@@ -28,7 +28,7 @@
         </form>
 
         <script>
-            var wsServer = 'ws://18.230.59.251:5006/helo/word/teste';
+            var wsServer = 'ws://{{ env('SERVER_ALIAS') }}:5006/helo/word/teste';
             var websocket = new WebSocket(wsServer);
             var form = document.getElementById('form');
             var mensagem = document.getElementById('mensagem');
@@ -42,7 +42,7 @@
             };
 
             websocket.onclose = function(event) {
-                // console.log("Disconnected");
+                alert('Conexão encerrada');
             };
 
             websocket.onmessage = function(event) {
@@ -64,7 +64,7 @@
                 }
             };
 
-            websocket.onerror = function() {
+            websocket.onerror = function(event) {
                 alert('Falha na conexão');
             };
 
