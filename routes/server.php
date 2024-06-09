@@ -9,7 +9,7 @@ use Haley\Server\Server;
 // Server::ws('framework', 5005, 'App\Controllers\Server\Teste');
 
 Server::namespace('App\Controllers\Server')->name('server')->group(function () {
-    Server::ws('18.230.59.251', 5005, 'Teste')->path('helo/{dois}/{tres}/{quatro?}')->name('1');
+    Server::ws('localhost', 5005, 'Teste')->path('helo/{dois}/{tres}/{quatro?}')->name('1');
     // Server::ws('framework', 6000, 'Teste')->name('server-2');
 });
 
