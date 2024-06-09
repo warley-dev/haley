@@ -98,6 +98,8 @@
                     mensagem: mensagem.value,
                     nome: nome.value
                 }));
+
+                mensagem.value = '';
             }
 
             // if (socket.readyState === WebSocket.OPEN) {

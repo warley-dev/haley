@@ -3,11 +3,17 @@
 namespace App\Controllers\Server;
 
 use Haley\Server\WebSocket\WebSocket;
+use Haley\Server\Timer;
 use Throwable;
 
 class Teste
 {
     protected array $clients = [];
+
+    public function onHandshake(int $id, array $params, array $header, WebSocket $ws)
+    {
+        return true;
+    }
 
     public function onOpen(int $id, array $params, array $header, WebSocket $ws)
     {
@@ -71,5 +77,20 @@ class Teste
     public function onError(string $on, Throwable $error, WebSocket $ws)
     {
         dd($on, $error->getMessage());
+    }
+
+    public function timer(Timer $timer, WebSocket $ws)
+    {
+        // $count = 0;
+
+        // $timer->setInterval(1000, function ($id) use ($ws, $timer, $count) {
+        //     global $count;
+        //     dd($timer->info($id));
+        //     $count++;
+        // });
+
+        // $id = $timer->setTimeout(5000, function () use ($ws) {
+        //     dd($ws->clients());
+        // });
     }
 }

@@ -35,8 +35,12 @@ use Haley\Storage\FTP;
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('server-1', 'server-1');
     Route::view('server-2', 'server-2');
-    Route::get('php', function() {
+    Route::get('php', function () {
         phpinfo();
+    });
+
+    Route::get('call/{a?}/{b?}/{c?}', function ($um, $dois, $tres) {
+        dd($um, $dois, $tres);
     });
 
     Route::get('query', function () {
