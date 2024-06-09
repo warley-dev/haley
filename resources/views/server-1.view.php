@@ -28,7 +28,7 @@
         </form>
 
         <script>
-            var wsServer = 'ws://18.230.59.251:5005/helo/word/teste';
+            var wsServer = 'ws://framework:5005/helo/word/teste';
             var websocket = new WebSocket(wsServer);
             var form = document.getElementById('form');
             var mensagem = document.getElementById('mensagem');

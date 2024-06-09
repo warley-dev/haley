@@ -11,8 +11,6 @@ class Teste
 
     public function onOpen(int $id, array $params, array $header, WebSocket $ws)
     {
-        dd($params);
-
         $ws->send($ws->clients(), json_encode([
             'nome' => null,
             'mensagem' => null,
