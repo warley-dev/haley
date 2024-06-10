@@ -12,6 +12,8 @@ class Teste
 
     public function onHandshake(int $id, array $params, array $header, WebSocket $ws)
     {
+        // dd($params);
+
         return true;
     }
 
@@ -24,7 +26,7 @@ class Teste
         ]));
     }
 
-    public function onMessage(int $id, string $data, WebSocket $ws)
+    public function onMessage(int $id, string $data, WebSocket $ws, bool $binary)
     {
         $data = json_decode($data, true);
 

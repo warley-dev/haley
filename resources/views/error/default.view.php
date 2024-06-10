@@ -65,6 +65,8 @@
             text-align: center;
             color: #fff;
             font-size: 80px;
+            margin-bottom: 10px;
+            line-height: 1;
         }
 
         .area {
