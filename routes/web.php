@@ -106,16 +106,18 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('chat', 'chat');
     Route::view('streaming', 'streaming');
     Route::view('webrtc', 'webrtc');
-
     // Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/', function () {
         $vars = [
+            'ini' => php_ini_loaded_file(),
             'extensions' => get_loaded_extensions(),
-            'functions' => get_defined_functions()
+            'functions' => get_defined_functions(),
+            'includeds' => get_included_files(),
+            'constants' => get_defined_constants()
         ];
 
-        dd(function_exists('dd'),$vars);
+        dd(function_exists('dd'), $vars);
         // dd(Password::create(123456789));
     })->name('home');
 
