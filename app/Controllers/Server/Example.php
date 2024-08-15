@@ -1,35 +1,55 @@
 <?php
 
-namespace App\Controllers\WebSocket;
+namespace App\Controllers\Server;
 
-use Haley\Collections\Log;
-use Haley\Console\Lines;
-use Haley\WebSocket\InterfaceSocketClient;
-use Haley\WebSocket\SocketClient;
-
+use Haley\Server\WebSocket\WebSocket;
+use Haley\Server\Timer;
 use Throwable;
 
-class Example extends Lines implements InterfaceSocketClient
+class Stream
 {
-    public function onOpen(SocketClient $client)
-    {
-    
-    } 
+    protected array $clients = [];
+    protected string|null $stream = null;
 
-    public function onMessage(mixed $message, int $message_id, SocketClient $client)
-    {     
-      
+    public function onHandshake(int $id, array $params, array $header, WebSocket $ws)
+    {
+        return true;
     }
 
-    public function onClose(SocketClient $client)
+    public function onOpen(int $id, array $params, array $header, WebSocket $ws)
     {
-      
+        // $ws->send($id, 'hello');
     }
 
-    public function onError(string $on, SocketClient $client, Throwable $error)
+    public function onMessage(int $id, string $data, WebSocket $ws, bool $binary)
     {
-        $this->red('[error on ' . $on . ' - ' . $client->id() . '] : ' . $error->getMessage())->br();
+        // dd(json_decode($data, true));
 
-        Log::create('websocket', $error->getMessage());
+        // $ws->close($id);
+        // $ws->send($ws->clients(), $data, $binary);
+    }
+
+    public function onClose(int $id, WebSocket $ws)
+    {
+    }
+
+    public function onError(string $on, Throwable $error, WebSocket $ws)
+    {
+        dd($on, $error->getMessage());
+    }
+
+    public function timer(Timer $timer, WebSocket $ws)
+    {
+        // $count = 0;
+
+        // $timer->setInterval(1000, function ($id) use ($ws, $timer, $count) {
+        //     global $count;
+        //     dd($timer->info($id));
+        //     $count++;
+        // });
+
+        // $id = $timer->setTimeout(5000, function () use ($ws) {
+        //     dd($ws->clients());
+        // });
     }
 }

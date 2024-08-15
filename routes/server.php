@@ -9,8 +9,11 @@ use Haley\Server\Server;
 // Server::ws('framework', 5005, 'App\Controllers\Server\Teste');
 
 Server::namespace('App\Controllers\Server')->name('server')->group(function () {
-    Server::ws(5006, 'Teste')->path('helo/{dois}/{tres}/{quatro?}')->name('chat');
-    Server::ws(5007, 'Stream')->path('{um?}/{dois?}')->name('stream');
+    Server::ws(5007, 'Teste')->path('helo/{dois}/{tres}/{quatro?}')->name('chat');
+
+    Server::ws(5012, 'Stream')->name('stream');
+    // Server::stream(5010, 'Teste');
+    Server::stream(6013, 'Stream')->name('stream');
 });
 
 // rename channels

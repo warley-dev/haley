@@ -32,7 +32,8 @@
 
     "require": {
         "php": "^8.3",
-        "haleydev/haley-framework": "dev-master"
+        "haleydev/haley-framework": "dev-master",
+        "swoole/ide-helper": "^5.1"
     },
 
     "config": {

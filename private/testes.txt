@@ -1,0 +1,15 @@
+A <a>https://stockzplus.com/</a>  e uma plataforma de gerenciamento de estoque, venda (sem API de pagamento na parte no qual os clientes vendem, e mais para os clientes poderem gerenciar suas vendas e estoque de seus pequenos e médios negócios), emissão e consultas de notas fiscais.
+No caso nossos clientes 'vendedores' ao realizar uma venda 'não e utilizado a API PagBank nem outras API de pagamento de terceiros' .
+Atualmente estamos utilizando a API de pagamento recorrente do PagBank para os clientes assinarem um plano para utilizar os recursos da plataforma.
+
+Agora queremos adicionar compra de pacotes avulsos na plataforma, para isso estamos solicitando a integração da API de PEDIDOS & PAGAMENTOS.
+
+Para você testar a venda de um produto 'pacote no caso' na nossa plataforma pode utilizar nosso site de testes abaixo.
+Crie uma conta: https://empresa.codehalley.com/login ou utilize uma conta que criei para o PagBank testar (email: pagbank@sandbox.pagseguro.com.br | senha: pagbank123456789)
+
+
+Após fazer login na plataforma de teste, o teste pode ser feito neste link: https://empresa.codehalley.com/configuracoes/pacotes/consultas
+Os dados a serem preenchidos são de ambiente de teste, então pode-se encontrar os cartões de teste neste link: https://dev.pagbank.uol.com.br/docs/cartoes-de-teste
+
+
+Obrigado por entrar em contato :), estamos aguardando atualizações.

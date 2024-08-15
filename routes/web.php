@@ -35,6 +35,13 @@ use Haley\Storage\FTP;
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('server-1', 'server-1');
     Route::view('server-2', 'server-2');
+
+    Route::view('chat', 'chat');
+    Route::view('streaming', 'streaming');
+    Route::view('webrtc', 'webrtc');
+    Route::view('remote', 'remote');
+
+
     Route::get('php', function () {
         phpinfo();
     });
@@ -100,7 +107,18 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::view('streaming', 'streaming');
     Route::view('webrtc', 'webrtc');
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    // Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/', function () {
+        $vars = [
+            'extensions' => get_loaded_extensions(),
+            'functions' => get_defined_functions()
+        ];
+
+        dd(function_exists('dd'),$vars);
+        // dd(Password::create(123456789));
+    })->name('home');
+
 
     Route::get('ftp', function () {
         $ftp = new FTP;
