@@ -16,12 +16,15 @@
             <p>
                 <?php echo $error_message ?>
             </p>
-            <p>
+
+            <!-- <a href="vscode://file{{$error_file}}:{{$error_line}}">{{$error_file}}:{{$error_line}}</a> -->
+            <!-- href="vscode://file/C:/caminho/do/seu/arquivo.txt" -->
+            <a class="error_message_link" href="vscode://file{{$error_file}}:{{$error_line}}">
                 <?php echo $error_file ?>
-            </p>
+            </a>
         </div>
 
-        <div class="menu">
+        <div class=" menu">
             <p class="menu-btn menu-btn-active" data-btn="code">code</p>
             <p class="menu-btn" data-btn="error">error</p>
             <p class="menu-btn" data-btn="request">request</p>
@@ -122,7 +125,7 @@
 
         ::-webkit-scrollbar-thumb {
             background-color: #dbdbdb2b;
-            border-radius: 0px;
+            border-radius: 8px;
         }
 
         .sections {
@@ -154,6 +157,7 @@
             font-size: 12px !important;
             color: #939393;
             border-bottom: none !important;
+            line-height: 1;
         }
 
         /* start menu */
@@ -209,7 +213,7 @@
 
         .box-debug p {
             font-size: 13px;
-            color: #747474;
+            color: #949494;
             padding: 3px 8px;
             border-bottom: 1px solid #d1d1d1;
         }
@@ -242,9 +246,22 @@
             user-select: none;
         }
 
+        .error_message_link {
+            color: #13b313 !important;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
+
         .error-line {
             background: #08080859;
             color: #13b313 !important;
+        }
+
+        .box-debug p:hover {
+            background-color: #08080859 !important;
+            cursor: pointer;
         }
     </style>
 

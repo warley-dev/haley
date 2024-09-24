@@ -22,9 +22,7 @@ class RunQuery
 
         $query->execute();
 
-        if ($count == true) {
-            return $query->rowCount();
-        }
+        if ($count == true) return $query->rowCount();
 
         if ($all == true) {
             return $query->fetchAll();

@@ -53,7 +53,7 @@ class Debug
             'code' => $analyzer_file,
             'error_file' => $error->getFile(),
             'error_message' => $error_message,
-            'error_line' => $error->getFile(),
+            'error_line' => $error->getLine(),
             'error_all' => $error->getTrace(),
 
             'request_all' => request()->all(),
