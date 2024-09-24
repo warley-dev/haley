@@ -19,8 +19,14 @@ return new class
             $build->json('json');
             $build->text('text');
             $build->timestamp('timestamp');
-
-
+            $build->date('date');
+            $build->datetime('datetime');
+            $build->year('year');
+            $build->time('time');
+            $build->double('double');
+            $build->float('float');
+            $build->decimal('decimal');
+            $build->boolean('boolean');
 
 
             // $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique();
@@ -30,17 +36,7 @@ return new class
             $build->dates();
 
             $build->dropColumn('email');
-            $build->dropColumn(['nome','id']);
-
-
-
-
-
-
-
-
-
-
+            $build->dropColumn(['nome', 'id']);
         });
     }
 };

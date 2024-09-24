@@ -72,10 +72,114 @@ class Builder
         return new BuilderOptions(BuilderMemory::$config['driver']);
     }
 
+    public function double(string $name, int $m = 10, int $d = 2)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = sprintf('DOUBLE(%s,%s)', $m, $d);
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function decimal(string $name, int $m = 10, int $d = 2)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = sprintf('DECIMAL(%s,%s)', $m, $d);
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function float(string $name, int $m = 10, int $d = 2)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = sprintf('FLOAT(%s,%s)', $m, $d);
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function boolean(string $name)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = 'BOOLEAN';
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
     public function timestamp(string $name)
     {
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'timestamp';
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function date(string $name)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = 'DATE';
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function datetime(string $name)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = 'DATETIME';
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function year(string $name)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = 'YEAR';
+        } else {
+            return $this->typeError('int');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function time(string $name)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $type = 'TIME';
         } else {
             return $this->typeError('int');
         }
