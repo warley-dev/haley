@@ -120,11 +120,18 @@ class CommandMigration
             }
         }
 
-        // set constraints
-        $constraints_active = [];
+        // drop constraints
+        foreach ($this->build::$dropConstraints as $constraint) {
+            if ($this->scheme->constraint()->has($this->build::$table, $constraint)) {
+                $change = $this->scheme->constraint()->drop($this->build::$table, $constraint);
 
+                if($change) Shell::green($this->build::$table . ':constraint:' . $constraint)->blue('droped')->br();
+            }
+        }
+
+        // set constraints
         foreach ($this->build::$constraints as $value) {
-            $constraints_active[] = $value['name'];
+            if (in_array($value['name'], $this->build::$dropConstraints)) continue;
 
             if (!$this->scheme->constraint()->has($this->build::$table, $value['name'])) {
                 $this->scheme->constraint()->create($this->build::$table, $value['name'], $value['type'], $value['value']);

@@ -230,7 +230,12 @@ class Builder
         $this->timestamp('update_at')->default('CURRENT_TIMESTAMP', true)->onUpdate('CURRENT_TIMESTAMP', true)->nullable(false);
     }
 
-    public function dropConstrant() {}
+    public function dropConstrant(string|array $name)
+    {
+        if (is_string($name)) $name = [$name];
+
+        BuilderMemory::$dropConstraints = array_merge($name, BuilderMemory::$dropConstraints);
+    }
 
     public function dropColumn(string|array $column)
     {
@@ -246,8 +251,8 @@ class Builder
             'reference_table' => $reference_table,
             'reference_column' => $reference_column,
             'name' => null,
-            'on_delete' => null,
-            'on_update' => null
+            'on_delete' => 'NO ACTION',
+            'on_update' => 'NO ACTION'
         ];
 
         return new ForeignOptions(BuilderMemory::$config['driver']);

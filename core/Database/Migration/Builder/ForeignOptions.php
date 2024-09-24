@@ -4,7 +4,10 @@ namespace Haley\Database\Migration\Builder;
 
 class ForeignOptions
 {
-    public function onDelete(string $value = 'CASCADE')
+    /**
+     * CASCADE - SET NULL - SET DEFAULT - RESTRICT - NO ACTION
+     */
+    public function onDelete(string $value = 'NO ACTION')
     {
         $key = array_key_last(BuilderMemory::$foreign);
 
@@ -15,7 +18,10 @@ class ForeignOptions
         return $this;
     }
 
-    public function onUpdate(string $value = 'CASCADE')
+    /**
+     * CASCADE - SET NULL - SET DEFAULT - RESTRICT -NO ACTION
+     */
+    public function onUpdate(string $value = 'NO ACTION')
     {
         $key = array_key_last(BuilderMemory::$foreign);
 

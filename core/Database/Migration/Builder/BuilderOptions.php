@@ -59,7 +59,7 @@ class BuilderOptions
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $column = BuilderMemory::$columns[$key]['name'];
 
-            if ($name == null) $name = 'unique_' . BuilderMemory::$table . '_' . trim($column, '`');
+            if ($name === null) $name = 'unique_' . BuilderMemory::$table . '_' . trim($column, '`');
 
             BuilderMemory::addConstraint($name, 'UNIQUE', "($column)");
         }

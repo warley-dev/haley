@@ -16,6 +16,7 @@ class BuilderMemory
     public static array $rename = [];
     public static array $foreign = [];
     public static array $dropColumn = [];
+    public static array $dropConstraints = [];
 
     public static function addColumn(string $name, string $type, int|string|array|null $paramns = null)
     {

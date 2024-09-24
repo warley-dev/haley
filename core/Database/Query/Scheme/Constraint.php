@@ -121,7 +121,7 @@ class Constraint
             $this->driverError($this->driver);
         }
 
-        return $this->has($table, $name);
+        return !$this->has($table, $name);
     }
 
     /**
