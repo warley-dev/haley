@@ -11,18 +11,22 @@ return new class
 
     public function up()
     {
+
+
         (new Migration)->up('test', function (Builder $build) {
             $build->id('id');
 
             $build->int('int')->nullable(false);
             $build->varchar('varchar');
-            $build->json('json');
             $build->text('text');
+            $build->json('json');
+
             $build->timestamp('timestamp');
             $build->date('date');
             $build->datetime('datetime');
             $build->year('year');
             $build->time('time');
+
             $build->double('double');
             $build->float('float');
             $build->decimal('decimal');
@@ -31,12 +35,8 @@ return new class
             $build->set('set', ['um', 'dois', 'tres']);
             $build->set('enum', ['um', 'dois', 'tres']);
 
-
-
-
             // $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique();
             // $build->varchar('email')->comment('helo word')->nullable(true);
-
 
             $build->dates();
 

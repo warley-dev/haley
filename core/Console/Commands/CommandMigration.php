@@ -44,7 +44,6 @@ class CommandMigration
 
             if (!$this->scheme->table()->has($this->build::$table)) $this->runCreate();
 
-
             $this->runEdit();
 
             $this->runConstraints();
