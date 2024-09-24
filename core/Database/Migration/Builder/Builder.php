@@ -77,7 +77,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = sprintf('DOUBLE(%s,%s)', $m, $d);
         } else {
-            return $this->typeError('int');
+            return $this->typeError('double');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -90,7 +90,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = sprintf('DECIMAL(%s,%s)', $m, $d);
         } else {
-            return $this->typeError('int');
+            return $this->typeError('decimal');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -103,7 +103,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = sprintf('FLOAT(%s,%s)', $m, $d);
         } else {
-            return $this->typeError('int');
+            return $this->typeError('float');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -116,7 +116,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'BOOLEAN';
         } else {
-            return $this->typeError('int');
+            return $this->typeError('boolean');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -129,7 +129,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'timestamp';
         } else {
-            return $this->typeError('int');
+            return $this->typeError('timestamp');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -142,7 +142,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'DATE';
         } else {
-            return $this->typeError('int');
+            return $this->typeError('date');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -155,7 +155,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'DATETIME';
         } else {
-            return $this->typeError('int');
+            return $this->typeError('datetime');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -168,7 +168,7 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'YEAR';
         } else {
-            return $this->typeError('int');
+            return $this->typeError('year');
         }
 
         BuilderMemory::addColumn($name, $type);
@@ -181,7 +181,39 @@ class Builder
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $type = 'TIME';
         } else {
-            return $this->typeError('int');
+            return $this->typeError('time');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function set(string $name, array $values)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+
+            foreach ($values as $key => $value) $values[$key] = "'{$value}'";
+
+            $type = sprintf('SET(%s)', implode(',', $values));
+        } else {
+            return $this->typeError('set');
+        }
+
+        BuilderMemory::addColumn($name, $type);
+
+        return new BuilderOptions(BuilderMemory::$config['driver']);
+    }
+
+    public function enum(string $name, array $values)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+
+            foreach ($values as $key => $value) $values[$key] = "'{$value}'";
+
+            $type = sprintf('ENUM(%s)', implode(',', $values));
+        } else {
+            return $this->typeError('enum');
         }
 
         BuilderMemory::addColumn($name, $type);

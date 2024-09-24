@@ -28,6 +28,11 @@ return new class
             $build->decimal('decimal');
             $build->boolean('boolean');
 
+            $build->set('set', ['um', 'dois', 'tres']);
+            $build->set('enum', ['um', 'dois', 'tres']);
+
+
+
 
             // $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique();
             // $build->varchar('email')->comment('helo word')->nullable(true);
