@@ -40,8 +40,6 @@ class CommandMigration
 
             $this->scheme = DB::scheme($this->build::$connection);
 
-            // $this->migrationTable();
-
             if (!$this->scheme->table()->has($this->build::$table)) $this->runCreate();
 
             $this->runEdit();
