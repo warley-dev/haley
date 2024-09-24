@@ -6,6 +6,7 @@ use Haley\Collections\Config;
 use Haley\Collections\Memory;
 use Haley\Kernel;
 use Haley\Shell\Shell;
+use Throwable;
 
 class Debug
 {
@@ -13,15 +14,12 @@ class Debug
     protected string $dd = '';
     protected array $tokens = [];
 
-    public function exceptions($error)
+    public function exceptions(Throwable $error)
     {
         if (!defined('HALEY_STOP')) define('HALEY_STOP', microtime(true));
         if (ob_get_level() > 0) ob_clean();
 
         $error_message = ucfirst($error->getMessage());
-        $error_file = $error->getFile();
-        $error_line = $error->getLine();
-        $error_all = $error;
 
         // get_included_files(), get_required_files(), get_include_path()
 
@@ -37,24 +35,26 @@ class Debug
 
         response()->status('500');
 
-        $file = file($error_file);
+        $file = file($error->getFile());
         $analyzer_file = '';
 
         foreach ($file as $key => $line) {
             $line = str_replace(' ', '&nbsp;', htmlspecialchars($line));
-            if ($error_line - 1 == $key) {
+            if ($error->getLine() - 1 == $key) {
                 $analyzer_file .= '<p id="error_line" class="error-line"><b class="line-number">' . $key + 1  . '</b>' . $line . '</p>';
             } else {
                 $analyzer_file .= '<p><b class="line-number">' . $key + 1 . '</b>' . $line . '</p>';
             }
         }
 
+        // dd($error->getTrace());
+
         $params = [
             'code' => $analyzer_file,
-            'error_file' => $error_file,
+            'error_file' => $error->getFile(),
             'error_message' => $error_message,
-            'error_line' => $error_line,
-            'error_all' => $error_all,
+            'error_line' => $error->getFile(),
+            'error_all' => $error->getTrace(),
 
             'request_all' => request()->all(),
             'method' => request()->method(),

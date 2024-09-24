@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
 
-    <script src="{{ dirname(__DIR__) . '/Debug/resources/' }}jquery.min.js"></script>
     <title>DEBUG</title>
 </head>
 
@@ -42,7 +41,7 @@
                 <div class="box-debug display-none" id="error">
                     @if($error_all)
                     <p class="none-border">
-                    <pre>{{ var_dump($value) }}</pre>
+                    <pre>{{ var_dump($error_all) }}</pre>
                     </p>
                     @endif
                 </div>
@@ -52,25 +51,26 @@
                         <?php echo $method ?>
                     </p>
                     <?php if ($request_all != false) : ?>
-                    <?php foreach ($request_all as $key => $value) : ?>
-                    <p>
-                        <?php echo $key ?> =>
-                        <?php htmlspecialchars(print_r($value)) ?>
-                    </p>
-                    <?php endforeach ?>
+                        <?php foreach ($request_all as $key => $value) : ?>
+                            <p>
+                                <?php echo $key ?> =>
+                                <?php htmlspecialchars(print_r($value)) ?>
+                            </p>
+                        <?php endforeach ?>
                     <?php else : ?>
-                    <p>[]</p>
+                        <p>[]</p>
                     <?php endif ?>
                 </div>
 
                 <div class="box-debug display-none" id="header">
                     <?php if ($headers) : ?>
-                    <?php foreach ($headers as $key => $value) : ?>
-                    <p>
-                        <?php echo $key ?> =>
-                        <?php echo $value ?>
-                    </p>
-                    <?php endforeach ?>
+                        <?php foreach ($headers as $key => $value) : ?>
+                            <p>
+                                <?php echo $key ?> =>
+                                <?php echo $value ?>
+                            </p>
+
+                        <?php endforeach ?>
                     <?php endif ?>
                 </div>
             </div>
@@ -94,9 +94,8 @@
             height: 100vh;
             background: #fbfbfb;
             display: flex;
-            /* width: 50%; */
             flex-direction: column;
-            /* justify-content: space-between; */
+            background-color: #141414;
         }
 
         * {
@@ -122,7 +121,7 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: #9d9d9d;
+            background-color: #dbdbdb2b;
             border-radius: 0px;
         }
 
@@ -141,12 +140,9 @@
         }
 
         .code {
-            background: #fbfbfb;
             overflow-y: auto;
             overflow-x: hidden !important;
             padding: 6px 0px;
-            /* border-left: 1px solid #d1d1d1; */
-            /* box-shadow: 0px 2px 3px 0px rgb(24 24 24 / 65%); */
             height: 100%;
             width: 100%;
         }
@@ -164,13 +160,11 @@
         .menu {
             display: flex;
             padding: 8px 10px;
-            border-bottom: 1px solid #d1d1d1;
-            background: #dbdbdb;
-            border-top: 1px solid #d1d1d1;
+            background: #dbdbdb2b;
         }
 
         .menu-btn-active {
-            color: #b37070 !important;
+            color: #d2721e !important;
             /* font-weight: bolder; */
         }
 
@@ -178,12 +172,12 @@
             cursor: pointer !important;
             font-size: 14px;
             cursor: pointer;
-            color: #6c6c6c;
+            color: #c9c9c9;
             padding: 0px 8px;
         }
 
         .menu-btn:hover {
-            color: #9b4747 !important;
+            color: #d2721e !important;
         }
 
         /* end menu */
@@ -192,7 +186,6 @@
         .debug {
             justify-content: center;
             display: flex;
-            background: #fbfbfb;
             width: 100%;
             position: relative;
         }
@@ -200,7 +193,6 @@
         .header-menu {
             width: 100%;
             z-index: 900;
-
         }
 
         .box {
@@ -227,16 +219,14 @@
         }
 
         .error_message {
-            background: #303030;
+            background-color: #68686817;
             padding: 8px;
-            /* box-shadow: 0px 2px 3px 0px rgb(24 24 24 / 65%); */
         }
 
         .error_message p {
             font-size: 14px;
-            /* font-weight: bolder; */
             text-align: center;
-            color: #cbcbcb;
+            color: #d2721e;
         }
 
         .line-number {
@@ -253,20 +243,35 @@
         }
 
         .error-line {
-            background: #e1e1e1;
-            color: #bd5b5b !important;
+            background: #08080859;
+            color: #13b313 !important;
         }
     </style>
 
-
     <script>
-        document.getElementById("error_line").scrollIntoView();
-        $(".menu-btn").click(function() {
-            tab = $(this).data('btn');
-            $('.menu-btn').removeClass('menu-btn-active');
-            $(this).addClass('menu-btn-active');
-            $('.box-debug').addClass('display-none');
-            $('#' + tab).removeClass('display-none');
+        document.getElementById('error_line').scrollIntoView();
+
+        let buttons = document.querySelectorAll('.menu-btn');
+        let boxs = document.querySelectorAll('.box-debug');
+
+        buttons.forEach((button) => {
+            console.log(button)
+
+            button.addEventListener('click', (e) => {
+                boxs.forEach((box) => {
+                    box.classList.add('display-none');
+                });
+
+                buttons.forEach((button) => {
+                    button.classList.remove('menu-btn-active');
+                });
+
+                let button = e.target;
+                let tab = button.dataset.btn;
+
+                button.classList.add('menu-btn-active');
+                document.getElementById(tab).classList.remove('display-none');
+            });
         });
     </script>
 </body>
