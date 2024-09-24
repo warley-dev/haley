@@ -1,5 +1,6 @@
 <?php
 
+use Haley\Database\DB;
 use Haley\Database\Migration\Builder\Builder;
 use Haley\Database\Migration\Migration;
 
@@ -10,30 +11,36 @@ return new class
 
     public function up()
     {
-        (new Migration)->up('haley', function (Builder $build) {
-            $build->id('id', 'dfg');
-            // $build->int('id');
-            $build->varchar('nome')->comment('helo word')->nullable(false);
-            $build->varchar('email')->comment('helo word')->nullable(true);
-            $build->json('json')->comment('aff');
+        (new Migration)->up('test', function (Builder $build) {
+            $build->id('id');
 
-            $build->foreign('nome','testa','nome');
-
-
+            $build->int('int')->nullable(false);
+            $build->varchar('varchar');
+            $build->json('json');
+            $build->text('text');
+            $build->timestamp('timestamp');
 
 
 
 
+            // $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique();
+            // $build->varchar('email')->comment('helo word')->nullable(true);
 
 
-            $build->int('fore')->comment('foreing test');
+            $build->dates();
 
-            //  $build->foreign('fore', 'teste', 'id');
+            $build->dropColumn('email');
+            $build->dropColumn(['nome','id']);
 
-            // $build->rename('test','mudou');
 
-            // $build->varchar('varcfghar')->comment('test fdgsdfg')->default('sdgfsdfg sdfgsdfg')->notNull()->unique();
-            // $build->varchar('varcfgr')->comment('vc')->default('v dfgdfc');
+
+
+
+
+
+
+
+
         });
     }
 };
