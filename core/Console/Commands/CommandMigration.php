@@ -69,8 +69,6 @@ class CommandMigration
 
     private function runEdit()
     {
-        $columns_names = [];
-
         // drop coluns
         foreach ($this->build::$dropColumn as $column) {
             if ($this->scheme->column()->has($this->build::$table, $column)) {
@@ -81,8 +79,14 @@ class CommandMigration
         }
 
         // change or create columns
-        foreach ($this->build::getColumns() as $value) {
+        $changes_columns = $this->build::getColumns();
+
+        foreach ($changes_columns as $key => $value) {
             if (in_array($value['name'], $this->build::$dropColumn)) continue;
+
+            if (array_key_exists($key - 1, $changes_columns) and !in_array($changes_columns[$key - 1]['name'], $this->build::$dropColumn)) {
+                $value['query'] .= ' AFTER ' . $changes_columns[$key - 1]['name'];
+            }
 
             if ($this->scheme->column()->has($this->build::$table, $value['name'])) {
                 $modified = $this->scheme->column()->change($this->build::$table, $value['name'], $value['query']);
@@ -93,8 +97,6 @@ class CommandMigration
 
                 if ($created) Shell::green($this->build::$table . ':' . $value['name'])->blue('added')->br();
             }
-
-            $columns_names[] = $value['name'];
         }
 
         // rename columns
@@ -127,32 +129,24 @@ class CommandMigration
             if (!$this->scheme->constraint()->has($this->build::$table, $value['name'])) {
                 $this->scheme->constraint()->create($this->build::$table, $value['name'], $value['type'], $value['value']);
             } else {
-                // if ($value['type'] == 'FOREIGN KEY')
                 $this->scheme->constraint()->change($this->build::$table, $value['name'], $value['type'], $value['value']);
             }
         }
 
         if (!$this->migration->single) return;
 
-
         // remove unused constraints
-        foreach ($this->build::getColumns() as $x) {
-
-
-            $constraints_check = $this->scheme->constraint()->getNamesByColumn($this->build::$table, $x['name']);
-
-            // var_dump( $this->scheme->constraint()->getNames($this->build::$table));
-
-            // if (!empty($constraints_check)) {
-            //     foreach ($constraints_check as $y) {
-            //         $this->red($y)->br();
-
-            //         if (!in_array($y, $constraints_active)) {
-            //             $this->scheme->constraint()->drop($this->build::$table, $y);
-            //         }
-            //     }
-            // }
-        }
+        // foreach ($this->build::getColumns() as $x) {
+        //     $constraints_check = $this->scheme->constraint()->getNamesByColumn($this->build::$table, $x['name']);
+        //     // var_dump($this->scheme->constraint()->getNames($this->build::$table));
+        //     if (!empty($constraints_check)) {
+        //         foreach ($constraints_check as $y) {
+        //             // if (!in_array($y, $constraints_active)) {
+        //             $this->scheme->constraint()->drop($this->build::$table, $y);
+        //             // }
+        //         }
+        //     }
+        // }
     }
 
     private function migrationTable()

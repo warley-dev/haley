@@ -2,9 +2,6 @@
 
 namespace Haley\Database\Migration\Builder;
 
-use Haley\Collections\Log;
-use InvalidArgumentException;
-
 class BuilderOptions
 {
     public function comment(string $value)
@@ -55,14 +52,14 @@ class BuilderOptions
         return $this;
     }
 
-    public function unique(string|null $name = null)
+    public function unique(string $name = null)
     {
         $key = array_key_last(BuilderMemory::$columns);
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $column = BuilderMemory::$columns[$key]['name'];
 
-            if ($name == null) $name = 'unique_' . BuilderMemory::$table . '_' . $column;
+            if ($name == null) $name = 'unique_' . BuilderMemory::$table . '_' . trim($column, '`');
 
             BuilderMemory::addConstraint($name, 'UNIQUE', "($column)");
         }

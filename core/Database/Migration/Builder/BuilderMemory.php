@@ -23,7 +23,7 @@ class BuilderMemory
             if ($paramns) $type .= "($paramns)";
 
             self::$columns[] = [
-                'name' => $name,
+                'name' => "`{$name}`",
                 'type' => $type,
                 'options' => [
                     'NULLABLE' => '',

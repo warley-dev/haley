@@ -44,6 +44,8 @@ class Column
      */
     public function has(string $table, string $column)
     {
+        $column = trim($column, '`');
+
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?", [$this->database, $table, $column], $this->connection)->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return true;
@@ -59,6 +61,8 @@ class Column
      */
     public function getSchema(string $table, string $column)
     {
+        $column = trim($column, '`');
+
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?", [$this->database, $table, $column], $this->connection)->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return $query;
@@ -75,6 +79,8 @@ class Column
      */
     public function create(string $table, string $column, string $type)
     {
+        $column = trim($column, '`');
+
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query("ALTER TABLE `{$table}` ADD COLUMN `{$column}` {$type}", connection: $this->connection);
         } else {
@@ -90,6 +96,8 @@ class Column
      */
     public function change(string $table, string $column, string $type, string|null $rename = null)
     {
+        $column = trim($column, '`');
+
         if (!$this->has($table, $column));
 
         if ($rename === null) {
@@ -100,6 +108,8 @@ class Column
 
         $old = $this->getSchema($table, $column);
 
+        unset($old['ORDINAL_POSITION']);
+
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query("ALTER TABLE `{$table}` CHANGE `{$column}` `{$rename}` {$type}", connection: $this->connection);
         } else {
@@ -108,9 +118,13 @@ class Column
 
         $new = $this->getSchema($table, $rename);
 
+        unset($new['ORDINAL_POSITION']);
+
         if (empty($new)) return false;
 
         $difference = array_diff($new, $old);
+
+        // var_dump($new);
 
         if (!count($difference)) return false;
 
@@ -123,8 +137,10 @@ class Column
      */
     public function drop(string $table, string $column)
     {
+        $column = trim($column, '`');
+
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE %s DROP COLUMN %s', $table, $column), connection: $this->connection);
+            DB::query(sprintf('ALTER TABLE %s DROP COLUMN `%s`', $table, $column), connection: $this->connection);
         } else {
             $this->driverError($this->driver);
         }
@@ -138,8 +154,10 @@ class Column
      */
     public function rename(string $table, string $column, string $to)
     {
+        $column = trim($column, '`');
+
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE %s RENAME COLUMN %s to %s', $table, $column, $to), connection: $this->connection);
+            DB::query(sprintf('ALTER TABLE %s RENAME COLUMN `%s`to `%s`', $table, $column, $to), connection: $this->connection);
         } else {
             $this->driverError($this->driver);
         }

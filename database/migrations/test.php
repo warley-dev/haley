@@ -35,13 +35,13 @@ return new class
             $build->set('set', ['um', 'dois', 'tres']);
             $build->set('enum', ['um', 'dois', 'tres']);
 
-            // $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique();
-            // $build->varchar('email')->comment('helo word')->nullable(true);
+            $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique();
+            $build->varchar('email')->comment('helo word')->nullable(true);
 
             $build->dates();
 
-            $build->dropColumn('email');
-            $build->dropColumn(['nome', 'id']);
+            // $build->dropColumn('email');
+            // $build->dropColumn(['nome']);
         });
     }
 };
