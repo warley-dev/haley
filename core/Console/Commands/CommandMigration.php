@@ -176,17 +176,21 @@ class CommandMigration
             }
         }
 
+        // drop index
+        foreach ($this->build::$dropIndex as $index) if ($this->scheme->constraint()->hasIndex($this->build::$table, $index)) {
+            $this->scheme->constraint()->dropIndex($this->build::$table, $index);
+        }
+
         // set indexes
         foreach ($this->build::$index as $index) {
+            if (in_array($index['name'], $this->build::$dropIndex)) continue;
+
             $has = $this->scheme->constraint()->hasIndex($this->build::$table, $index['name']);
 
             if ($has) $this->scheme->constraint()->dropIndex($this->build::$table, $index['name']);
 
             $create = $this->scheme->constraint()->addIndex($this->build::$table, $index['column'], $index['name'], $index['type']);
         }
-
-        // dd($this->scheme->constraint()->dropIndex($this->build::$table, 'idx_testea'));
-        // $this->scheme->constraint()->addIndex($this->build::$table, ['text', 'varchar'], 'idx_testea');
     }
 
     private function migrationTable()

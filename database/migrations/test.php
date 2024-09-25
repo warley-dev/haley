@@ -37,14 +37,12 @@ return new class
             $build->varchar('nome')->comment('helo word')->nullable(true)->default('aaaa')->unique('unique_teste');
             $build->varchar('email')->comment('helo word')->nullable(true);
 
+            // $build->index(['varchar',  'nome', 'email']);
             // $build->foreign('int','outro','id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
 
-            // continuar:
-            // indices, como utilizar indices e adicionar try caths
-            // CREATE INDEX idx_select ON pedidos_produtos(id_produto, id_pedido);
 
-            // index default name (idx_select)
-            // drop index
+            // continuar:
+            // testar indexs / add and drop (dropar index adicionais)
             // bigint
 
             // $build->dropConstrant('fk_teste');

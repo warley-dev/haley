@@ -258,8 +258,6 @@ class Constraint
         $table = trim($table, '`');
         $name = trim($name, '`');
 
-        if (!$this->hasIndex($table, $name)) return false;
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('DROP INDEX `%s` ON `%s`', $name, $table), [], $this->connection)->fetch(PDO::FETCH_ASSOC);
         } else {

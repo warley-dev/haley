@@ -310,6 +310,17 @@ class Builder
         }
     }
 
+    public function dropIndex(string|array $name)
+    {
+        if (is_string($name)) $name = [$name];
+
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$dropIndex = array_merge($name, BuilderMemory::$dropIndex);
+        } else {
+            return $this->typeError('dropIndex');
+        }
+    }
+
     private function typeError(string $type)
     {
         Log::create('migration', 'Driver does not support the type ' . $type);
