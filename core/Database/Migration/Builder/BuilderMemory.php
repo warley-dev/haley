@@ -15,6 +15,8 @@ class BuilderMemory
 
     public static array $rename = [];
     public static array $foreign = [];
+
+    public static bool $dropTable = false;
     public static array $dropColumn = [];
     public static array $dropConstraints = [];
 
@@ -48,13 +50,13 @@ class BuilderMemory
             $on_update = $value['on_update'];
 
             if (in_array(self::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-                $value = sprintf('(%s) REFERENCES %s (%s)', $column, $reference_table, $reference_column);
+                $value = sprintf('(`%s`) REFERENCES `%s`(`%s`)', $column, $reference_table, $reference_column);
 
-                if ($on_delete !== null) $value .= $on_delete;
-                if ($on_update !== null) $value .= $on_update;
+                if ($on_delete !== null) $value .= ' ' . $on_delete;
+                if ($on_update !== null) $value .= ' ' . $on_update;
                 if ($name == null) $name = sprintf('foreign_%s_%s_%s_%s', self::$table, $column, $reference_table, $reference_column);
 
-                self::addConstraint($name, 'FOREIGN KEY', $value);
+                self::addConstraint($name, 'FOREIGN KEY', trim(preg_replace('/( ){2,}/', '$1', $value)));
             }
         }
     }
@@ -103,6 +105,8 @@ class BuilderMemory
         self::$constraints = [];
         self::$rename = [];
         self::$foreign = [];
+        self::$dropTable = false;
         self::$dropColumn = [];
+        self::$dropConstraints = [];
     }
 }

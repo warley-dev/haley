@@ -244,6 +244,11 @@ class Builder
         BuilderMemory::$dropColumn = array_merge($column, BuilderMemory::$dropColumn);
     }
 
+    public function dropTable()
+    {
+        BuilderMemory::$dropTable = true;
+    }
+
     public function foreign(string $column, string $reference_table, string $reference_column)
     {
         BuilderMemory::$foreign[] = [
@@ -251,8 +256,8 @@ class Builder
             'reference_table' => $reference_table,
             'reference_column' => $reference_column,
             'name' => null,
-            'on_delete' => 'NO ACTION',
-            'on_update' => 'NO ACTION'
+            'on_delete' => null,
+            'on_update' => null
         ];
 
         return new ForeignOptions(BuilderMemory::$config['driver']);

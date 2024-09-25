@@ -11,39 +11,44 @@ return new class
 
     public function up()
     {
-
-
         (new Migration)->up('test', function (Builder $build) {
-            $build->id('id');
+            $build->id();
 
             $build->int('int')->nullable(false);
-            $build->varchar('varchar');
-            $build->text('text');
-            $build->json('json');
+            $build->varchar('varchar')->nullable(true);
+            $build->text('text')->nullable(true);
+            $build->json('json')->nullable(true);
 
-            $build->timestamp('timestamp');
-            $build->date('date');
-            $build->datetime('datetime');
-            $build->year('year');
-            $build->time('time');
+            $build->timestamp('timestamp')->nullable(true);
+            $build->date('date')->nullable(true);
+            $build->datetime('datetime')->nullable(true);
+            $build->year('year')->nullable(true);
+            $build->time('time')->nullable(true);
 
-            $build->double('double');
-            $build->float('float');
-            $build->decimal('decimal');
-            $build->boolean('boolean');
+            $build->double('double')->nullable(true);
+            $build->float('float')->nullable(true);
+            $build->decimal('decimal')->nullable(true);
+            $build->boolean('boolean')->nullable(true);
 
-            $build->set('set', ['um', 'dois', 'tres']);
-            $build->set('enum', ['um', 'dois', 'tres']);
+            $build->set('set', ['um', 'dois', 'tres'])->nullable(true);
+            $build->set('enum', ['um', 'dois', 'tres'])->nullable(true);
 
-            $build->varchar('nome')->comment('helo word')->nullable(false)->default('aaaa')->unique('unique_teste');
+            $build->varchar('nome')->comment('helo word')->nullable(true)->default('aaaa')->unique('unique_teste');
             $build->varchar('email')->comment('helo word')->nullable(true);
 
             $build->dates();
+            $build->dropColumn(['ids']);
 
+            $build->foreign('int','outro','id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fore_test');
+
+            // continuar:
+            // indices, como utilizar indices e adicionar try caths
+            // CREATE INDEX idx_select ON pedidos_produtos(id_produto, id_pedido);
 
             // $build->dropConstrant('unique_teste');
             // $build->dropColumn('email');
             // $build->dropColumn(['nome']);
+            // $build->dropTable();
         });
     }
 };

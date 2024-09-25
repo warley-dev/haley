@@ -58,4 +58,11 @@ class DB
     {
         return new Scheme($connection);
     }
+
+    /**
+     * Dump database
+     */
+    public static function dump(string $path, string|null $connection) {
+        
+    }
 }
