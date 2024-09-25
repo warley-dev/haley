@@ -85,7 +85,7 @@ class CommandMigration
     private function runEdit()
     {
         // drop coluns
-        foreach ($this->build::$dropColumn as $column) {
+        foreach ($this->build::$dropColumns as $column) {
             if ($this->scheme->column()->has($this->build::$table, $column)) {
                 $drop = $this->scheme->column()->drop($this->build::$table, $column);
 
@@ -97,9 +97,9 @@ class CommandMigration
         $changes_columns = $this->build::getColumns();
 
         foreach ($changes_columns as $key => $value) {
-            if (in_array($value['name'], $this->build::$dropColumn)) continue;
+            if (in_array($value['name'], $this->build::$dropColumns)) continue;
 
-            if (array_key_exists($key - 1, $changes_columns) and !in_array($changes_columns[$key - 1]['name'], $this->build::$dropColumn)) {
+            if (array_key_exists($key - 1, $changes_columns) and !in_array($changes_columns[$key - 1]['name'], $this->build::$dropColumns)) {
                 $value['query'] .= ' AFTER ' . $changes_columns[$key - 1]['name'];
             }
 
@@ -128,7 +128,7 @@ class CommandMigration
     {
         // column id primary key
         if (count($this->build::$id)) {
-            if (!in_array($this->build::$id['name'], $this->build::$dropColumn)) {
+            if (!in_array($this->build::$id['name'], $this->build::$dropColumns)) {
                 $set = $this->scheme->constraint()->setId($this->build::$table, $this->build::$id['name'], $this->build::$id['comment']);
 
                 if ($set and !$this->create) Shell::green($this->build::$table . ':' . $this->build::$id['name'])->blue('chanhe primary key')->br();
@@ -145,34 +145,29 @@ class CommandMigration
         }
 
         // set constraints
-        foreach ($this->build::$constraints as $value) {
-            if (in_array($value['name'], $this->build::$dropConstraints)) continue;
+        foreach ($this->build::$constraints as $constraints) {
+            if (in_array($constraints['name'], $this->build::$dropConstraints)) continue;
 
-            if (!$this->scheme->constraint()->has($this->build::$table, $value['name'])) {
-                $create = $this->scheme->constraint()->create($this->build::$table, $value['name'], $value['type'], $value['value']);
+            if (!$this->scheme->constraint()->has($this->build::$table, $constraints['name'])) {
+                $create = $this->scheme->constraint()->create($this->build::$table, $constraints['name'], $constraints['type'], $constraints['value']);
 
-                if ($create) Shell::green($this->build::$table . ':constraint:' . $value['name'])->blue('added')->br();
-                else  Shell::red($this->build::$table . ':constraint:' . $value['name'])->red('fail added')->br();
+                if ($create) Shell::green($this->build::$table . ':constraint:' . $constraints['name'])->blue('added')->br();
+                else  Shell::red($this->build::$table . ':constraint:' . $constraints['name'])->red('fail added')->br();
             } else {
-                $this->scheme->constraint()->change($this->build::$table, $value['name'], $value['type'], $value['value']);
+                $this->scheme->constraint()->change($this->build::$table, $constraints['name'], $constraints['type'], $constraints['value']);
             }
         }
-
-        dd($this->scheme->constraint()->getNames($this->build::$table));
 
         // remove unused constraints
         foreach ($this->build::getColumns() as $column) {
             $constraints = $this->scheme->constraint()->getNamesByColumn($this->build::$table, $column['name']);
-
-
-
 
             if (!empty($constraints)) foreach ($constraints as $constraint) {
                 $drop = true;
 
                 foreach ($this->build::$constraints as $check) if ($constraint == $check['name']) $drop = false;
 
-                if ($drop) $this->scheme->constraint()->drop($this->build::$table,$constraint);
+                if ($drop) $this->scheme->constraint()->drop($this->build::$table, $constraint);
             }
         }
     }

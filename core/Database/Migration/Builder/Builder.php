@@ -221,51 +221,75 @@ class Builder
         return new BuilderOptions(BuilderMemory::$config['driver']);
     }
 
+    public function foreign(string $column, string $reference_table, string $reference_column)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$foreign[] = [
+                'column' => $column,
+                'reference_table' => $reference_table,
+                'reference_column' => $reference_column,
+                'name' => null,
+                'on_delete' => null,
+                'on_update' => null
+            ];
+        } else {
+            return $this->typeError('foreign');
+        }
+
+        return new ForeignOptions(BuilderMemory::$config['driver']);
+    }
+
     /**
      * Columns createdAt and updatedAt
      */
     public function dates()
     {
-        $this->timestamp('created_at')->default('CURRENT_TIMESTAMP', true)->nullable(false);
-        $this->timestamp('update_at')->default('CURRENT_TIMESTAMP', true)->onUpdate('CURRENT_TIMESTAMP', true)->nullable(false);
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $this->timestamp('created_at')->default('CURRENT_TIMESTAMP', true)->nullable(false);
+            $this->timestamp('update_at')->default('CURRENT_TIMESTAMP', true)->onUpdate('CURRENT_TIMESTAMP', true)->nullable(false);
+        } else {
+            return $this->typeError('dates');
+        }
     }
 
     public function dropConstrant(string|array $name)
     {
         if (is_string($name)) $name = [$name];
 
-        BuilderMemory::$dropConstraints = array_merge($name, BuilderMemory::$dropConstraints);
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$dropConstraints = array_merge($name, BuilderMemory::$dropConstraints);
+        } else {
+            return $this->typeError('dropConstrant');
+        }
     }
 
     public function dropColumn(string|array $column)
     {
         if (is_string($column)) $column = [$column];
 
-        BuilderMemory::$dropColumn = array_merge($column, BuilderMemory::$dropColumn);
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$dropColumns = array_merge($column, BuilderMemory::$dropColumns);
+        } else {
+            return $this->typeError('dropColumn');
+        }
     }
 
     public function dropTable()
     {
-        BuilderMemory::$dropTable = true;
-    }
-
-    public function foreign(string $column, string $reference_table, string $reference_column)
-    {
-        BuilderMemory::$foreign[] = [
-            'column' => $column,
-            'reference_table' => $reference_table,
-            'reference_column' => $reference_column,
-            'name' => null,
-            'on_delete' => null,
-            'on_update' => null
-        ];
-
-        return new ForeignOptions(BuilderMemory::$config['driver']);
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$dropTable = true;
+        } else {
+            return $this->typeError('dropTable');
+        }
     }
 
     public function rename(string $column, string $to)
     {
-        BuilderMemory::$rename[$column] = $to;
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$rename[$column] = $to;
+        } else {
+            return $this->typeError('rename');
+        }
     }
 
     private function typeError(string $type)

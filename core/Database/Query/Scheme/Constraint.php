@@ -233,6 +233,24 @@ class Constraint
     }
 
     /**
+     * Drop foreigns from the table
+     * @return bool
+     */
+    public function dropForeign(string $table, string $name)
+    {
+        $table = trim($table, '`');
+        $name = trim($name, '`');
+
+        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE `%s` DROP FOREIGN KEY `%s`', $table, $name), connection: $this->connection)->fetch(PDO::FETCH_OBJ);
+        } else {
+            $this->driverError($this->driver);
+        }
+
+        // return $this->getPrimaryKey($table) === null;
+    }
+
+    /**
      * Set column id - Primary key
      */
     public function setId(string $table, string $column, string|null $comment)

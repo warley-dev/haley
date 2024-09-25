@@ -17,7 +17,7 @@ class BuilderMemory
     public static array $foreign = [];
 
     public static bool $dropTable = false;
-    public static array $dropColumn = [];
+    public static array $dropColumns = [];
     public static array $dropConstraints = [];
 
     public static function addColumn(string $name, string $type, int|string|array|null $paramns = null)
@@ -54,7 +54,7 @@ class BuilderMemory
 
                 if ($on_delete !== null) $value .= ' ' . $on_delete;
                 if ($on_update !== null) $value .= ' ' . $on_update;
-                if ($name == null) $name = sprintf('foreign_%s_%s_%s_%s', self::$table, $column, $reference_table, $reference_column);
+                if ($name == null) $name = sprintf('fk_%s_%s', self::$table, $column);
 
                 self::addConstraint($name, 'FOREIGN KEY', trim(preg_replace('/( ){2,}/', '$1', $value)));
             }
@@ -106,7 +106,7 @@ class BuilderMemory
         self::$rename = [];
         self::$foreign = [];
         self::$dropTable = false;
-        self::$dropColumn = [];
+        self::$dropColumns = [];
         self::$dropConstraints = [];
     }
 }
