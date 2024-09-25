@@ -15,10 +15,12 @@ class BuilderMemory
 
     public static array $rename = [];
     public static array $foreign = [];
+    public static array $index = [];
 
     public static bool $dropTable = false;
-    public static array $dropColumns = [];
-    public static array $dropConstraints = [];
+    public static array $dropIndex = [];
+    public static array $dropColumn = [];
+    public static array $dropConstraint = [];
 
     public static function addColumn(string $name, string $type, int|string|array|null $paramns = null)
     {
@@ -105,8 +107,9 @@ class BuilderMemory
         self::$constraints = [];
         self::$rename = [];
         self::$foreign = [];
+        self::$index = [];
         self::$dropTable = false;
-        self::$dropColumns = [];
-        self::$dropConstraints = [];
+        self::$dropColumn = [];
+        self::$dropConstraint = [];
     }
 }

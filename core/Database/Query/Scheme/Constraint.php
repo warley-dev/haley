@@ -233,21 +233,70 @@ class Constraint
     }
 
     /**
-     * Drop foreigns from the table
      * @return bool
      */
-    public function dropForeign(string $table, string $name)
+    public function hasIndex(string $table, string $name)
     {
         $table = trim($table, '`');
-        $name = trim($name, '`');
 
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE `%s` DROP FOREIGN KEY `%s`', $table, $name), connection: $this->connection)->fetch(PDO::FETCH_OBJ);
+            $query = DB::query('SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
+
+            if (!empty($query)) return true;
         } else {
             $this->driverError($this->driver);
         }
 
-        // return $this->getPrimaryKey($table) === null;
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function dropIndex(string $table, string $name)
+    {
+        $table = trim($table, '`');
+        $name = trim($name, '`');
+
+        if (!$this->hasIndex($table, $name)) return false;
+
+        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('DROP INDEX `%s` ON `%s`', $name, $table), [], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $this->driverError($this->driver);
+        }
+
+        return !$this->hasIndex($table, $name);
+    }
+
+    /**
+     * BTREE | FULLTEXT | HASH
+     */
+    public function addIndex(string $table, string|array $column, string $name, string $type = 'BTREE')
+    {
+        $table = trim($table, '`');
+
+        if (is_string($column)) $column = [$column];
+
+        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
+            foreach ($column as $key => $value) $column[$key] = '`' . trim($value, '`') . '`';
+
+            $column = implode(',', $column);
+
+            if ($type == 'BTREE') {
+                $query = sprintf('CREATE INDEX `%s` ON `%s`(%s)', $name, $table, $column);
+            } elseif ($type == 'FULLTEXT') {
+                $query = sprintf('CREATE FULLTEXT INDEX `%s` ON `%s`(%s)', $name, $table, $column);
+            } else if ($type == 'HASH') {
+                $query = sprintf('CREATE INDEX `%s` ON `%s`(%s) USING HASH', $name, $table, $column);
+            }
+
+            DB::query($query, [], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $this->driverError($this->driver);
+        }
+
+        return $this->hasIndex($table, $name);
     }
 
     /**

@@ -252,12 +252,39 @@ class Builder
         }
     }
 
+    /**
+     * BTREE | FULLTEXT | HASH
+     */
+    public function index(string|array $column, string|null $name = null, string $type = 'BTREE')
+    {
+        if ($name === null) $name = 'idx_query_' . BuilderMemory::$table;
+
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$index[$name] = [
+                'name' => $name,
+                'type' => $type,
+                'column' => $column
+            ];
+        } else {
+            return $this->typeError('index');
+        }
+    }
+
+    public function rename(string $column, string $to)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$rename[$column] = $to;
+        } else {
+            return $this->typeError('rename');
+        }
+    }
+
     public function dropConstrant(string|array $name)
     {
         if (is_string($name)) $name = [$name];
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropConstraints = array_merge($name, BuilderMemory::$dropConstraints);
+            BuilderMemory::$dropConstraint = array_merge($name, BuilderMemory::$dropConstraint);
         } else {
             return $this->typeError('dropConstrant');
         }
@@ -268,7 +295,7 @@ class Builder
         if (is_string($column)) $column = [$column];
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropColumns = array_merge($column, BuilderMemory::$dropColumns);
+            BuilderMemory::$dropColumn = array_merge($column, BuilderMemory::$dropColumn);
         } else {
             return $this->typeError('dropColumn');
         }
@@ -280,15 +307,6 @@ class Builder
             BuilderMemory::$dropTable = true;
         } else {
             return $this->typeError('dropTable');
-        }
-    }
-
-    public function rename(string $column, string $to)
-    {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$rename[$column] = $to;
-        } else {
-            return $this->typeError('rename');
         }
     }
 

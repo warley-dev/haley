@@ -85,7 +85,7 @@ class CommandMigration
     private function runEdit()
     {
         // drop coluns
-        foreach ($this->build::$dropColumns as $column) {
+        foreach ($this->build::$dropColumn as $column) {
             if ($this->scheme->column()->has($this->build::$table, $column)) {
                 $drop = $this->scheme->column()->drop($this->build::$table, $column);
 
@@ -97,9 +97,9 @@ class CommandMigration
         $changes_columns = $this->build::getColumns();
 
         foreach ($changes_columns as $key => $value) {
-            if (in_array($value['name'], $this->build::$dropColumns)) continue;
+            if (in_array($value['name'], $this->build::$dropColumn)) continue;
 
-            if (array_key_exists($key - 1, $changes_columns) and !in_array($changes_columns[$key - 1]['name'], $this->build::$dropColumns)) {
+            if (array_key_exists($key - 1, $changes_columns) and !in_array($changes_columns[$key - 1]['name'], $this->build::$dropColumn)) {
                 $value['query'] .= ' AFTER ' . $changes_columns[$key - 1]['name'];
             }
 
@@ -128,7 +128,7 @@ class CommandMigration
     {
         // column id primary key
         if (count($this->build::$id)) {
-            if (!in_array($this->build::$id['name'], $this->build::$dropColumns)) {
+            if (!in_array($this->build::$id['name'], $this->build::$dropColumn)) {
                 $set = $this->scheme->constraint()->setId($this->build::$table, $this->build::$id['name'], $this->build::$id['comment']);
 
                 if ($set and !$this->create) Shell::green($this->build::$table . ':' . $this->build::$id['name'])->blue('chanhe primary key')->br();
@@ -136,9 +136,11 @@ class CommandMigration
         }
 
         // drop constraints
-        foreach ($this->build::$dropConstraints as $constraint) {
+        foreach ($this->build::$dropConstraint as $constraint) {
             if ($this->scheme->constraint()->has($this->build::$table, $constraint)) {
                 $drop = $this->scheme->constraint()->drop($this->build::$table, $constraint);
+
+                $this->scheme->constraint()->dropIndex($this->build::$table, $constraint);
 
                 if ($drop) Shell::green($this->build::$table . ':constraint:' . $constraint)->blue('droped')->br();
             }
@@ -146,7 +148,7 @@ class CommandMigration
 
         // set constraints
         foreach ($this->build::$constraints as $constraints) {
-            if (in_array($constraints['name'], $this->build::$dropConstraints)) continue;
+            if (in_array($constraints['name'], $this->build::$dropConstraint)) continue;
 
             if (!$this->scheme->constraint()->has($this->build::$table, $constraints['name'])) {
                 $create = $this->scheme->constraint()->create($this->build::$table, $constraints['name'], $constraints['type'], $constraints['value']);
@@ -167,9 +169,24 @@ class CommandMigration
 
                 foreach ($this->build::$constraints as $check) if ($constraint == $check['name']) $drop = false;
 
-                if ($drop) $this->scheme->constraint()->drop($this->build::$table, $constraint);
+                if ($drop) {
+                    $this->scheme->constraint()->drop($this->build::$table, $constraint);
+                    $this->scheme->constraint()->dropIndex($this->build::$table, $constraint);
+                }
             }
         }
+
+        // set indexes
+        foreach ($this->build::$index as $index) {
+            $has = $this->scheme->constraint()->hasIndex($this->build::$table, $index['name']);
+
+            if ($has) $this->scheme->constraint()->dropIndex($this->build::$table, $index['name']);
+
+            $create = $this->scheme->constraint()->addIndex($this->build::$table, $index['column'], $index['name'], $index['type']);
+        }
+
+        // dd($this->scheme->constraint()->dropIndex($this->build::$table, 'idx_testea'));
+        // $this->scheme->constraint()->addIndex($this->build::$table, ['text', 'varchar'], 'idx_testea');
     }
 
     private function migrationTable()

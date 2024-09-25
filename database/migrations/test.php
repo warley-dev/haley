@@ -14,7 +14,7 @@ return new class
         (new Migration)->up('test', function (Builder $build) {
             $build->id();
 
-            $build->int('int')->nullable(false);
+            $build->int('int')->nullable(false)->index();
             $build->double('double')->nullable(true);
             $build->float('float')->nullable(true);
             $build->decimal('decimal')->nullable(true);
@@ -37,7 +37,7 @@ return new class
             $build->varchar('nome')->comment('helo word')->nullable(true)->default('aaaa')->unique('unique_teste');
             $build->varchar('email')->comment('helo word')->nullable(true);
 
-            $build->foreign('int','outro','id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
+            // $build->foreign('int','outro','id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
 
             // continuar:
             // indices, como utilizar indices e adicionar try caths
