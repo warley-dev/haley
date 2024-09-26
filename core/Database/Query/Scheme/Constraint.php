@@ -55,7 +55,7 @@ class Constraint
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getNamesByType(string $table, string $type)
     {
@@ -69,13 +69,11 @@ class Constraint
             $this->driverError($this->driver);
         }
 
-        if (count($names)) return $names;
-
-        return null;
+        return $names;
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getNamesByColumn(string $table, string $column)
     {
@@ -92,9 +90,7 @@ class Constraint
             $this->driverError($this->driver);
         }
 
-        if (count($names)) return $names;
-
-        return null;
+        return $names;
     }
 
     /**
@@ -153,8 +149,7 @@ class Constraint
     }
 
     /**
-     * @return array|false
-     */
+     * @return bool */
     public function change(string $table, string $name, string $type, string $value)
     {
         $old = $this->getSchema($table, $name);
@@ -176,7 +171,7 @@ class Constraint
 
         if (!count($difference)) return false;
 
-        return $difference;
+        return true;
     }
 
     /**
@@ -269,6 +264,7 @@ class Constraint
 
     /**
      * BTREE | FULLTEXT | HASH
+     * @return bool
      */
     public function addIndex(string $table, string|array $column, string $name, string $type = 'BTREE')
     {
@@ -295,6 +291,29 @@ class Constraint
         }
 
         return $this->hasIndex($table, $name);
+    }
+
+    /**
+     * @return array
+     */
+    public function getIndexs(string $table)
+    {
+        $data = [];
+        $table = trim($table, '`');
+
+        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT COLUMN_NAME, INDEX_NAME, INDEX_TYPE FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?', [$this->database, $table], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
+
+            if (count($query)) foreach ($query as $value) $data[] = [
+                'name' => $value['INDEX_NAME'],
+                'column' => $value['COLUMN_NAME'],
+                'type' => $value['INDEX_TYPE']
+            ];
+        } else {
+            $this->driverError($this->driver);
+        }
+
+        return $data;
     }
 
     /**

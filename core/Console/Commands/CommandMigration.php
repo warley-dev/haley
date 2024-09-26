@@ -181,6 +181,10 @@ class CommandMigration
             $this->scheme->constraint()->dropIndex($this->build::$table, $index);
         }
 
+
+        dd($this->scheme->constraint()->getIndexs($this->build::$table));
+        //
+
         // set indexes
         foreach ($this->build::$index as $index) {
             if (in_array($index['name'], $this->build::$dropIndex)) continue;
