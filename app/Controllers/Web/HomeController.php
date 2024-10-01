@@ -11,12 +11,10 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $filmes = DB::table('filmes')->limit(5000)->get();
+        // $filmes = DB::table('filmes')->limit(5000)->get();
 
         // dd($filmes);
 
-        return view('home', [
-            'filmes' => $filmes
-        ]);
+        return view('home', []);
     }
 }

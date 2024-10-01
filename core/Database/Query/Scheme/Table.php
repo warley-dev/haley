@@ -102,13 +102,13 @@ class Table
     /**
      * @return bool
      */
-    public function create(string $table, array $columns, string|null $definitions = null)
+    public function create(string $table, array $content, string|null $definitions = null)
     {
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $columns = implode(',', $columns);
+            $content = implode(',', $content);
             $definitions = $definitions ?? '';
 
-            DB::query(trim("CREATE TABLE `{$table}` ({$columns}) {$definitions}"), connection: $this->connection);
+            DB::query(trim("CREATE TABLE `{$table}` ({$content}) {$definitions}"), connection: $this->connection);
         } else {
             $this->driverError($this->driver);
         }

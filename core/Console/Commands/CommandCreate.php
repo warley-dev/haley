@@ -143,15 +143,12 @@ class CommandCreate
         }
     }
 
-    public function database(string $name)
+    public function migration(string $name)
     {
         $table = pathinfo(directoryRoot('database/' . $name), PATHINFO_FILENAME);
 
         $class = date('Y_m_d_His') . '_' . $table;
-        $namespace = trim(str_replace([basename($name), '/'], ['', '\\'], $name), '\\');
-        $namespace = !empty($namespace) ? $namespace = '\\' . $namespace : '';
-        $location = directoryRoot('database/' . str_replace(basename($name), '', $name) . $class . '.php');
-        $mold = (new Molds)->database($class, $namespace, $table);
+        $location = directoryRoot('database/migrations/' . str_replace(basename($name), '', $name) . $class . '.php');
 
         createDir(dirname($location));
 
@@ -166,12 +163,16 @@ class CommandCreate
             }
         }
 
-        file_put_contents($location, $mold);
+        $template = view('migration', [
+            'table' => $name
+        ], directoryHaley('Templates'));
+
+        file_put_contents($location, $template);
 
         if (file_exists($location)) {
-            Shell::green("database migration {$class} created")->normal($location)->br();
+            Shell::green("migration {$class} created")->normal($location)->br();
         } else {
-            Shell::red('error: failed to create database migration class');
+            Shell::red('error: failed to create migration');
         }
     }
 

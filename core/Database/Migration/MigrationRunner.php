@@ -60,6 +60,12 @@ class MigrationRunner
             return;
         }
 
+        if (!method_exists($this->migration, 'down')) {
+            $this->addError('the down method does not exist');
+
+            return;
+        }
+
         $connection = $this->connection($this->migration->connection);
 
         if (!$connection) return;
@@ -74,10 +80,36 @@ class MigrationRunner
         $this->build::compileForeigns();
 
         $this->scheme = DB::scheme($this->build::$connection);
+        $this->migrationTable();
 
         if ($type === 'up') $this->migration->up($builder);
+        if ($type === 'down') $this->migration->down($builder);
 
         $this->exec();
+    }
+
+    private function migrationTable()
+    {
+        if (!$this->scheme->table()->has('migrations')) $this->scheme->table()->create('migrations', [
+            '`id` int NOT NULL AUTO_INCREMENT',
+            '`migration` varchar(255) DEFAULT NULL UNIQUE',
+            '`count` INT',
+            '`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'PRIMARY KEY (`id`)'
+        ]);
+
+        $check = DB::table('migrations')->select(['id', 'count'])->where('migration', $this->name)->first();
+
+        if (!empty($check->id)) {
+            DB::table('migrations')->where('id', $check->id)->update([
+                'count' => $check->count + 1
+            ]);
+        } else {
+            DB::table('migrations')->insert([
+                'count' => 1,
+                'migration' => $this->name
+            ]);
+        }
     }
 
     private function exec()
@@ -121,7 +153,9 @@ class MigrationRunner
             $columns[$value['name']] = "`{$value['name']}` {$value['query']}";
         }
 
-        $this->scheme->table()->create($this->build::$table, $columns);
+        $create = $this->scheme->table()->create($this->build::$table, $columns);
+
+        dd($create);
 
         $this->addInfo("table {$this->build::$table} created", "create:{$this->build::$table}");
     }

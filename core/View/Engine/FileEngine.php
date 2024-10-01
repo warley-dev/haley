@@ -58,7 +58,7 @@ class FileEngine
         // formats
         $view = trim($view);
 
-        // save cache 
+        // save cache
         $cache_json_file = directoryRoot('storage/cache/jsons/views.json');
         $this->view_cache = directoryRoot('storage/cache/views/' . $cache_name);
 

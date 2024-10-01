@@ -1,7 +1,6 @@
 <?php
 
 use Haley\Database\Migration\Builder\Builder;
-use Haley\Database\Migration\Migration;
 
 return new class
 {
@@ -52,5 +51,5 @@ return new class
         // $build->rename('varchaae','teste_rename');
     }
 
-    public function down() {}
+    public function down(Builder $build) {}
 };

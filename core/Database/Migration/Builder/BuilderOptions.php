@@ -59,9 +59,9 @@ class BuilderOptions
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $column = BuilderMemory::$columns[$key]['name'];
 
-            if ($name === null) $name = 'unique_' . BuilderMemory::$table . '_' . trim($column, '`');
+            if ($name === null) $name = 'unique_' . BuilderMemory::$table . '_' . $column;
 
-            BuilderMemory::addConstraint($name, 'UNIQUE', "($column)");
+            BuilderMemory::addConstraint($name, 'UNIQUE', "(`$column`)");
         }
 
         return $this;
@@ -73,7 +73,7 @@ class BuilderOptions
     public function index(string|null $name = null, string $type = 'BTREE')
     {
         $key = array_key_last(BuilderMemory::$columns);
-        $column = trim(BuilderMemory::$columns[$key]['name'], '`');
+        $column = BuilderMemory::$columns[$key]['name'];
         $table = BuilderMemory::$table;
 
         if ($name === null) $name = 'idx_' . $table . '_' . $column;

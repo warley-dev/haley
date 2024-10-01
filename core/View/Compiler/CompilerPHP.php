@@ -31,6 +31,9 @@ class CompilerPHP
     {
         $this->view = $view;
 
+        // php tag replace
+        $this->view = str_replace('<?php', '<?php echo \'<?php\' ?>', $this->view);
+
         // comment
         $regex = "/{{--(.*?)--}}/s";
 

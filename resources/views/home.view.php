@@ -9,13 +9,9 @@
 </head>
 
 <body>
-    {{-- @include('include.teste'); --}}
+    <!-- {{-- @include('include.teste'); --}} -->
 
-    @foreach ($filmes as $filme)
-    <div>
-        <p>{{ $filme->titulo }}</p>
-    </div>
-    @endforeach
+
 
     <style>
         * {

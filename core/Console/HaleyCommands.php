@@ -33,13 +33,13 @@ class HaleyCommands
             });
 
             Console::title('Create')->prefix('create:')->group(function () {
-                Console::command('env', 'CommandCreate::env')->description('create a env file');
-                Console::command('migration {name}', 'CommandCreate::database')->description('create a new migration');
-                Console::command('model {name} {connection?}', 'CommandCreate::model')->description('create a new model');
-                Console::command('controller {name}', 'CommandCreate::controller')->description('create a new controller');
-                Console::command('middleware {name}', 'CommandCreate::middleware')->description('create a new middleware');
-                Console::command('job {name}', 'CommandCreate::job')->description('create a new job');
-                Console::command('class {name}', 'CommandCreate::class')->description('create a new');
+                // Console::command('env', 'CommandCreate::env')->description('create a env file');
+                Console::command('migration {name}', 'CommandCreate::migration')->description('create a new migration');
+                // Console::command('model {name} {connection?}', 'CommandCreate::model')->description('create a new model');
+                // Console::command('controller {name}', 'CommandCreate::controller')->description('create a new controller');
+                // Console::command('middleware {name}', 'CommandCreate::middleware')->description('create a new middleware');
+                // Console::command('job {name}', 'CommandCreate::job')->description('create a new job');
+                // Console::command('class {name}', 'CommandCreate::class')->description('create a new');
                 // Console::command('model {name} {connection?}', 'CommandCreate::model')->description('create a new model class / name --all to create all models in the database');
             });
 

@@ -19,12 +19,16 @@ class View
 
         $view = $engine->getView($file);
 
-        if (!$view) return;
+        if (!$view) return '';
 
         foreach ($params as $key => $value) $$key = $value;
 
-        require_once $view;
+        ob_start();
 
-        return;
+        require $view;
+
+        $content = ob_get_clean();
+
+        return $content ?? '';
     }
 }

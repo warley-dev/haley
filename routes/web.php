@@ -13,10 +13,10 @@ use Requtize\QueryBuilder\ConnectionAdapters\PdoBridge;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
-    Route::get('/', 'DatabaseController@index');
+    Route::get('/', 'HomeController@index');
 
-    Route::get('test', function() {
-        dd('helo word');
-    });
+    // Route::get('test', function() {
+    //     dd('helo word');
+    // });
 });
 
