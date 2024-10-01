@@ -27,7 +27,7 @@ class MigrationRunner
     private BuilderMemory|null $build = null;
     private Scheme|null $scheme = null;
 
-    public function run(string $migration, $type = 'up')
+    public function run(string $migration, bool $force = false, $type = 'up')
     {
         BuilderMemory::reset();
 
@@ -82,6 +82,24 @@ class MigrationRunner
         $this->scheme = DB::scheme($this->build::$connection);
         $this->migrationTable();
 
+        // check migration db
+        $check = DB::table('migrations')->select(['id', 'count'])->where('migration', $this->name)->first();
+
+        if (!empty($check->id)) {
+            if ($force) {
+                DB::table('migrations')->connection($this->build::$connection)->where('id', $check->id)->update([
+                    'count' => $check->count + 1
+                ]);
+            } else {
+                return;
+            }
+        } else {
+            DB::table('migrations')->connection($this->build::$connection)->insert([
+                'count' => 1,
+                'migration' => $this->name
+            ]);
+        }
+
         if ($type === 'up') $this->migration->up($builder);
         if ($type === 'down') $this->migration->down($builder);
 
@@ -97,19 +115,6 @@ class MigrationRunner
             '`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'PRIMARY KEY (`id`)'
         ]);
-
-        $check = DB::table('migrations')->select(['id', 'count'])->where('migration', $this->name)->first();
-
-        if (!empty($check->id)) {
-            DB::table('migrations')->where('id', $check->id)->update([
-                'count' => $check->count + 1
-            ]);
-        } else {
-            DB::table('migrations')->insert([
-                'count' => 1,
-                'migration' => $this->name
-            ]);
-        }
     }
 
     private function exec()
@@ -154,8 +159,6 @@ class MigrationRunner
         }
 
         $create = $this->scheme->table()->create($this->build::$table, $columns);
-
-        dd($create);
 
         $this->addInfo("table {$this->build::$table} created", "create:{$this->build::$table}");
     }

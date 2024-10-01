@@ -31,6 +31,8 @@ class CommandMigration
             $migration_files = array_diff(scandir(directoryRoot('database/migrations')), ['.', '..']);
         }
 
+        $updates = false;
+
         foreach ($migration_files as $file) {
             $migration = new MigrationRunner();
 
@@ -53,6 +55,8 @@ class CommandMigration
 
                 Shell::list($start, $end)->br();
             }
+
+            if(count($migration->getErrors()) or count($migration->getInfos())) $updates = true;
 
             // dd($migration->getErrors());
 
@@ -94,6 +98,8 @@ class CommandMigration
             // $this->build::reset();
             // $this->create = false;
         }
+
+        if(!$updates) Shell::red('no pending migrations')->br();
     }
 
     private function runCreate()
