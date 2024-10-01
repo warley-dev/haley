@@ -20,9 +20,9 @@ if (!function_exists('view')) {
      * @param array|object $params
      * @return Template
      */
-    function view(string $view, array|object $params = [], string|null $path = null)
+    function view(string $view, array|object $params = [], bool $render = true, string|null $path = null)
     {
-        return (new View)->view($view, $params, $path);
+        return (new View)->view($view, $params, $render, $path);
     }
 }
 

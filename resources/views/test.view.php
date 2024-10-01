@@ -9,16 +9,16 @@
 </head>
 
 <body>
-    @include('include.teste')
+    {{-- @include('include.teste')
 
-    @section('h1') Ola @endsection
-    
+    @section('h1') Ola @endsection --}}
+
     <h1>@url('/fghfgh')</h1>
     <h1>@urlFull('/fghfgh')</h1>
     <h1>@urlFullQuery(['teste' => 'ola'])</h1>
 
     <h1>@csrf</h1>
-    <h1>@route('web.files',['um','dois'])</h1>   
+    <h1>@route('web.files',['um','dois'])</h1>
 </body>
 
 </html>

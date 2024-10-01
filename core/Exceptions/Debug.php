@@ -61,7 +61,7 @@ class Debug
             'headers' => request()->headers(),
         ];
 
-        view('exceptions', $params, directoryHaley('Exceptions/views'));
+        view('exceptions', $params, true, directoryHaley('Exceptions/views'));
 
         (new Kernel)->terminate();
     }
@@ -83,7 +83,7 @@ class Debug
             $this->dd .= '</div>';
         }
 
-        view('dd', ['dd' => $this->dd], directoryHaley('Exceptions/views'));
+        view('dd', ['dd' => $this->dd], true, directoryHaley('Exceptions/views'));
 
         (new Kernel)->terminate();
     }

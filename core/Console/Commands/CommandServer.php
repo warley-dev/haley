@@ -279,8 +279,6 @@ class CommandServer
     protected function execute(string $type, array $params)
     {
         if ($type == 'websocket') (new WebSocketServer)->run($params);
-        elseif ($type == 'http') {
-            (new HttpServer)->run($params);
-        }
+        elseif ($type == 'http') (new HttpServer)->run($params);
     }
 }

@@ -4,6 +4,7 @@ namespace Haley\Http;
 
 use Haley\Collections\HttpCodes;
 use Haley\Collections\MimeTypes;
+use Haley\Kernel;
 use Throwable;
 
 class Response
@@ -26,7 +27,6 @@ class Response
         if (ob_get_level() > 0) ob_clean();
 
         response()->status($status);
-        response()->header('content-type', 'text/html; charset=utf-8');
 
         if ($mesage === null) $mesage = HttpCodes::get($status);
 
@@ -47,13 +47,13 @@ class Response
         }
 
         if (file_exists(directoryResources('views/error/default.view.php'))) {
-            view('error.default', [
+            return view('error.default', [
                 'status' => $status,
                 'mesage' => $mesage
             ]);
         }
 
-        return self::status($status);
+        (new Kernel)->terminate();
     }
 
     public static function json(mixed $value, int|null $status = null)
@@ -102,6 +102,7 @@ class Response
             if (ob_get_level() > 0) ob_clean();
 
             $extension = pathinfo($file, PATHINFO_EXTENSION);
+
             header('Content-type: ' . MimeTypes::get($extension));
             header('Content-Length: ' . filesize($file));
 

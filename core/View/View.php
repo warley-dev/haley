@@ -7,7 +7,7 @@ use Haley\View\Engine\FileEngine;
 
 class View
 {
-    public function view(string $view, array|object $params = [], string|null $path = null)
+    public function view(string $view, array|object $params = [], bool $render = true, string|null $path = null)
     {
         if (ob_get_level() > 0) ob_clean();
 
@@ -21,14 +21,18 @@ class View
 
         if (!$view) return '';
 
-        foreach ($params as $key => $value) $$key = $value;
+        if ($render) {
+            foreach ($params as $key => $value) $$key = $value;
 
-        ob_start();
+            require $view;
+        } else {
+            foreach ($params as $key => $value) $$key = $value;
 
-        require $view;
+            ob_start();
 
-        $content = ob_get_clean();
+            require $view;
 
-        return $content ?? '';
+            return ob_get_clean();
+        }
     }
 }

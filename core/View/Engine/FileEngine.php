@@ -9,11 +9,11 @@ use Haley\View\Compiler\CompilerInclude;
 
 class FileEngine
 {
-    private false|string $view_file = false;
-    private false|string $view_cache = false;
+    private null|string $view_file = null;
+    private null|string $view_cache = null;
 
     /**
-     * @return false|string
+     * @return null|string
      */
     public function getView(string $file)
     {

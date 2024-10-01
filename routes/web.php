@@ -3,20 +3,23 @@
 use Haley\Database\DB;
 use Haley\Router\Route;
 
-use Requtize\QueryBuilder\Connection;
-use Requtize\QueryBuilder\QueryBuilder\QueryBuilderFactory;
-use Requtize\QueryBuilder\ConnectionAdapters\PdoBridge;
-
-
 // --------------------------------------------------------------------------|
 //                               WEB ROUTES                                  |
 // --------------------------------------------------------------------------|
 
+// Route::error(function ($status,  $message) {
+//     return view('error.default',[
+//         'status' => $status,
+//         'message' => $message
+//     ]);
+// });
+
 Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('/', 'HomeController@index');
 
-    // Route::get('test', function() {
-    //     dd('helo word');
-    // });
-});
+    Route::view('test', 'test');
 
+    Route::get('haley', function () {
+        dd(getMemoryUsage());
+    });
+});

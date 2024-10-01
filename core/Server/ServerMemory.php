@@ -13,7 +13,7 @@ class ServerMemory
         'namespace' => [],
         'name' => [],
         'host' => [],
-        'alias' => []
+        // 'alias' => []
     ];
 
     public static function server(string $type, array $params)
@@ -21,7 +21,7 @@ class ServerMemory
         if (count(self::$attributes['namespace'])) $params['namespace'] = implode('\\', self::$attributes['namespace']);
         if (count(self::$attributes['name'])) $params['name'] = implode('.', self::$attributes['name']);
         if (count(self::$attributes['host'])) $params['host'] = implode('.', self::$attributes['host']);
-        if (count(self::$attributes['alias'])) $params['alias'] = implode('.', self::$attributes['alias']);
+        // if (count(self::$attributes['alias'])) $params['alias'] = implode('.', self::$attributes['alias']);
 
         self::$servers[$type][] = $params;
     }

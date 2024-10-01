@@ -165,7 +165,7 @@ class CommandCreate
 
         $template = view('migration', [
             'table' => $name
-        ], directoryHaley('Templates'));
+        ], false, directoryHaley('Templates'));
 
         file_put_contents($location, $template);
 

@@ -30,7 +30,7 @@ return [
     ],
 
     'server' => [
-        'alias' => env('SERVER_ALIAS', 'localhost'),
+        // 'alias' => env('SERVER_ALIAS', 'localhost'),
         'host' => env('SERVER_HOST', 'localhost'),
 
         'path' => [

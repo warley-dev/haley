@@ -77,13 +77,13 @@ class Server
         return new self;
     }
 
-    public static function alias(string $value)
-    {
-        ServerMemory::setAttribute('alias', $value);
-        self::$attributes[self::$group][] = 'alias';
+    // public static function alias(string $value)
+    // {
+    //     ServerMemory::setAttribute('alias', $value);
+    //     self::$attributes[self::$group][] = 'alias';
 
-        return new self;
-    }
+    //     return new self;
+    // }
 
     public static function group(callable $routes)
     {
