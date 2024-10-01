@@ -33,25 +33,25 @@ class Server
         return new WebSocketOptions;
     }
 
-    public static function stream(int $port, string $class)
-    {
-        $class = trim($class, '\\');
+    // public static function stream(int $port, string $class)
+    // {
+    //     $class = trim($class, '\\');
 
-        ServerMemory::server('http', [
-            'protocol' => 'stream',
-            'host' => null,
-            'alias' => null,
-            'port' => $port,
-            'namespace' => null,
-            'class' => $class,
-            'name' => null,
-            'receive' => true,
-            'connections' => null,
-            'path' => null
-        ]);
+    //     ServerMemory::server('http', [
+    //         'protocol' => 'stream',
+    //         'host' => null,
+    //         'alias' => null,
+    //         'port' => $port,
+    //         'namespace' => null,
+    //         'class' => $class,
+    //         'name' => null,
+    //         'receive' => true,
+    //         'connections' => null,
+    //         'path' => null
+    //     ]);
 
-        return new HttpOptions;
-    }
+    //     return new HttpOptions;
+    // }
 
     public static function namespace(string $value)
     {

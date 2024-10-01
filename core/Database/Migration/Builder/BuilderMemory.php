@@ -17,7 +17,7 @@ class BuilderMemory
     public static array $foreign = [];
     public static array $index = [];
 
-    public static bool $dropTable = false;
+    public static array $dropTable = [];
     public static array $dropIndex = [];
     public static array $dropColumn = [];
     public static array $dropConstraint = [];
@@ -28,7 +28,7 @@ class BuilderMemory
             if ($paramns) $type .= "($paramns)";
 
             self::$columns[] = [
-                'name' => "`{$name}`",
+                'name' => $name,
                 'type' => $type,
                 'options' => [
                     'NULLABLE' => '',
@@ -108,7 +108,7 @@ class BuilderMemory
         self::$rename = [];
         self::$foreign = [];
         self::$index = [];
-        self::$dropTable = false;
+        self::$dropTable = [];
         self::$dropColumn = [];
         self::$dropConstraint = [];
     }

@@ -272,8 +272,6 @@
         let boxs = document.querySelectorAll('.box-debug');
 
         buttons.forEach((button) => {
-            console.log(button)
-
             button.addEventListener('click', (e) => {
                 boxs.forEach((box) => {
                     box.classList.add('display-none');

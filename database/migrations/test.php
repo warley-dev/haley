@@ -1,54 +1,56 @@
 <?php
 
-use Haley\Database\DB;
 use Haley\Database\Migration\Builder\Builder;
 use Haley\Database\Migration\Migration;
 
 return new class
 {
-    public bool $active = true;
-    public bool $single = true;
+    public string $table = 'test';
+    public string|null $connection = null;
 
-    public function up()
+    public function up(Builder $build)
     {
-        (new Migration)->up('test', function (Builder $build) {
-            $build->id();
+        // $build->dropTable(['test','outro','aaa']);
 
-            $build->int('int')->nullable(false)->index();
-            $build->double('double')->nullable(true);
-            $build->float('float')->nullable(true);
-            $build->decimal('decimal')->nullable(true);
-            $build->boolean('boolean')->nullable(true);
+        $build->id();
 
-            $build->varchar('varchar')->nullable(true);
-            $build->text('text')->nullable(true);
-            $build->json('json')->nullable(true);
+        $build->int('int')->nullable(false);
+        $build->double('double')->nullable(true);
+        $build->float('float')->nullable(true);
+        $build->decimal('decimal')->nullable(true);
+        $build->boolean('boolean')->nullable(false);
 
-            $build->timestamp('timestamp')->nullable(true);
-            $build->date('date')->nullable(true);
-            $build->datetime('datetime')->nullable(true);
-            $build->year('year')->nullable(true);
-            $build->time('time')->nullable(true);
-            $build->dates();
+        $build->varchar('varchaae')->nullable(true);
+        $build->text('text')->nullable(true);
+        $build->json('json')->nullable(true);
 
-            $build->set('set', ['um', 'dois', 'tres'])->nullable(true);
-            $build->set('enum', ['um', 'dois', 'tres'])->nullable(true);
+        $build->timestamp('timestamp')->nullable(true);
+        $build->date('date')->nullable(true);
+        $build->datetime('datetime')->nullable(true);
+        $build->year('year')->nullable(true);
+        $build->time('time')->nullable(true);
+        $build->dates();
 
-            $build->varchar('nome')->comment('helo word')->nullable(true)->default('aaaa')->unique('unique_teste');
-            $build->varchar('email')->comment('helo word')->nullable(true);
+        $build->set('set', ['um', 'dois', 'tres'])->nullable(true);
+        $build->set('enum', ['um', 'dois', 'tres'])->nullable(true);
 
-            // $build->index(['varchar',  'nome', 'email']);
-            // $build->foreign('int','outro','id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
+        $build->varchar('nome')->comment('helo word')->nullable(true)->default('aaaa')->unique('unique_teste');
+        $build->varchar('email')->comment('helo word')->nullable(true);
+
+        // $build->index(['varchar',  'nome', 'email']);
+        $build->foreign('int', 'outro', 'id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
 
 
-            // continuar:
-            // testar indexs / add and drop (dropar index adicionais)
-            // bigint
+        // continuar:
+        // testar indexs / add and drop (dropar index adicionais)
+        // bigint
 
-            // $build->dropConstrant('fk_teste');
-            // $build->dropConstrant('unique_teste');
-            // $build->dropColumn('email');
-            // $build->dropTable();
-        });
+        $build->dropConstrant('fk_teste');
+        // $build->dropConstrant('unique_teste');
+        // $build->dropColumn(['email','int','nome']);
+        // $build->dropTable();
+        // $build->rename('varchaae','teste_rename');
     }
+
+    public function down() {}
 };

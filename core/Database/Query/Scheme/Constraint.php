@@ -25,8 +25,6 @@ class Constraint
      */
     public function has(string $table, string $name)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return true;
@@ -42,8 +40,6 @@ class Constraint
      */
     public function getSchema(string $table, string $name)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return $query;
@@ -60,7 +56,6 @@ class Constraint
     public function getNamesByType(string $table, string $type)
     {
         $names = [];
-        $table = trim($table, '`');
 
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT CONSTRAINT_NAME as `constraint_name` FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_TYPE = ?', [$this->database, $table, $type], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
@@ -79,9 +74,6 @@ class Constraint
     {
         $names = [];
 
-        $column = trim($column, '`');
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT CONSTRAINT_NAME as `constraint_name` FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? AND CONSTRAINT_NAME IS NOT NULL', [$this->database, $table, $column], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -99,7 +91,6 @@ class Constraint
     public function getNames(string $table)
     {
         $names = [];
-        $table = trim($table, '`');
 
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT CONSTRAINT_NAME as `constraint_name` FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?', [$this->database, $table], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
@@ -119,8 +110,6 @@ class Constraint
      */
     public function drop(string $table, string $name)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             if ($name == 'PRIMARY') return $this->dropPrimaryKey($table);
 
@@ -137,8 +126,6 @@ class Constraint
      */
     public function create(string $table, string $name, string $type, string $value)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('ALTER TABLE `%s` ADD CONSTRAINT `%s` %s %s', $table, $name, $type, $value), connection: $this->connection);
         } else {
@@ -153,8 +140,6 @@ class Constraint
     public function change(string $table, string $name, string $type, string $value)
     {
         $old = $this->getSchema($table, $name);
-
-        $table = trim($table, '`');
 
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             if ($this->has($table, $name)) $this->drop($table, $name);
@@ -180,9 +165,6 @@ class Constraint
      */
     public function setPrimaryKey(string $table, string $column)
     {
-        $table = trim($table, '`');
-        $column = trim($column, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('ALTER TABLE `%s` ADD PRIMARY KEY `%s`(`%s`)', $table, 'primary_' . $table . '_' . $column, $column), connection: $this->connection);
         } else {
@@ -198,8 +180,6 @@ class Constraint
      */
     public function getPrimaryKey(string $table)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ? AND CONSTRAINT_NAME = ?', [$table, $this->database, 'PRIMARY'], $this->connection)->fetch(PDO::FETCH_OBJ);
             if (!empty($query)) return $query->COLUMN_NAME;
@@ -216,8 +196,6 @@ class Constraint
      */
     public function dropPrimaryKey(string $table)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('ALTER TABLE `%s` DROP PRIMARY KEY', $table), connection: $this->connection)->fetch(PDO::FETCH_OBJ);
         } else {
@@ -232,8 +210,6 @@ class Constraint
      */
     public function hasIndex(string $table, string $name)
     {
-        $table = trim($table, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             $query = DB::query('SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
 
@@ -250,9 +226,6 @@ class Constraint
      */
     public function dropIndex(string $table, string $name)
     {
-        $table = trim($table, '`');
-        $name = trim($name, '`');
-
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('DROP INDEX `%s` ON `%s`', $name, $table), [], $this->connection)->fetch(PDO::FETCH_ASSOC);
         } else {
@@ -268,12 +241,10 @@ class Constraint
      */
     public function addIndex(string $table, string|array $column, string $name, string $type = 'BTREE')
     {
-        $table = trim($table, '`');
-
         if (is_string($column)) $column = [$column];
 
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            foreach ($column as $key => $value) $column[$key] = '`' . trim($value, '`') . '`';
+            foreach ($column as $key => $value) $column[$key] = '`' . $value . '`';
 
             $column = implode(',', $column);
 
@@ -299,12 +270,11 @@ class Constraint
     public function getIndexs(string $table)
     {
         $data = [];
-        $table = trim($table, '`');
 
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT COLUMN_NAME, INDEX_NAME, INDEX_TYPE FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?', [$this->database, $table], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
+            $result = DB::query('SELECT INDEX_NAME, COLUMN_NAME, INDEX_TYPE FROM INFORMATION_SCHEMA.STATISTICS WHERE INDEX_NAME != ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND NULLABLE = ?', ['PRIMARY', $this->database, $table, 'YES'], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($query)) foreach ($query as $value) $data[] = [
+            if (count($result)) foreach ($result as $value) $data[] = [
                 'name' => $value['INDEX_NAME'],
                 'column' => $value['COLUMN_NAME'],
                 'type' => $value['INDEX_TYPE']
@@ -321,9 +291,6 @@ class Constraint
      */
     public function setId(string $table, string $column, string|null $comment)
     {
-        $table = trim($table, '`');
-        $column = trim($column, '`');
-
         $atual = $this->getPrimaryKey($table);
 
         if ($atual == $column) return false;

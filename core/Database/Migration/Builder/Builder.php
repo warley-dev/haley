@@ -301,10 +301,13 @@ class Builder
         }
     }
 
-    public function dropTable()
+    public function dropTable(string|array|null $table = null)
     {
+        if ($table === null) $table = BuilderMemory::$table;
+        if (is_string($table)) $table = [$table];
+
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropTable = true;
+            BuilderMemory::$dropTable = array_merge(BuilderMemory::$dropTable, $table);
         } else {
             return $this->typeError('dropTable');
         }

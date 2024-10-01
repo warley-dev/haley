@@ -19,11 +19,9 @@ Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function (
         sleep(60 * 30);
     })->description('timeout 5 min')->timeout(5)->name('test')->unique();
 
-
     // Job::everyMinute(1, function () {
     //     Log::clean(['jobs', 'database', 'connection', 'migration','websocket']);
     // })->description('Clean logs')->name('test')->unique();
-
 
     // Job::everyMinute(1, function () {
     //     sleep(80);
@@ -31,8 +29,6 @@ Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function (
     // })->description('every 1 minute')->timeout(1)->unique(true);
 
     // Job::everyMinute(6, 'Um::one')->description('every 6 minute')->name('aaaaaaaa');
-
-
 
     // Job::date('01:20 05/05/2024')->name('date')->description('especific date')->unique();
 });

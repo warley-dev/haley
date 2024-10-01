@@ -13,6 +13,8 @@ class WebSocketServer
 
     public function run(array $params)
     {
+        if (!empty($params['name']) and is_string($params['name'])) cli_set_process_title($params['name']);
+
         try {
             $class = $params['class'];
 
@@ -26,12 +28,16 @@ class WebSocketServer
             $class = new $class();
 
             $this->server = new Server($params['host'], $params['port']);
+
+            $this->server->set([
+                'open_websocket_pong_frame' => true,
+            ]);
         } catch (Throwable $error) {
             Shell::red("{$error->getMessage()} : {$error->getFile()} {$error->getLine()}")->br();
             die;
         }
 
-        $this->server->on('handshake', function ( $request, $response) use ($params, $class) {
+        $this->server->on('handshake', function ($request, $response) use ($params, $class) {
             $status = $this->server->stats();
 
             if (!empty($params['connections'])) {

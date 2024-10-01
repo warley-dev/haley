@@ -60,4 +60,9 @@ class Migration
 
         call_user_func($build, $builder);
     }
+
+    public function down()
+    {
+
+    }
 }

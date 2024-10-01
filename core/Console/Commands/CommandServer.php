@@ -51,7 +51,7 @@ class CommandServer
         try {
             foreach ($config['path'] as $path) require_once $path;
 
-            foreach (ServerMemory::$servers as $type => $servers) {  
+            foreach (ServerMemory::$servers as $type => $servers) {
                 foreach ($servers as $params) {
                     if (!empty($name) and $name != $params['name']) continue;
 
@@ -279,9 +279,8 @@ class CommandServer
     protected function execute(string $type, array $params)
     {
         if ($type == 'websocket') (new WebSocketServer)->run($params);
-        elseif ($type == 'http'){
-
-             (new HttpServer)->run($params);
+        elseif ($type == 'http') {
+            (new HttpServer)->run($params);
         }
     }
 }
