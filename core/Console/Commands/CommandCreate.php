@@ -222,6 +222,8 @@ class CommandCreate
         }
     }
 
+    // cotinuar ws
+
     // public function class(string $name)
     // {
     //     $params = $this->params($name, directoryRoot('app/Classes'));
