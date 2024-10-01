@@ -14,13 +14,13 @@
     <div class="header-menu">
         <div class="error_message">
             <p>
-                <?php echo $error_message ?>
+                {{ $error_message }}
             </p>
 
             <!-- <a href="vscode://file{{$error_file}}:{{$error_line}}">{{$error_file}}:{{$error_line}}</a> -->
             <!-- href="vscode://file/C:/caminho/do/seu/arquivo.txt" -->
             <a class="error_message_link" href="vscode://file{{$error_file}}:{{$error_line}}">
-                <?php echo $error_file ?>
+                {{ $error_file }}
             </a>
         </div>
 
@@ -37,7 +37,7 @@
             <div class="box">
                 <div class="box-debug" id="code">
                     <section class="code">
-                        <?php echo $code ?>
+                        {{ $code }}
                     </section>
                 </div>
 
@@ -50,31 +50,25 @@
                 </div>
 
                 <div class="box-debug display-none" id="request">
-                    <p>METHOD =>
-                        <?php echo $method ?>
-                    </p>
-                    <?php if ($request_all != false) : ?>
-                        <?php foreach ($request_all as $key => $value) : ?>
-                            <p>
-                                <?php echo $key ?> =>
-                                <?php htmlspecialchars(print_r($value)) ?>
-                            </p>
-                        <?php endforeach ?>
-                    <?php else : ?>
-                        <p>[]</p>
-                    <?php endif ?>
+                    <p>METHOD => {{ $method }} </p>
+
+                    @if($request_all != false)
+
+                    @foreach($request_all as $key => $value)
+                    <p>{{ $key }} => {{ htmlspecialchars(print_r($value)) }} </p>
+                    @endforeach
+
+                    @else
+                    <p>[]</p>
+                    @endif
                 </div>
 
                 <div class="box-debug display-none" id="header">
-                    <?php if ($headers) : ?>
-                        <?php foreach ($headers as $key => $value) : ?>
-                            <p>
-                                <?php echo $key ?> =>
-                                <?php echo $value ?>
-                            </p>
-
-                        <?php endforeach ?>
-                    <?php endif ?>
+                    @if($headers)
+                    @foreach ($headers as $key => $value)
+                    <p>{{ $key }} => {{ $value }}</p>
+                    @endforeach
+                    @endif
                 </div>
             </div>
         </section>

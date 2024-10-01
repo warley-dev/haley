@@ -2,43 +2,119 @@
 
 namespace Haley\Collections;
 
-use Haley\Database\Query\DB;
+use Haley\Database\DB;
 
 abstract class Model
 {
+    protected static string|null $connection = null;
     public static string $table;
-    public static string|null $primary = null;
-    public static array $columns = [];
+    protected static string|null $id = null;
+    protected static array $fillable = [];
 
-    public static function create(array $values)
+    public static function select(string|array $columns = '*')
     {
-        if (!empty($values[0])) if (!is_array($values[0])) $values = [$values];
+        return DB::table(static::$table)->connection(static::$connection)->select($columns);
+    }
 
-        foreach ($values as $key => $data) {
-            foreach ($data as $column => $value) {
-                if (!in_array($column, static::$columns)) unset($values[$key][$column]);
+    public static function create(array $data)
+    {
+        if (!is_array($data[array_key_first($data)])) {
+            foreach ($data as $column => $value) if (!in_array($column, static::$fillable)) unset($data[$column]);
+        } else {
+            foreach ($data as $key_data => $values) {
+                foreach ($values as $column => $value) {
+                    if (!in_array($column, static::$fillable)) unset($data[$key_data][$column]);
+                }
             }
-
-            if (!count($values[$key])) unset($values[$key]);
         }
 
-        if (count($values)) return (new DB)->table(static::$table)->insert($values);
+        return DB::table(static::$table)->connection(static::$connection)->insert($data);
+    }
+
+    /**
+     * @return int|array
+     */
+    public static function createGetId(array $data)
+    {
+        if (!is_array($data[array_key_first($data)])) {
+            foreach ($data as $column => $value) if (!in_array($column, static::$fillable)) unset($data[$column]);
+
+            return (int)DB::table(static::$table)->connection(static::$connection)->insertGetId($data);
+        } else {
+            $ids = [];
+
+            foreach ($data as $key_data => $values) {
+                foreach ($values as $column => $value) {
+                    if (!in_array($column, static::$fillable)) unset($data[$key_data][$column]);
+                }
+
+                $ids[] = (int)DB::table(static::$table)->connection(static::$connection)->insertGetId($data[$key_data]);
+            }
+
+            return $ids;
+        }
+    }
+
+    public static function createOrIgnore(array $data)
+    {
+        if (!is_array($data[array_key_first($data)])) {
+            foreach ($data as $column => $value) if (!in_array($column, static::$fillable)) unset($data[$column]);
+        } else {
+            foreach ($data as $key_data => $values) {
+                foreach ($values as $column => $value) {
+                    if (!in_array($column, static::$fillable)) unset($data[$key_data][$column]);
+                }
+            }
+        }
+
+        return DB::table(static::$table)->connection(static::$connection)->insertIgnore($data);
+    }
+
+    public static function updateOrCreate(array $check, array $data)
+    {
+        foreach ($data as $column => $value) if (!in_array($column, static::$fillable)) unset($data[$column]);
+
+        $has = DB::table(static::$table)->connection(static::$connection)->select(static::$id);
+
+        foreach ($check as $column => $value) {
+            if (is_array($value)) $has->whereIn($column, $value);
+            else $has->where($column, $value);
+        }
+
+        $has = $has->get();
+
+        if (count($has)) {
+            $ids = [];
+
+            foreach ($has as $value) $ids[] = get_object_vars($value)[static::$id];
+
+            if (count($ids)) return  DB::table(static::$table)->connection(static::$connection)->whereIn(static::$id, $ids)->update($data);
+        } else {
+            return DB::table(static::$table)->connection(static::$connection)->insert($data);
+        }
 
         return 0;
     }
 
-    public static function query()
+    public static function delete(int|string|array $id)
     {
-        return (new DB)->table(static::$table);
+        if (!is_array($id)) $id = [$id];
+
+        return DB::table(static::$table)->connection(static::$connection)->whereIn(static::$id, $id)->delete();
+    }
+
+    public static function id(int|string $id, string|array $columns = '*')
+    {
+        return DB::table(static::$table)->connection(static::$connection)->select($columns)->where(static::$id, $id)->first();
     }
 
     public static function all()
     {
-        return (new DB)->table(static::$table)->get();
+        return DB::table(static::$table)->connection(static::$connection)->get();
     }
 
     public static function count()
     {
-        return (new DB)->table(static::$table)->count();
+        return DB::table(static::$table)->connection(static::$connection)->count();
     }
 }

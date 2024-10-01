@@ -55,7 +55,7 @@ class CommandDashboard
             }
         }
 
-        $width += 7;
+        $width += 20;
         $header_title = ' HALEY FRAMEWORK ';
         $header_version = ' 1.0 beta ';
         $header_width = $width - (strlen($header_title) + strlen($header_version)) - 4;

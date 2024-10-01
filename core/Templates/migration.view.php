@@ -1,5 +1,6 @@
 <?php
 
+
 use Haley\Database\Migration\Builder\Builder;
 
 return new class

@@ -21,8 +21,11 @@ class HaleyCommands
                 Console::command('execute {key}', 'CommandJobs::execute', false);
             });
 
-            Console::title('Migration')->prefix('migration:')->group(function () {
-                Console::command('run {name?}', 'CommandMigration::run')->description('run pending migrations');
+            Console::title('Migrations')->prefix('migrate')->group(function () {
+                Console::command('', 'CommandMigration::run')->description('execute pending migrations');
+                Console::command(':reset', 'CommandMigration::run')->description('reset all migrations');
+                Console::command(':up {name?}', 'CommandMigration::run')->description('run migration up');
+                Console::command(':down {name?}', 'CommandMigration::run')->description('run migration down');
             });
 
             Console::title('Server')->prefix('server:')->group(function () {
@@ -32,19 +35,23 @@ class HaleyCommands
                 Console::command('list', 'CommandServer::list')->description('list servers');
             });
 
-            Console::title('Create')->prefix('create:')->group(function () {
-                // Console::command('env', 'CommandCreate::env')->description('create a env file');
+            Console::title('Make')->prefix('make:')->group(function () {
+                Console::command('env', 'CommandCreate::env')->description('create a env file');
+                Console::command('web {name}', 'CommandCreate::web')->description('create a new web controller');
+                Console::command('api {name}', 'CommandCreate::api')->description('create a new api controller');
                 Console::command('migration {name}', 'CommandCreate::migration')->description('create a new migration');
-                // Console::command('model {name} {connection?}', 'CommandCreate::model')->description('create a new model');
-                // Console::command('controller {name}', 'CommandCreate::controller')->description('create a new controller');
+                Console::command('model {name} {connection?}', 'CommandCreate::model')->description('create a new model');
+                Console::command('job {name}', 'CommandCreate::job')->description('create a new job');
+                Console::command('ws {name}', 'CommandCreate::ws')->description('create a new websocket controller');
+
+
                 // Console::command('middleware {name}', 'CommandCreate::middleware')->description('create a new middleware');
-                // Console::command('job {name}', 'CommandCreate::job')->description('create a new job');
+
                 // Console::command('class {name}', 'CommandCreate::class')->description('create a new');
                 // Console::command('model {name} {connection?}', 'CommandCreate::model')->description('create a new model class / name --all to create all models in the database');
             });
 
-            Console::title('Clean')->group(function () {
-            });
+            Console::title('Clean')->group(function () {});
         });
     }
 

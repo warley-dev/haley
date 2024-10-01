@@ -1,4 +1,4 @@
-APP_NAME = Code Haley
+APP_NAME = Haley
 APP_DEBUG = true
 APP_TIMEZONE = America/Sao_Paulo
 
