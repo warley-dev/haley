@@ -2,6 +2,7 @@
 
 namespace Haley\Storage;
 
-class Storage {
-
+class Storage
+{
+    public static function 
 }

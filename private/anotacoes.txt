@@ -15,3 +15,6 @@ aprimorar return response('qualquercoisa',200, [
 ])
 
 substituir funcoes de arquivos / pastas para classe storage
+
+
+continuar comandos migration e (jobs refatorar para desvincular as funcoes do console)
