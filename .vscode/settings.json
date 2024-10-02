@@ -1,5 +1,0 @@
-{
-    "search.useIgnoreFiles": false,
-    "search.useParentIgnoreFiles": false,
-    "php.validate.executablePath": "/usr/bin/php8.3"
-}

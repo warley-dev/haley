@@ -17,7 +17,6 @@ use Haley\Router\Route;
 
 Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('/', 'HomeController@index');
-
     Route::view('test', 'test');
 
     Route::get('haley', function () {
