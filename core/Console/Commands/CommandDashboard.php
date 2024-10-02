@@ -53,8 +53,6 @@ class CommandDashboard
 
         if (Shell::width() < 120) $width = Shell::width();
 
-
-
         $title = Shell::gray('| ', false, false);
         $title .= Shell::green('HALEY FRAMEWORK', false, false);
         $title .= Shell::gray(' |', false, false);

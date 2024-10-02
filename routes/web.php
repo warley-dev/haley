@@ -9,18 +9,13 @@ use Haley\Shell\Shell;
 //                               WEB ROUTES                                  |
 // --------------------------------------------------------------------------|
 
-// Route::error(function ($status,  $message) {
-//     return view('error.default',[
-//         'status' => $status,
-//         'message' => $message
-//     ]);
-// });
-
 Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::view('view', 'test');
 
-    // verificar parametros no controller
+    // unificar classe
+    // app ini configurar
+
     Route::get('model', function () {
         $data = [
             [
@@ -53,7 +48,5 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
         dd($select);
     });
 
-    Route::get('test', function () {
-        dd((new JobController())->list());
-    });
+    Route::get('test/{um}/{dois}/{tres?}', 'Test@index');
 });

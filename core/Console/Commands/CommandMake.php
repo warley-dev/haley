@@ -349,6 +349,38 @@ class CommandMake
         }
     }
 
+    public function console(string $name)
+    {
+        $params = $this->params($name, directoryRoot('app/Console'));
+
+        if (file_exists($params['path'])) {
+            Shell::red('replace current file ? (y/n)');
+
+            $response = Shell::readline();
+
+            if ($response != 'y') {
+                Shell::red('operation canceled')->br();
+
+                return;
+            }
+        }
+
+        createDir($params['directory']);
+
+        $template = view('console', [
+            'name' => $params['name'],
+            'namespace' => $params['namespace']
+        ], false, directoryHaley('Templates'));
+
+        file_put_contents($params['path'], $template);
+
+        if (file_exists($params['path'])) {
+            Shell::green("console {$params['name']} created")->normal($params['path'])->br();
+        } else {
+            Shell::red('error: failed to console class')->br();
+        }
+    }
+
     protected function params(string $name, string $directory)
     {
         $explode = explode('/', $name);

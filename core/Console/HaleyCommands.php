@@ -25,6 +25,7 @@ class HaleyCommands
                 Console::command('ws {name}', 'CommandMake::ws')->description('create a new websocket controller');
                 Console::command('middleware {name}', 'CommandMake::middleware')->description('create a new middleware');
                 Console::command('class {name}', 'CommandMake::class')->description('create a new class');
+                Console::command('console {name}', 'CommandMake::console')->description('create a new console');
             });
 
             Console::title('Migrations')->prefix('migrate')->group(function () {

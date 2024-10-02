@@ -56,16 +56,15 @@ class Kernel
 
             $routes = Config::route('http', []);
 
-            if ($routes) {
-                foreach ($routes as $name => $config) {
-                    if (!file_exists($config['path'])) continue;
+            if ($routes) foreach ($routes as $name => $config) {
+                if (!file_exists($config['path'])) continue;
 
-                    $config['name'] = $name;
-                    RouteMemory::resetAttributes();
-                    RouteMemory::$config = $config;
-                    require_once $config['path'];
-                }
+                $config['name'] = $name;
+                RouteMemory::resetAttributes();
+                RouteMemory::$config = $config;
+                require_once $config['path'];
             }
+
 
             Route::end();
         });
