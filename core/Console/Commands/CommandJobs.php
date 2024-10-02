@@ -59,7 +59,7 @@ class CommandJobs
     {
         set_time_limit(0);
 
-        $this->stopJobs(false);
+        $this->stopJobs();
 
         $pid = getmypid();
 

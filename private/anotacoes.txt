@@ -13,3 +13,5 @@ terminal multipls opcoes
 aprimorar return response('qualquercoisa',200, [
     'headers' => '...'
 ])
+
+substituir funcoes de arquivos / pastas para classe storage

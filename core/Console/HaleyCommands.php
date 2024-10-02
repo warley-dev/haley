@@ -45,7 +45,9 @@ class HaleyCommands
                 Console::command('execute {key}', 'CommandJobs::execute', false);
             });
 
-            Console::title('Clean')->group(function () {});
+            Console::title('Cleaning')->prefix('clear')->group(function () {
+                Console::command(':views', 'CommandCleaning::views')->description('clear views cache');
+            });
         });
     }
 

@@ -5,9 +5,9 @@ namespace Haley\Env;
 class Env
 {
     /**
-     * Array com as informações env
+     * Env values
      */
-    private static $env = [];
+    protected static $env = [];
 
     /**
      * Variáveis de ambiente env
@@ -15,27 +15,13 @@ class Env
      */
     public static function env(string|null $key = null, mixed $or = null)
     {
-        if (!count(self::$env)) {
-            if (file_exists(directoryRoot('storage/cache/jsons/env.json'))) {
-                self::$env = self::envCache();
-            } elseif (file_exists(directoryRoot('.env'))) {
-                self::$env = self::envRead();
-            }
-        }
+        self::$env = self::envRead();
 
         if ($key == null) return self::$env;
 
         if (array_key_exists($key, self::$env)) return self::$env[$key];
 
         return $or;
-    }
-
-    /**
-     * @return array
-     */
-    private static function envCache()
-    {
-        return json_decode(file_get_contents(directoryRoot('storage/cache/jsons/env.json')), true);
     }
 
     /**
