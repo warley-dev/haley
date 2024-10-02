@@ -11,7 +11,9 @@ use Haley\Jobs\Job;
 
 Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function () {
     Job::everyMinute(1, function () {
-        sleep(60 * 2);
+        sleep(30);
+
+        dd('aa');
     })->description('Job example')->name('test')->unique();
 
 

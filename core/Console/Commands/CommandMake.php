@@ -2,11 +2,10 @@
 
 namespace Haley\Console\Commands;
 
-use Haley\Collections\Molds;
 use Haley\Database\DB;
 use Haley\Shell\Shell;
 
-class CommandCreate
+class CommandMake
 {
     public function migration(string $name)
     {
@@ -222,67 +221,103 @@ class CommandCreate
         }
     }
 
-    // cotinuar ws
+    public function ws(string $name)
+    {
+        $params = $this->params($name, directoryRoot('app/Controllers/Server'));
 
-    // public function class(string $name)
-    // {
-    //     $params = $this->params($name, directoryRoot('app/Classes'));
+        if (file_exists($params['path'])) {
+            Shell::red('replace current file ? (y/n)');
 
-    //     if (file_exists($params['file_directory'])) {
-    //         Shell::red('replace current file ? (y/n)');
+            $response = Shell::readline();
 
-    //         $response = Shell::readline();
+            if ($response != 'y') {
+                Shell::red('operation canceled')->br();
 
-    //         if ($response != 'y') {
-    //             Shell::red('operation canceled')->br();
-    //             return;
-    //         }
-    //     }
+                return;
+            }
+        }
 
-    //     $mold = Molds::class($params['class'], $params['namespace']);
+        createDir($params['directory']);
 
-    //     createDir($params['folder']);
+        $template = view('ws', [
+            'name' => $params['name'],
+            'namespace' => $params['namespace']
+        ], false, directoryHaley('Templates'));
 
-    //     file_put_contents($params['file_directory'], $mold);
+        file_put_contents($params['path'], $template);
 
-    //     if (file_exists($params['file_directory'])) {
-    //         Shell::green("class {$params['class']} created")->normal($params['file_directory'])->br();
-    //     } else {
-    //         Shell::red('error: failed to create class')->br();
-    //     }
-    // }
+        if (file_exists($params['path'])) {
+            Shell::green("websocket controller {$params['name']} created")->normal($params['path'])->br();
+        } else {
+            Shell::red('error: failed to create websocket controller')->br();
+        }
+    }
 
+    public function middleware(string $name)
+    {
+        $params = $this->params($name, directoryRoot('app/Middlewares'));
 
+        if (file_exists($params['path'])) {
+            Shell::red('replace current file ? (y/n)');
 
-    // public function middleware(string $name)
-    // {
-    //     $params = $this->params($name, directoryRoot('app/Middlewares'));
+            $response = Shell::readline();
 
-    //     if (file_exists($params['file_directory'])) {
-    //         Shell::red('replace current file ? (y/n)');
+            if ($response != 'y') {
+                Shell::red('operation canceled')->br();
 
-    //         $response = Shell::readline();
+                return;
+            }
+        }
 
-    //         if ($response != 'y') {
-    //             Shell::red('operation canceled')->br();
-    //             return;
-    //         }
-    //     }
+        createDir($params['directory']);
 
-    //     $mold = Molds::middleware($params['class'], $params['namespace']);
+        $template = view('middleware', [
+            'name' => $params['name'],
+            'namespace' => $params['namespace']
+        ], false, directoryHaley('Templates'));
 
-    //     createDir($params['folder']);
+        file_put_contents($params['path'], $template);
 
-    //     file_put_contents($params['file_directory'], $mold);
+        if (file_exists($params['path'])) {
+            Shell::green("middleware {$params['name']} created")->normal($params['path'])->br();
+        } else {
+            Shell::red('error: failed to create middleware')->br();
+        }
+    }
 
-    //     if (file_exists($params['file_directory'])) {
-    //         Shell::green("middleware {$params['class']} created")->normal($params['file_directory'])->br();
-    //     } else {
-    //         Shell::red('error: failed to create middleware')->br();
-    //     }
-    // }
+    public function class(string $name)
+    {
+        $params = $this->params($name, directoryRoot('app/Classes'));
 
-    private function params(string $name, string $directory)
+        if (file_exists($params['path'])) {
+            Shell::red('replace current file ? (y/n)');
+
+            $response = Shell::readline();
+
+            if ($response != 'y') {
+                Shell::red('operation canceled')->br();
+
+                return;
+            }
+        }
+
+        createDir($params['directory']);
+
+        $template = view('class', [
+            'name' => $params['name'],
+            'namespace' => $params['namespace']
+        ], false, directoryHaley('Templates'));
+
+        file_put_contents($params['path'], $template);
+
+        if (file_exists($params['path'])) {
+            Shell::green("class {$params['name']} created")->normal($params['path'])->br();
+        } else {
+            Shell::red('error: failed to create class')->br();
+        }
+    }
+
+    protected function params(string $name, string $directory)
     {
         $explode = explode('/', $name);
 

@@ -1,12 +1,15 @@
 <?php
-namespace App\Middlewares;
+
+
+namespace App\Middlewares{{ $namespace ? "\\$namespace" : '' }};
+
 use Haley\Router\Middleware;
 
-class Test extends Middleware
+class {{$name}} extends Middleware
 {
     public function example()
     {
-        if(request()->session()->has('example')) {
+        if (request()->session()->has('example')) {
             return $this->continue();
         }
 

@@ -3,13 +3,12 @@
 namespace Haley\Console\Commands;
 
 use Haley\Collections\Log;
-use Haley\Console\Lines;
 use Haley\Jobs\JobMemory;
 use Haley\Collections\Config;
 use Haley\Shell\Shell;
 use Throwable;
 
-class CommandJobs extends Lines
+class CommandJobs
 {
     private array $cache = [
         'master' => [
@@ -97,7 +96,7 @@ class CommandJobs extends Lines
     {
         foreach (Config::route('job', []) as $job) require_once $job;
 
-        $this->yellow('running jobs...')->br();
+        Shell::yellow('running jobs...')->br();
 
         createDir(directoryRoot('storage/cache/jsons'));
 
@@ -161,7 +160,7 @@ class CommandJobs extends Lines
 
                 $mesage = sprintf('%s - %s', $job['name'] ?? '???', $job['description'] ?? '???');
 
-                $this->green('executed')->normal($mesage)->br();
+                Shell::green('executed')->normal($mesage)->br();
 
                 shell_exec('php ' . directoryRoot() . ' && php haley job:execute ' . $key . ' > /dev/null 2>&1 &');
             }
@@ -169,9 +168,9 @@ class CommandJobs extends Lines
 
         file_put_contents($cache_path, json_encode($cache, true));
 
-        if ($name !== null and $run == false) $this->red('job ' . $name . ' not found')->br();
+        if ($name !== null and $run == false) Shell::red('job ' . $name . ' not found')->br();
 
-        $run ? $this->yellow('finished jobs')->br() : $this->red('no job to be done')->br();
+        $run ? Shell::yellow('finished jobs')->br() : Shell::red('no job to be done')->br();
     }
 
     public function execute(string $key)

@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Controllers\Server;
+
+namespace App\Controllers\Server{{ $namespace ? "\\$namespace" : '' }};
 
 use Haley\Server\WebSocket\WebSocket;
 use Haley\Server\Timer;
 use Throwable;
 
-class Example
+class {{$name}}
+
 {
     public function onHandshake(int $id, array $params, array $header, WebSocket $ws)
     {
