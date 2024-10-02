@@ -14,6 +14,7 @@ class Log
 
         $file = directoryRoot("storage/logs/$name.log");
         $value = '[' . date('d/m/Y H:i:s') . '] ' . $value . PHP_EOL;
+
         return file_put_contents($file, $value, FILE_APPEND);
     }
 

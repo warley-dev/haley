@@ -51,4 +51,9 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
 
         dd($select);
     });
+
+    Route::get('storage', function() {
+
+
+    });
 });

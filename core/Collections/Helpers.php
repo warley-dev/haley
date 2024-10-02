@@ -9,8 +9,6 @@ use Haley\Http\Redirect;
 use Haley\Http\Request;
 use Haley\Http\Response;
 use Haley\Http\Route;
-use Haley\Kernel;
-use Haley\Shell\Shell;
 use Haley\Validator\ValidatorHelper;
 use Haley\View\View;
 
@@ -396,67 +394,3 @@ if (!function_exists('getMemoryUsage')) {
         return $memory;
     }
 }
-
-// if (!function_exists('getCpuUsage')) {
-//     function getCpuUsage()
-//     {
-//         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-//             $output = shell_exec("wmic cpu get loadpercentage");
-
-//             if ($output !== null) {
-//                 $lines = explode("\n", trim($output));
-//                 $usage = trim($lines[1]);
-
-//                 return (int)$usage;
-//             }
-//         } else {
-//             // Lê o conteúdo do arquivo /proc/stat
-//             $content1 = file_get_contents('/proc/stat');
-//             usleep(9000);
-//             $content2 = file_get_contents('/proc/stat');
-
-//             if ($content1 === false || $content2 === false) return null;
-
-//             // Obtém as linhas que começam com 'cpu ' (informações agregadas da CPU)
-//             $lines1 = explode("\n", trim($content1));
-//             $lines2 = explode("\n", trim($content2));
-
-//             $cpuData1 = null;
-//             $cpuData2 = null;
-
-//             foreach ($lines1 as $line)  if (strpos($line, 'cpu ') === 0) {
-//                 $cpuData1 = preg_split('/\s+/', $line);
-//                 break;
-//             }
-
-//             foreach ($lines2 as $line)  if (strpos($line, 'cpu ') === 0) {
-//                 $cpuData2 = preg_split('/\s+/', $line);
-//                 break;
-//             }
-
-//             if ($cpuData1 === null || $cpuData2 === null)   return null;
-
-//             $user1 = isset($cpuData1[1]) ? (int)$cpuData1[1] : 0;
-//             $nice1 = isset($cpuData1[2]) ? (int)$cpuData1[2] : 0;
-//             $system1 = isset($cpuData1[3]) ? (int)$cpuData1[3] : 0;
-//             $idle1 = isset($cpuData1[4]) ? (int)$cpuData1[4] : 0;
-
-//             $user2 = isset($cpuData2[1]) ? (int)$cpuData2[1] : 0;
-//             $nice2 = isset($cpuData2[2]) ? (int)$cpuData2[2] : 0;
-//             $system2 = isset($cpuData2[3]) ? (int)$cpuData2[3] : 0;
-//             $idle2 = isset($cpuData2[4]) ? (int)$cpuData2[4] : 0;
-
-//             $total1 = $user1 + $nice1 + $system1 + $idle1;
-//             $total2 = $user2 + $nice2 + $system2 + $idle2;
-
-//             $totalUsage = ($total2 - $total1) - ($idle2 - $idle1);
-//             $totalDifference = $total2 - $total1;
-
-//             $usage = ($totalDifference > 0) ? (100 * $totalUsage / $totalDifference) : 0;
-
-//             return  number_format($usage, 2);
-//         }
-
-//         return null;
-//     }
-// }
