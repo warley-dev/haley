@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\usuarios;
+use Haley\Job\JobController;
 use Haley\Router\Route;
+use Haley\Shell\Shell;
 
 // --------------------------------------------------------------------------|
 //                               WEB ROUTES                                  |
@@ -18,6 +20,7 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('/', 'HomeController@index');
     Route::view('view', 'test');
 
+    // verificar parametros no controller
     Route::get('model', function () {
         $data = [
             [
@@ -50,7 +53,7 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
         dd($select);
     });
 
-    Route::get('test', function() {
-
+    Route::get('test', function () {
+        dd((new JobController())->list());
     });
 });

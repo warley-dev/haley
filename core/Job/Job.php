@@ -1,6 +1,6 @@
 <?php
 
-namespace Haley\Jobs;
+namespace Haley\Job;
 
 class Job
 {

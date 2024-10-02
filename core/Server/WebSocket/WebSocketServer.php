@@ -60,7 +60,7 @@ class WebSocketServer
 
             if (method_exists($class, 'onHandshake')) {
                 try {
-                    $aproved =  $class->onHandshake($request->fd, $request_params, $request->header, new WebSocket($request->fd, $this->server));
+                    $aproved = $class->onHandshake($request->fd, $request_params, $request->header, new WebSocket($request->fd, $this->server));
 
                     if (!$aproved) {
                         $response->end();

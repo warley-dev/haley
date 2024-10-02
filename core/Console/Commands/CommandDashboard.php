@@ -12,7 +12,6 @@ class CommandDashboard
     {
         $commands = ConsoleMemory::$commands;
         $commands_list = [];
-        $width = 0;
 
         foreach ($commands as $value) {
             if ($value['list']) {
@@ -41,12 +40,7 @@ class CommandDashboard
 
                 $end = null;
 
-                if (!empty($value['description'])) $end = Shell::normal($value['description'], false, false);
-
-                $strlen = strlen(Shell::decolorize($start));
-
-                if ($end) $strlen += strlen(Shell::decolorize($end));
-                if ($strlen > $width) $width = $strlen;
+                if (!empty($value['description'])) $end = $value['description'];
 
                 $commands_list[$title][] = [
                     'start' => $start,
@@ -55,25 +49,28 @@ class CommandDashboard
             }
         }
 
-        $width += 20;
-        $header_title = ' HALEY FRAMEWORK ';
-        $header_version = ' 1.0 beta ';
-        $header_width = $width - (strlen($header_title) + strlen($header_version)) - 4;
+        $width = 120;
 
-        Shell::br()->green(str_repeat('-', $width), false)->br();
+        if (Shell::width() < 120) $width = Shell::width();
 
-        Shell::green('|', false);
-        Shell::yellow($header_title, false);
-        Shell::green('|' . str_repeat('-', intval($header_width)) . '|', false);
-        Shell::gray($header_version, false);
-        Shell::green('|', false);
 
-        Shell::br()->green(str_repeat('-', $width), false)->br()->br();
+
+        $title = Shell::gray('| ', false, false);
+        $title .= Shell::green('HALEY FRAMEWORK', false, false);
+        $title .= Shell::gray(' |', false, false);
+
+        $version = Shell::gray('| ', false, false);
+        $version .= Shell::green('1.0.0', false, false);
+        $version .= Shell::gray(' |', false, false);
+
+        Shell::list(width: $width)->br();
+        Shell::list($title, $version, width: $width)->br();
+        Shell::list(width: $width)->br();
 
         foreach ($commands_list as $title => $value) {
             Shell::br()->yellow($title)->br();
 
-            foreach ($value as $x) Shell::list($x['start'], $x['end'], '-', $width)->br();
+            foreach ($value as $x) Shell::list($x['start'], $x['end'], width: $width)->br();
         }
 
         Shell::br();

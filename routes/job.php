@@ -1,7 +1,7 @@
 <?php
 
 use Haley\Collections\Log;
-use Haley\Jobs\Job;
+use Haley\Job\Job;
 
 // --------------------------------------------------------------------------|
 //                               JOB ROUTES                                  |
@@ -9,22 +9,21 @@ use Haley\Jobs\Job;
 
 // alterar modo de funcionamento para data/hora do php
 
-Job::namespace('App\Jobs')->name('test')->timeout(5)->unique()->group(function () {
+Job::namespace('App\Jobs')->timeout(1)->unique()->group(function () {
     Job::everyMinute(1, function () {
         dd('aa');
 
-        sleep(5);
+        sleep(120);
     })->description('Job example')->name('test')->unique();
 
 
     Job::everyMinute(1, function () {
         sleep(5);
-        dd('aa');
-    })->description('timeout 5 min')->timeout(5)->name('test_2')->unique();
+    })->description('test')->name('test_rename')->unique();
 
-    // Job::everyMinute(1, function () {
-    //     Log::clean(['jobs', 'database', 'connection', 'migration','websocket']);
-    // })->description('Clean logs')->name('test')->unique();
+    Job::dayAt(2, 14, function () {
+        Log::clean(['jobs', 'database', 'connection', 'migration', 'websocket']);
+    })->description('Clean logs')->name('clean.logs')->unique();
 
     // Job::everyMinute(1, function () {
     //     sleep(80);

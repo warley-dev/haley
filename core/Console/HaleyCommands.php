@@ -2,6 +2,7 @@
 
 namespace Haley\Console;
 
+use Haley\Job\JobController;
 use Haley\Shell\Shell;
 
 class HaleyCommands
@@ -41,8 +42,11 @@ class HaleyCommands
             });
 
             Console::title('Jobs')->prefix('job:')->group(function () {
-                Console::command('active', 'CommandJobs::active')->description('enable or disable jobs ' . self::checkJob());
-                Console::command('run {name?}', 'CommandJobs::run')->description('execute jobs');
+                Console::command('process', 'CommandJobs::process')->description('stop or start process ' . self::checkJob());
+                Console::command('list', 'CommandJobs::list')->description('list jobs');
+                Console::command('clock', 'CommandJobs::clock')->description('executes valid jobs');
+
+                Console::command('master', 'CommandJobs::master', false);
                 Console::command('execute {key}', 'CommandJobs::execute', false);
             });
 
@@ -54,19 +58,10 @@ class HaleyCommands
 
     private static function checkJob()
     {
-        if (strtolower(PHP_OS) == 'linux') {
-            $service = shell_exec('service cron status 2>&1');
+        $controller = new JobController();
 
-            if (str_contains($service, 'running') or str_contains($service, 'active')) {
+        if ($controller->running()) return Shell::green('running', false, false);
 
-                $check = shell_exec('crontab -l 2>&1');
-
-                if (!empty($check) and str_contains($check, '* * * * * cd ' . directoryRoot() . ' && php haley job:run >> /dev/null 2>&1')) {
-                    return Shell::green('enabled', false, false);
-                }
-            }
-        }
-
-        return Shell::red('disabled', false, false);
+        return Shell::red('stopped', false, false);
     }
 }

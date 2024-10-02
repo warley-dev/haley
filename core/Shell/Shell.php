@@ -2,6 +2,14 @@
 
 namespace Haley\Shell;
 
+/**
+ * If you do not have the necessary permissions posix_kill may not work correctly.
+ *
+ * php fpm check permission in '/etc/php/[version]/fpm/pool.d/www.conf'
+ *
+ * user = you user
+ * group =  you user
+ */
 class Shell extends Lines
 {
     /**
@@ -137,7 +145,7 @@ class Shell extends Lines
         foreach ($pid as $value) {
             if (!is_numeric($value)) continue;
 
-            $kill = posix_kill($value, SIGTERM);
+            $kill = posix_kill($value, SIGKILL);
 
             if ($kill) $response = true;
         }
