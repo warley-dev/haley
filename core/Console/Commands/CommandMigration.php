@@ -2,8 +2,10 @@
 
 namespace Haley\Console\Commands;
 
+use Haley\Database\DB;
 use Haley\Database\Migration\MigrationRunner;
 use Haley\Shell\Shell;
+use Throwable;
 
 class CommandMigration
 {
@@ -48,5 +50,106 @@ class CommandMigration
         }
 
         if (!$updates) Shell::red('no pending migrations')->br();
+    }
+
+    public function up(string $name)
+    {
+        $file = directoryRoot('database/migrations/' . $name . '.php');
+
+        if (!file_exists($file)) return Shell::red('file not found')->blue($file)->br();
+
+        $migration = new MigrationRunner();
+
+        $migration->run($file, true);
+
+        $updates = false;
+
+        foreach ($migration->getErrors() as $error) {
+            $start = Shell::normal($error['migration'], true, false);
+            $end = Shell::red($error['message'], true, false);
+
+            if ($error['command']) $start .= Shell::gray('[' . $error['command'] . ']', false, false);
+
+            Shell::list($start, $end)->br();
+        }
+
+        foreach ($migration->getInfos() as $info) {
+            $start = Shell::normal($info['migration'], true, false);
+            $end = Shell::green($info['message'], true, false);
+
+            if ($info['command']) $start .= Shell::gray('[' . $info['command'] . ']', false, false);
+
+            Shell::list($start, $end)->br();
+        }
+
+        if (count($migration->getErrors()) or count($migration->getInfos())) $updates = true;
+
+        if (!$updates) Shell::red('no pending migration')->br();
+    }
+
+    public function down(string $name)
+    {
+        $file = directoryRoot('database/migrations/' . $name . '.php');
+
+        if (!file_exists($file)) return Shell::red('file not found')->blue($file)->br();
+
+        $migration = new MigrationRunner();
+
+        $migration->run($file, true, 'down');
+
+        $updates = false;
+
+        foreach ($migration->getErrors() as $error) {
+            $start = Shell::normal($error['migration'], true, false);
+            $end = Shell::red($error['message'], true, false);
+
+            if ($error['command']) $start .= Shell::gray('[' . $error['command'] . ']', false, false);
+
+            Shell::list($start, $end)->br();
+        }
+
+        foreach ($migration->getInfos() as $info) {
+            $start = Shell::normal($info['migration'], true, false);
+            $end = Shell::green($info['message'], true, false);
+
+            if ($info['command']) $start .= Shell::gray('[' . $info['command'] . ']', false, false);
+
+            Shell::list($start, $end)->br();
+        }
+
+        if (count($migration->getErrors()) or count($migration->getInfos())) $updates = true;
+
+        if (!$updates) Shell::red('no pending migration')->br();
+    }
+
+    public function reset(string|null $connection = null)
+    {
+        Shell::red('Are you sure you want to reset the database ? (y/n)');
+
+        $response = Shell::readline();
+
+        if ($response != 'y') {
+            Shell::red('operation canceled')->br();
+
+            return;
+        }
+
+        $scheme = DB::scheme($connection);
+
+        $tables = $scheme->table()->getNames();
+
+        while (count($tables)) {
+            foreach ($tables as $key => $table) {
+                try {
+                    $drop = $scheme->table()->drop($table);
+
+                    if ($drop) unset($table[$key]);
+                } catch (Throwable $e) {
+                    $tables = $scheme->table()->getNames();
+                }
+            }
+        }
+
+        $this->run();
     }
 }

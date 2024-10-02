@@ -13,13 +13,11 @@ class Env
      * Variáveis de ambiente env
      * @return string|array|int|false|true|null
      */
-    public static function env(string|null $key = null, mixed $or = null)
+    public static function env(string $name, mixed $or = null)
     {
-        self::$env = self::envRead();
+        if (!count(self::$env)) self::$env = self::envRead();
 
-        if ($key == null) return self::$env;
-
-        if (array_key_exists($key, self::$env)) return self::$env[$key];
+        if (array_key_exists($name, self::$env)) return self::$env[$name];
 
         return $or;
     }
@@ -32,12 +30,33 @@ class Env
         $file = array_filter(file(directoryRoot('.env')));
         $env = [];
 
-        foreach ($file as $value) {
-            if ($value[0] === '#') continue;
+        foreach ($file as $line) {
+            if ($line[0] === '#') continue;
 
-            $item = explode('=', trim($value), 2);
-            isset($item[1]) ? $e = self::checkValue(trim($item[1])) : $e = null;
-            $env[trim($item[0])] = $e;
+            $line = trim($line);
+
+            if (!strlen($line)) continue;
+
+            $item = explode('=', $line, 2);
+
+            $name = trim($item[0]);
+            $value = array_key_exists(1, $item) ? $item[1] : null;
+
+            if ($value !== null) $value = strlen($value) ? self::checkValue(trim($value)) : null;
+
+            $env[$name] = $value;
+        }
+
+        foreach ($env as $name => $value) {
+            if (!$value) continue;
+
+            $padrao = '/\${(.*?)}/';
+
+            if (preg_match($padrao, $value, $matches)) {
+                if (array_key_exists($matches[1], $env)) {
+                    $env[$name] = str_replace($matches[0], $env[$matches[1]], $value);
+                }
+            }
         }
 
         return $env;
@@ -62,6 +81,9 @@ class Env
             case '(null)':
                 return null;
         }
+
+        if (filter_var($value, FILTER_VALIDATE_INT) !== false) return (int)$value;
+        if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) return (float)$value;
 
         return $value;
     }

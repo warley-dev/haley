@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\usuarios;
-use Haley\Database\DB;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
@@ -17,9 +16,9 @@ use Haley\Router\Route;
 
 Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('/', 'HomeController@index');
-    Route::view('test', 'test');
+    Route::view('view', 'test');
 
-    Route::get('haley', function () {
+    Route::get('model', function () {
         $data = [
             [
                 'id_acesso' => 1,
@@ -51,8 +50,7 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
         dd($select);
     });
 
-    Route::get('storage', function() {
-
+    Route::get('test', function() {
 
     });
 });

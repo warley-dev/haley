@@ -1,94 +1,154 @@
 <?php
+
 namespace Haley\Collections;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
 
 class Mailer
 {
-    /**
-     * Resultado do envio. 
-     * @return true|false
-     */
-    public $result = false;
+    private array|null $from = null;
+    private array $recipients = [];
+    private string|null $subject = null;
+
+    private string|null $content = null;
+    private array|null $view = null;
+    private array $attachments = [];
+    private bool $html = true;
 
     /**
-     * Email do destinatario.
-     * @param $email
+     * Set from
      */
-    public $email;
+    public function from(string $email, string|null $name = null)
+    {
+        $this->from = [
+            'email' => $email,
+            'name' => $name
+        ];
+    }
 
     /**
-     * Nome do destinatario.
-     * @param $name
+     * Add recipient
      */
-    public $name;
+    public function recipient(string $email, string|null $name = null)
+    {
+        $this->recipients[] = [
+            'email' => $email,
+            'name' => $name
+        ];
+    }
 
     /**
-     * Titulo do email.
-     * @param $title
+     * Set subject
      */
-    public $title;
+    public function subject(string|null $subject)
+    {
+        $this->subject = $subject;
+    }
 
     /**
-     * Corpo do email.
-     * @param $body
+     * Content view
      */
-    public $body = null;
+    public function view(string $view, array|object $params = [], string|null $path = null)
+    {
+        $this->html = true;
+        $this->content = null;
+
+        $this->view = [
+            'view' => $view,
+            'params' => $params,
+            'path' => $path
+        ];
+    }
 
     /**
-     * Enexo do email 'opcional'.
-     * @param $anexo
+     * Content text
      */
-    public $anexo = null;
+    public function content(string $content, bool $html = true)
+    {
+        $this->html = $html;
+        $this->content = $content;
+        $this->view = null;
+    }
 
     /**
-     * Envia as informacoes do email para o destinatario.   
+     * Add attachment
+     */
+    public function attachments(string $path, string|null $name = null)
+    {
+        $this->attachments[] = [
+            'path' => $path,
+            'name' => $name
+        ];
+    }
+
+    /**
+     * Reset params
+     */
+    public function reset()
+    {
+        $this->from = null;
+        $this->recipients = [];
+        $this->subject = null;
+        $this->content = null;
+        $this->view = null;
+        $this->attachments = [];
+        $this->html = true;
+
+        return $this;
+    }
+
+    /**
+     * Send email
      */
     public function send()
     {
-        $mailer = new PHPMailer;
-        $mailer->isSMTP();
-        $mailer->SMTPDebug = 0; //2 para exibir relatorio
-        $mailer->Host = env('MAILER_HOST');
-        $mailer->Port = env('MAILER_PORT');
-        $mailer->SMTPAuth = true;
-        $mailer->Username = env('MAILER_USERNAME');
-        $mailer->Password = env('MAILER_PASSWORD');
+        $mail = new PHPMailer();
 
-        // informacoes do remetente
-        $mailer->setFrom(env('MAILER_USERNAME'), env('MAILER_NAME'));
-        $mailer->addReplyTo(env('MAILER_RESPONSE'), env('MAILER_NAME'));
+        // server settings
+        $mail->Host = env('MAIL_HOST', '');
+        $mail->Username = env('MAIL_USERNAME', '');
+        $mail->Password = env('MAIL_PASSWORD', '');
+        $mail->Port = env('MAIL_PORT');
+        $mail->CharSet = 'UTF-8';
 
-        // destinatario
-        $mailer->AddAddress($this->email, $this->name);
-
-        // titulo do email
-        $mailer->Subject = $this->title;
-
-        // conteudo do e-mail
-        if ($this->body != null) {
-            $mailer->Body = $this->body;
+        if (env('MAIL_SMTP')) {
+            $mail->isSMTP();
+            $mail->SMTPAuth = true;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->SMTPDebug = SMTP::DEBUG_OFF;
         }
 
-        // ativa html no email
-        $mailer->IsHTML(true);
-
-        // anexo
-        if ($this->anexo != null) {
-            if (file_exists($this->anexo)) {
-                $mailer->addAttachment("$this->anexo");
-            }
-        }
-
-        // envio e resultado
-        if ($mailer->send()) {
-            $this->result = true;
-            return true;
+        // from
+        if ($this->from) {
+            $mail->setFrom($this->from['email'], $this->from['name'] ?? '');
         } else {
-            $this->result = false;
-            return false;
+            $mail->setFrom(env('MAIL_FROM_ADDRESS', ''), env('MAIL_FROM_NAME', ''));
         }
+
+        // recipients
+        foreach ($this->recipients as $recipient) {
+            $mail->addAddress($recipient['email'], $recipient['name'] ?? '');
+        }
+
+        // attachments
+        foreach ($this->attachments as $attachment) {
+            $mail->addAttachment($attachment['path'], $attachment['name'] ?? '');
+        }
+
+        // content
+        $mail->isHTML($this->html);
+
+        $mail->Subject = $this->subject ?? '';
+
+        if ($this->content !== null) {
+            $mail->Body = $this->content;
+        } else if ($this->view !== null) {
+            $mail->Body = view($this->view['view'], $this->view['params'], false, $this->view['path']);
+        } else {
+            $mail->Body = '';
+        }
+
+        return $mail->send();
     }
 }

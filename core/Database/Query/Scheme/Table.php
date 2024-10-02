@@ -53,7 +53,7 @@ class Table
     // return 'SHOW FULL TABLES WHERE table_type = \'BASE TABLE\'';
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getNames()
     {
@@ -68,7 +68,7 @@ class Table
 
         if (count($names)) return $names;
 
-        return null;
+        return $names;
     }
 
     /**

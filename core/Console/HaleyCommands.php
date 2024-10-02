@@ -18,6 +18,7 @@ class HaleyCommands
                 Console::command('web {name}', 'CommandMake::web')->description('create a new web controller');
                 Console::command('api {name}', 'CommandMake::api')->description('create a new api controller');
                 Console::command('migration {name}', 'CommandMake::migration')->description('create a new migration');
+                Console::command('mail {name}', 'CommandMake::mail')->description('create a new mail');
                 Console::command('model {name} {connection?}', 'CommandMake::model')->description('[--all to create all models] create a new model');
                 Console::command('job {name}', 'CommandMake::job')->description('create a new job');
                 Console::command('ws {name}', 'CommandMake::ws')->description('create a new websocket controller');
@@ -27,9 +28,9 @@ class HaleyCommands
 
             Console::title('Migrations')->prefix('migrate')->group(function () {
                 Console::command('', 'CommandMigration::run')->description('execute pending migrations');
-                Console::command(':reset', 'CommandMigration::run')->description('reset all migrations');
-                Console::command(':up {name?}', 'CommandMigration::run')->description('run migration up');
-                Console::command(':down {name?}', 'CommandMigration::run')->description('run migration down');
+                Console::command(':reset', 'CommandMigration::reset')->description('reset all migrations');
+                Console::command(':up {name}', 'CommandMigration::up')->description('run migration up');
+                Console::command(':down {name}', 'CommandMigration::down')->description('run migration down');
             });
 
             Console::title('Servers')->prefix('server:')->group(function () {

@@ -19,7 +19,7 @@ return new class
         $build->decimal('decimal')->nullable(true);
         $build->boolean('boolean')->nullable(false);
 
-        $build->varchar('varchaae')->nullable(true);
+        $build->varchar('varchaaeres')->nullable(true);
         $build->text('text')->nullable(true);
         $build->json('json')->nullable(true);
 
@@ -51,5 +51,8 @@ return new class
         // $build->rename('varchaae','teste_rename');
     }
 
-    public function down(Builder $build) {}
+    public function down(Builder $build)
+    {
+        $build->dropTable();
+    }
 };
