@@ -15,6 +15,8 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
 
     // unificar classe
     // app ini configurar
+    // make seed
+    // migration build adicionar after e before
 
     Route::get('model', function () {
         $data = [
