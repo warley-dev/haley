@@ -14,7 +14,9 @@ return new class
         $build->int('id_acesso')->index('idx_acesso');
         $build->varchar('nome');
         $build->varchar('email')->index('idx_email');
-        $build->boolean('ativo');
+        $build->boolean('ativo')->after('id_acesso');
+
+        $build->id('primary_test');
 
         $build->dates();
     }

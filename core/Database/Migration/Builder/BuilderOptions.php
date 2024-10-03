@@ -86,4 +86,32 @@ class BuilderOptions
 
         return $this;
     }
+
+    /**
+     * Valid only when editing table
+     */
+    public function first()
+    {
+        $key = array_key_last(BuilderMemory::$columns);
+
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$columns[$key]['options']['POSITION'] = 'FIRST';
+        }
+
+        return $this;
+    }
+
+    /**
+     * Valid only when editing table
+     */
+    public function after(string $column)
+    {
+        $key = array_key_last(BuilderMemory::$columns);
+
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$columns[$key]['options']['POSITION'] = "AFTER `{$column}`";
+        }
+
+        return $this;
+    }
 }

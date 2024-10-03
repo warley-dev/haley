@@ -35,7 +35,8 @@ class BuilderMemory
                     'DEFAULT' => '',
                     'ONUPDATE' => '',
                     'COMMENT' => '',
-                    'AUTOINCREMENT' => ''
+                    'AUTOINCREMENT' => '',
+                    'POSITION' => null,
                 ]
             ];
         }

@@ -7,15 +7,14 @@ use Haley\Shell\Shell;
 
 class CommandMake
 {
-    public function migration(string $name)
+    public function migration(string $name, string|null $table = null)
     {
-        $table = pathinfo(directoryRoot('database/' . $name), PATHINFO_FILENAME);
-        $class = date('Y_m_d_His') . '_' . $table;
-        $location = directoryRoot('database/migrations/' . str_replace(basename($name), '', $name) . $class . '.php');
+        $name = date('Y_m_d_His') . '_' . str_replace(['/', '\\'], '_', $name);
+        $params = $this->params($name, directoryRoot('database/migrations'));
 
-        createDir(dirname($location));
+        createDir($params['directory']);
 
-        if (file_exists($location)) {
+        if (file_exists($params['path'])) {
             Shell::red('replace current file ? (y/n)');
 
             $response = Shell::readline();
@@ -27,13 +26,13 @@ class CommandMake
         }
 
         $template = view('migration', [
-            'table' => $name
+            'table' => $table
         ], false, directoryHaley('Templates'));
 
-        file_put_contents($location, $template);
+        file_put_contents($params['path'], $template);
 
-        if (file_exists($location)) {
-            Shell::green("migration {$class} created")->normal($location)->br();
+        if (file_exists($params['path'])) {
+            Shell::green("migration {$params['name']} created")->normal($params['path'])->br();
         } else {
             Shell::red('error: failed to create migration');
         }
@@ -393,7 +392,7 @@ class CommandMake
 
         if (!strlen($name)) $namespace = null;
 
-        $directory = rtrim(directorySeparator($directory . '/' . implode($explode)), '/');
+        $directory = rtrim(directorySeparator($directory . '/' . implode('/', $explode)), '/');
 
         return [
             'name' => $name,

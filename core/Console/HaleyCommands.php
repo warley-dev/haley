@@ -18,7 +18,7 @@ class HaleyCommands
                 Console::command('env', 'CommandMake::env')->description('create a env file');
                 Console::command('web {name}', 'CommandMake::web')->description('create a new web controller');
                 Console::command('api {name}', 'CommandMake::api')->description('create a new api controller');
-                Console::command('migration {name}', 'CommandMake::migration')->description('create a new migration');
+                Console::command('migration {name} {table?}', 'CommandMake::migration')->description('create a new migration');
                 Console::command('mail {name}', 'CommandMake::mail')->description('create a new mail');
                 Console::command('model {name} {connection?}', 'CommandMake::model')->description('[--all to create all models] create a new model');
                 Console::command('job {name}', 'CommandMake::job')->description('create a new job');

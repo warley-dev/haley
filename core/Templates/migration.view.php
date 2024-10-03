@@ -5,7 +5,7 @@ use Haley\Database\Migration\Builder\Builder;
 
 return new class
 {
-    public string $table = '{{ strtolower($table) }}';
+    public string|null $table = {{$table ? "'" . strtolower($table) . "'" : 'null'}};
     public string|null $connection = null;
 
     public function up(Builder $build)

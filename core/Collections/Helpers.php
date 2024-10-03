@@ -263,9 +263,9 @@ if (!function_exists('directoryHaley')) {
 if (!function_exists('createDir')) {
     function createDir(string $path)
     {
-        if (file_exists($path)) return true;
+        $path = dirname(directorySeparator($path));
 
-        $path = directorySeparator($path);
+        if (file_exists($path)) return true;
 
         return file_exists($path) ? true : mkdir($path, 0777, true);
     }
@@ -274,7 +274,7 @@ if (!function_exists('createDir')) {
 if (!function_exists('deleteDir')) {
     function deleteDir(string $path)
     {
-        $path = directorySeparator($path);
+        $path = dirname(directorySeparator($path));
 
         if (!file_exists($path)) return true;
 

@@ -32,7 +32,7 @@ class CommandMigration
                 $start = Shell::normal($error['migration'], true, false);
                 $end = Shell::red($error['message'], true, false);
 
-                if ($error['command']) $start .= Shell::gray('[' . $error['command'] . ']', false, false);
+                if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
 
                 Shell::list($start, $end)->br();
             }
@@ -41,7 +41,7 @@ class CommandMigration
                 $start = Shell::normal($info['migration'], true, false);
                 $end = Shell::green($info['message'], true, false);
 
-                if ($info['command']) $start .= Shell::gray('[' . $info['command'] . ']', false, false);
+                if ($info['table']) $start .= Shell::gray('[' . $info['table'] . ']', false, false);
 
                 Shell::list($start, $end)->br();
             }
@@ -68,7 +68,7 @@ class CommandMigration
             $start = Shell::normal($error['migration'], true, false);
             $end = Shell::red($error['message'], true, false);
 
-            if ($error['command']) $start .= Shell::gray('[' . $error['command'] . ']', false, false);
+            if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
 
             Shell::list($start, $end)->br();
         }
@@ -77,7 +77,7 @@ class CommandMigration
             $start = Shell::normal($info['migration'], true, false);
             $end = Shell::green($info['message'], true, false);
 
-            if ($info['command']) $start .= Shell::gray('[' . $info['command'] . ']', false, false);
+            if ($info['table']) $start .= Shell::gray('[' . $info['table'] . ']', false, false);
 
             Shell::list($start, $end)->br();
         }
@@ -103,7 +103,7 @@ class CommandMigration
             $start = Shell::normal($error['migration'], true, false);
             $end = Shell::red($error['message'], true, false);
 
-            if ($error['command']) $start .= Shell::gray('[' . $error['command'] . ']', false, false);
+            if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
 
             Shell::list($start, $end)->br();
         }
@@ -112,7 +112,7 @@ class CommandMigration
             $start = Shell::normal($info['migration'], true, false);
             $end = Shell::green($info['message'], true, false);
 
-            if ($info['command']) $start .= Shell::gray('[' . $info['command'] . ']', false, false);
+            if ($info['table']) $start .= Shell::gray('[' . $info['table'] . ']', false, false);
 
             Shell::list($start, $end)->br();
         }

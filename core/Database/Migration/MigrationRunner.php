@@ -100,10 +100,16 @@ class MigrationRunner
             ]);
         }
 
-        if ($type === 'up') $this->migration->up($builder);
-        if ($type === 'down') $this->migration->down($builder);
+        try {
+            if ($type === 'up') $this->migration->up($builder);
+            if ($type === 'down') $this->migration->down($builder);
 
-        $this->exec();
+            $this->exec();
+        } catch (Throwable $error) {
+            $this->addError($error->getMessage());
+
+            return;
+        }
     }
 
     private function migrationTable()
@@ -130,12 +136,16 @@ class MigrationRunner
                     $this->addError($error->getMessage());
                 }
 
-                if ($drop) $this->addInfo("table $table droped", "drop:$table");
-                else $this->addError("table $table failed to drop", "drop:$table");
+                if ($drop) $this->addInfo("table $table droped");
+                else $this->addError("table $table failed to drop");
             } else {
-                $this->addError("table $table does not exist", "drop:$table");
+                $this->addError("table $table does not exist");
             }
         }
+
+        dd($this->build::$table);
+
+        if ($this->build::$table === null) return;
 
         if (in_array($this->build::$table, $this->build::$dropTable)) return;
 
@@ -176,10 +186,10 @@ class MigrationRunner
                     $this->addError($error->getMessage());
                 }
 
-                if ($drop) $this->addInfo("column $column droped", "drop:{$this->build::$table}.$column");
-                else $this->addError("failed to drop column $column", "drop:{$this->build::$table}.$column");
+                if ($drop) $this->addInfo("column $column droped");
+                else $this->addError("failed to drop column $column");
             } else {
-                $this->addError("column $column does not exist", "drop:{$this->build::$table}.$column");
+                $this->addError("column $column does not exist");
             }
         }
 
@@ -187,14 +197,18 @@ class MigrationRunner
         foreach ($this->build->getColumns() as $column) {
             if (in_array($column['name'], $this->build::$dropColumn)) continue;
 
+            if ($column['options']['POSITION'] !== null) {
+                $column['query'] .= ' ' . $column['options']['POSITION'];
+            }
+
             if ($this->scheme->column()->has($this->build::$table, $column['name'])) {
                 $change = $this->scheme->column()->change($this->build::$table, $column['name'], $column['query']);
 
-                if ($change) $this->addInfo("column {$column['name']} changed", "change:{$this->build::$table}.{$column['name']}");
+                if ($change) $this->addInfo("column {$column['name']} changed");
             } else {
                 $create = $this->scheme->column()->create($this->build::$table, $column['name'], $column['query']);
 
-                if ($create) $this->addInfo("column {$column['name']} added", "add:{$this->build::$table}.{$column['name']}");
+                if ($create) $this->addInfo("column {$column['name']} added");
             }
         }
 
@@ -203,7 +217,7 @@ class MigrationRunner
             if ($this->scheme->column()->has($this->build::$table, $column) and !$this->scheme->column()->has($this->build::$table, $to)) {
                 $renamed = $this->scheme->column()->rename($this->build::$table, $column, $to);
 
-                if ($renamed) $this->addInfo("column $column renamed", "rename:{$this->build::$table}.$column");
+                if ($renamed) $this->addInfo("column $column renamed");
             }
         }
     }
@@ -215,7 +229,7 @@ class MigrationRunner
             if (!in_array($this->build::$id['name'], $this->build::$dropColumn)) {
                 $set = $this->scheme->constraint()->setId($this->build::$table, $this->build::$id['name'], $this->build::$id['comment']);
 
-                if ($set) $this->addInfo("primary key {$this->build::$id['name']} defined", "primary:{$this->build::$table}.{$this->build::$id['name']}");
+                if ($set) $this->addInfo("primary key {$this->build::$id['name']} defined");
             }
         }
 
@@ -224,7 +238,7 @@ class MigrationRunner
             if ($this->scheme->constraint()->has($this->build::$table, $constraint)) {
                 $drop = $this->scheme->constraint()->drop($this->build::$table, $constraint);
 
-                if ($drop) $this->addInfo("constraint $constraint droped", "drop:{$this->build::$table}:$constraint");
+                if ($drop) $this->addInfo("constraint $constraint droped");
             }
         }
 
@@ -235,7 +249,7 @@ class MigrationRunner
             if (!$this->scheme->constraint()->has($this->build::$table, $constraints['name'])) {
                 $create = $this->scheme->constraint()->create($this->build::$table, $constraints['name'], $constraints['type'], $constraints['value']);
 
-                if ($create) $this->addInfo("constraint {$constraints['name']} added", "add:{$this->build::$table}:{$constraints['name']}");
+                if ($create) $this->addInfo("constraint {$constraints['name']} added");
             } else {
                 $this->scheme->constraint()->change($this->build::$table, $constraints['name'], $constraints['type'], $constraints['value']);
             }
@@ -251,25 +265,25 @@ class MigrationRunner
 
             $create = $this->scheme->constraint()->addIndex($this->build::$table, $index['column'], $index['name'], $index['type']);
 
-            if ($create) $this->addInfo("index {$index['name']} added", "add:{$this->build::$table}:{$index['name']}");
+            if ($create) $this->addInfo("index {$index['name']} added");
         }
     }
 
-    private function addError(string $message, string|null $command = null)
+    private function addError(string $message)
     {
         $this->errors[] = [
             'migration' => $this->name,
             'message' => $message,
-            'command' => $command
+            'table' => $this->build::$table
         ];
     }
 
-    private function addInfo(string $message, string|null $command = null)
+    private function addInfo(string $message)
     {
         $this->infos[] = [
             'migration' => $this->name,
             'message' => $message,
-            'command' => $command
+            'table' => $this->build::$table
         ];
     }
 

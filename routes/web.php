@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\usuarios;
-use Haley\Job\JobController;
 use Haley\Router\Route;
-use Haley\Shell\Shell;
 
 // --------------------------------------------------------------------------|
 //                               WEB ROUTES                                  |
