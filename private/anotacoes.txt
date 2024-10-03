@@ -5,7 +5,6 @@ commands {
 
 sudo chmod -R a+rw storage/
 
-
 terminal multipls opcoes
 --id=1 --id=2 --id=3
 
@@ -13,8 +12,3 @@ terminal multipls opcoes
 aprimorar return response('qualquercoisa',200, [
     'headers' => '...'
 ])
-
-substituir funcoes de arquivos / pastas para classe storage
-
-
-continuar comandos migration e (jobs refatorar para desvincular as funcoes do console)
