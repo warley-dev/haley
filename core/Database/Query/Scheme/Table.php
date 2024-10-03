@@ -76,7 +76,7 @@ class Table
     public function drop(string $table)
     {
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query('DROP TABLE ' . $table, connection: $this->connection);
+            DB::query(sprintf('DROP TABLE `%s`', $table), connection: $this->connection);
         } else {
             $this->driverError($this->driver);
         }
@@ -90,7 +90,7 @@ class Table
     public function dropIfExists(string $table)
     {
         if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query('DROP TABLE IF EXISTS ' . $table, connection: $this->connection);
+            DB::query(sprintf('DROP TABLE IF EXISTS `%s`', $table), connection: $this->connection);
         } else {
             $this->driverError($this->driver);
         }
@@ -107,7 +107,7 @@ class Table
             $content = implode(',', $content);
             $definitions = $definitions ?? '';
 
-            DB::query(trim("CREATE TABLE `{$table}` ({$content}) {$definitions}"), connection: $this->connection);
+            DB::query(sprintf("CREATE TABLE `%s` (%s) %s", $table, $content, $definitions), connection: $this->connection);
         } else {
             $this->driverError($this->driver);
         }

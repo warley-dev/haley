@@ -4,8 +4,6 @@ namespace Haley\Collections;
 
 class Password
 {
-    public static string $salt = '';
-
     /**
      * Retorna um hash de uma string
      * @param string $password
@@ -13,7 +11,7 @@ class Password
      */
     public static function create(string $password)
     {
-        $rash = password_hash(self::$salt . $password, PASSWORD_DEFAULT);
+        $rash = password_hash($password, PASSWORD_DEFAULT);
         return $rash;
     }
 
@@ -25,15 +23,6 @@ class Password
      */
     public static function check(string $password, string $hash)
     {
-        return password_verify(self::$salt . $password, $hash);
-    }
-
-    /**
-     * Cria um token random
-     * @return string
-     */
-    public static function token(int $length = 5)
-    {
-        return strtoupper(bin2hex(random_bytes($length)));
+        return password_verify($password, $hash);
     }
 }

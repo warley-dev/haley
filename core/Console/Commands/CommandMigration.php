@@ -4,6 +4,7 @@ namespace Haley\Console\Commands;
 
 use Haley\Database\DB;
 use Haley\Database\Migration\MigrationRunner;
+use Haley\Shell\Lines;
 use Haley\Shell\Shell;
 use Throwable;
 
@@ -14,7 +15,7 @@ class CommandMigration
         if ($name !== null) {
             $file = directoryRoot('database/migrations/' . $name . '.php');
 
-            if (!file_exists($file)) return Shell::red('file not found')->blue($file)->br();
+            if (!file_exists($file)) return Shell::red('file not found')->normal($file)->br();
 
             $migration_files = [$name . '.php'];
         } else {
@@ -56,7 +57,7 @@ class CommandMigration
     {
         $file = directoryRoot('database/migrations/' . $name . '.php');
 
-        if (!file_exists($file)) return Shell::red('file not found')->blue($file)->br();
+        if (!file_exists($file)) return Shell::red('file not found')->normal($file)->br();
 
         $migration = new MigrationRunner();
 
@@ -91,7 +92,7 @@ class CommandMigration
     {
         $file = directoryRoot('database/migrations/' . $name . '.php');
 
-        if (!file_exists($file)) return Shell::red('file not found')->blue($file)->br();
+        if (!file_exists($file)) return Shell::red('file not found')->normal($file)->br();
 
         $migration = new MigrationRunner();
 
@@ -151,5 +152,34 @@ class CommandMigration
         }
 
         $this->run();
+    }
+
+    public function seed(string|null $name)
+    {
+        if ($name !== null) {
+            $file = directoryRoot('database/seeders/' . $name . '.php');
+
+            if (!file_exists($file)) return Shell::red('file not found')->normal($file)->br();
+
+            $migration_files = [$name . '.php'];
+        } else {
+            $migration_files = array_diff(scandir(directoryRoot('database/seeders')), ['.', '..']);
+        }
+
+        foreach ($migration_files as $file) {
+            try {
+                $path = directoryRoot('database/seeders/' . $file);
+
+                $seed = require $path;
+
+                $seed->run();
+            } catch (Throwable $error) {
+                $e = Lines::red($error->getMessage(), false, false);
+
+                Shell::list(str_replace('.php', '', $file), $e)->br();
+            }
+        }
+
+        Shell::green('seeders run')->br();
     }
 }

@@ -141,8 +141,6 @@ class MigrationRunner
             }
         }
 
-        dd($this->build::$table);
-
         if ($this->build::$table === null) return;
 
         if (in_array($this->build::$table, $this->build::$dropTable)) return;

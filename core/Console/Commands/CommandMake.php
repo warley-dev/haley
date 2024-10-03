@@ -38,6 +38,35 @@ class CommandMake
         }
     }
 
+    public function seed(string $name)
+    {
+        $name = str_replace(['/', '\\'], '_', $name);
+        $params = $this->params($name, directoryRoot('database/seeders'));
+
+        createDir($params['directory']);
+
+        if (file_exists($params['path'])) {
+            Shell::red('replace current file ? (y/n)');
+
+            $response = Shell::readline();
+
+            if ($response != 'y') {
+                Shell::red('operation canceled')->br();
+                return;
+            }
+        }
+
+        $template = view('seed', [], false, directoryHaley('Templates'));
+
+        file_put_contents($params['path'], $template);
+
+        if (file_exists($params['path'])) {
+            Shell::green("seed {$params['name']} created")->normal($params['path'])->br();
+        } else {
+            Shell::red('error: failed to create seed');
+        }
+    }
+
     public function env()
     {
         $location = directoryRoot('.env');
@@ -77,6 +106,8 @@ class CommandMake
 
         if (count($names)) {
             foreach ($names as $name) {
+                if ($name == 'migrations') continue;
+
                 $params = $this->params($name, directoryRoot('app/Models'));
 
                 if (file_exists($params['path'])) {

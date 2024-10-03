@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\usuarios;
+use App\Models\users;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
@@ -17,36 +17,38 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     // migration build adicionar after e before
 
     Route::get('model', function () {
-        $data = [
-            [
-                'id_acesso' => 1,
-                'nome' => 'um',
-                'email' => 'um@hotmail.com',
-                'ativo' => 1
-            ],
+        // $data = [
+        //     [
+        //         'id_acesso' => 1,
+        //         'nome' => 'um',
+        //         'email' => 'um@hotmail.com',
+        //         'ativo' => 1
+        //     ],
 
-            [
-                'id_acesso' => 1,
-                'nome' => 'um',
-                'email' => 'um@hotmail.com',
-                'ativo' => 1
-            ]
-        ];
+        //     [
+        //         'id_acesso' => 1,
+        //         'nome' => 'um',
+        //         'email' => 'um@hotmail.com',
+        //         'ativo' => 1
+        //     ]
+        // ];
 
-        $create = usuarios::createGetId($data);
+        // $create = usuarios::createGetId($data);
 
-        // dd($create);
+        // // dd($create);
 
-        $create_or_update = usuarios::updateOrCreate(['id' => ['1', '2', '3']], [
-            'nome' => 'atualizados'
-        ]);
+        // $create_or_update = usuarios::updateOrCreate(['id' => ['1', '2', '3']], [
+        //     'nome' => 'atualizados'
+        // ]);
 
         // dd($create_or_update);
 
-        $select = usuarios::select()->get();
+        $select = users::query()->get();
 
         dd($select);
     });
 
-    Route::get('test/{um}/{dois}/{tres?}', 'Test@index');
+    Route::get('databse', function () {
+        // refaturar connection database e configuracoes
+    });
 });

@@ -10,5 +10,5 @@ class test extends Model
 
     public static string $table = 'test';
     protected static string|null $id = 'id';
-    protected static array $fillable = ['id', 'int', 'double', 'float', 'decimal', 'boolean', 'varchaae', 'text', 'json', 'timestamp', 'date', 'datetime', 'year', 'time', 'created_at', 'update_at', 'set', 'enum', 'nome', 'email'];
+    protected static array $fillable = ['id', 'int', 'double', 'float', 'decimal', 'boolean', 'varchaaeres', 'text', 'json', 'timestamp', 'date', 'datetime', 'year', 'time', 'created_at', 'update_at', 'set', 'enum', 'nome', 'email'];
 };

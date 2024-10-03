@@ -11,9 +11,9 @@ abstract class Model
     protected static string|null $id = null;
     protected static array $fillable = [];
 
-    public static function select(string|array $columns = '*')
+    public static function query()
     {
-        return DB::table(static::$table)->connection(static::$connection)->select($columns);
+        return DB::table(static::$table)->connection(static::$connection)->table(static::$table);
     }
 
     public static function create(array $data)

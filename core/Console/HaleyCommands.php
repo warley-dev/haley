@@ -19,6 +19,7 @@ class HaleyCommands
                 Console::command('web {name}', 'CommandMake::web')->description('create a new web controller');
                 Console::command('api {name}', 'CommandMake::api')->description('create a new api controller');
                 Console::command('migration {name} {table?}', 'CommandMake::migration')->description('create a new migration');
+                Console::command('seed {name}', 'CommandMake::seed')->description('create a new seed');
                 Console::command('mail {name}', 'CommandMake::mail')->description('create a new mail');
                 Console::command('model {name} {connection?}', 'CommandMake::model')->description('[--all to create all models] create a new model');
                 Console::command('job {name}', 'CommandMake::job')->description('create a new job');
@@ -30,6 +31,7 @@ class HaleyCommands
 
             Console::title('Migrations')->prefix('migrate')->group(function () {
                 Console::command('', 'CommandMigration::run')->description('execute pending migrations');
+                Console::command(':seed {name?}', 'CommandMigration::seed')->description('run seeders');
                 Console::command(':reset', 'CommandMigration::reset')->description('reset all migrations');
                 Console::command(':up {name}', 'CommandMigration::up')->description('run migration up');
                 Console::command(':down {name}', 'CommandMigration::down')->description('run migration down');
