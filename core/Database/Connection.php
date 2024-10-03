@@ -3,7 +3,6 @@
 namespace Haley\Database;
 
 use Haley\Collections\Config;
-use Haley\Collections\Log;
 use PDO;
 use PDOException;
 
@@ -20,7 +19,7 @@ class Connection
      */
     public static function instance(string $connection)
     {
-        if (isset(self::$instances[$connection])) return self::$instances[$connection];        
+        if (isset(self::$instances[$connection])) return self::$instances[$connection];
 
         $config = Config::database('connections');
 
@@ -35,13 +34,12 @@ class Connection
             $password = $config['password'];
             $options = null;
 
-            if (isset($config['options']) and !empty($config['options'])) $options = $config['options'];           
+            if (isset($config['options']) and !empty($config['options'])) $options = $config['options'];
 
             self::$instances[$connection] = new PDO("$drive:host=$host;port=$port;dbname=$dbname", $username, $password, $options);
             return self::$instances[$connection];
         }
 
-        Log::create('database', "Connection not found ( {$connection} )");
         throw new PDOException("Connection not found ( {$connection} )");
     }
 

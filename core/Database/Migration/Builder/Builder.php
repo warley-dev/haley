@@ -2,7 +2,6 @@
 
 namespace Haley\Database\Migration\Builder;
 
-use Haley\Collections\Log;
 use InvalidArgumentException;
 
 class Builder
@@ -10,7 +9,6 @@ class Builder
     public function id(string $name = 'id', string|null $comment = null)
     {
         if (count(BuilderMemory::$id)) {
-            Log::create('migration', 'Table ' . BuilderMemory::$table . ' must have only one primary key');
             throw new InvalidArgumentException('Table ' . BuilderMemory::$table . ' must have only one primary key');
         }
 
@@ -326,7 +324,6 @@ class Builder
 
     private function typeError(string $type)
     {
-        Log::create('migration', 'Driver does not support the type ' . $type);
         throw new InvalidArgumentException('Driver does not support the type ' . $type);
     }
 }

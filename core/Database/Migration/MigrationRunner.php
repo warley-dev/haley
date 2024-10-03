@@ -3,12 +3,10 @@
 namespace Haley\Database\Migration;
 
 use Haley\Collections\Config;
-use Haley\Collections\Log;
 use Haley\Database\DB;
 use Haley\Database\Migration\Builder\Builder;
 use Haley\Database\Migration\Builder\BuilderMemory;
 use Haley\Database\Query\Scheme;
-use InvalidArgumentException;
 use Throwable;
 
 class MigrationRunner

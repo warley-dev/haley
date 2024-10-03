@@ -3,7 +3,6 @@
 namespace Haley\Database\Query;
 
 use Haley\Collections\Config;
-use Haley\Collections\Log;
 use Haley\Database\Query\Scheme\Column;
 use Haley\Database\Query\Scheme\Constraint;
 use Haley\Database\Query\Scheme\Table;
@@ -38,12 +37,10 @@ class Scheme
         }
 
         if (empty($this->connection)) {
-            Log::create('migration', "Connection not found");
             throw new InvalidArgumentException("Connection not found");
         }
 
         if (empty($this->driver) or !in_array($this->driver ?? '', ['mysql', 'pgsql', 'mariadb'])) {
-            Log::create('migration', 'Driver not found or not compatible');
             throw new InvalidArgumentException('Driver not found or not compatible');
         }
 

@@ -2,7 +2,6 @@
 
 namespace Haley\Database\Query\Scheme;
 
-use Haley\Collections\Log;
 use Haley\Database\DB;
 use InvalidArgumentException;
 use PDO;
@@ -118,7 +117,6 @@ class Table
 
     private function driverError(string $driver)
     {
-        Log::create('migration', 'Driver not found for ' . $driver);
         throw new InvalidArgumentException('Driver not found for ' . $driver);
     }
 }

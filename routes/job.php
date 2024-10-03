@@ -8,7 +8,7 @@ use Haley\Job\Job;
 // --------------------------------------------------------------------------|
 
 Job::namespace('App\Jobs')->timeout(1)->unique()->group(function () {
-    Job::dayAt(3, 0, function () {
-        Log::clean(['jobs', 'database', 'connection', 'migration', 'websocket']);
+    Job::everyDayAt(0, function () {
+        Log::clean(['framework']);
     })->description('clean logs')->name('clean.logs')->unique();
 });

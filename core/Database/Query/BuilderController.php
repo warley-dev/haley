@@ -2,7 +2,6 @@
 
 namespace Haley\Database\Query;
 
-use Haley\Collections\Log;
 use InvalidArgumentException;
 
 class BuilderController
@@ -30,7 +29,6 @@ class BuilderController
     protected function executeProcessor(string $command, string $driver)
     {
         if (!in_array($driver, ['mysql', 'pgsql', 'mariadb'])) {
-            Log::create('connection', "Drive not found! ( {$driver} )");
             throw new InvalidArgumentException("Drive not found! ( {$driver} )");
         }
 

@@ -3,7 +3,6 @@
 namespace Haley\Database\Query;
 
 use Haley\Collections\Config;
-use Haley\Collections\Log;
 use InvalidArgumentException;
 use PDOException;
 
@@ -882,7 +881,6 @@ class Builder extends BuilderController
 
         if (!empty($config[$connection])) return $config[$connection];
 
-        Log::create('database', "Connection not found ( {$connection} )");
         throw new PDOException("Connection not found ( {$connection} )");
     }
 }
