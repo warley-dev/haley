@@ -49,15 +49,5 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
 
     Route::get('database', function () {
         // refaturar connection database e configuracoes
-
-        // dd(DB::connection('sqlite')->prepare('CREATE TABLE t1(a, b UNIQUE);')->execute());
-
-        // $query = DB::connection('sqlite')->prepare('INSERT INTO t1 (`b`) VALUES(?);');
-
-        // $query->bindValue(1,'AAAA');
-
-        // dd($query->execute());
-
-        dd(DB::table('t1')->connection('sqlite')->get());
     });
 });

@@ -23,11 +23,6 @@ return [
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, // PDO::FETCH_ASSOC -- array
                 PDO::ATTR_PERSISTENT => true
             ]) : [],
-        ],
-
-        'sqlite' => [
-            'driver' => 'sqlite',
-            'database' => directoryStorage('sqlite.db')
         ]
     ],
 ];

@@ -13,7 +13,7 @@ use PDOException;
  */
 class Connection
 {
-    public static array $drivers = ['mysql', 'pgsql', 'mariadb', 'sqlite'];
+    public static array $drivers = ['mysql', 'pgsql', 'mariadb'];
     private static array $instances;
 
     /**
@@ -26,21 +26,17 @@ class Connection
 
         $config = self::config($connection);
 
-        if ($config['driver'] !== 'sqlite') {
-            $drive = $config['driver'];
-            $host = $config['host'];
-            $port = $config['port'];
-            $dbname = $config['database'];
-            $username = $config['username'];
-            $password = $config['password'];
-            $options = null;
+        $drive = $config['driver'];
+        $host = $config['host'];
+        $port = $config['port'];
+        $dbname = $config['database'];
+        $username = $config['username'];
+        $password = $config['password'];
+        $options = null;
 
-            if (array_key_exists('options', $config) and is_array($config['options'])) $options = $config['options'];
+        if (array_key_exists('options', $config) and is_array($config['options'])) $options = $config['options'];
 
-            self::$instances[$connection] = new PDO("$drive:host=$host;port=$port;dbname=$dbname", $username, $password, $options);
-        } else {
-            self::$instances[$connection] = new PDO("sqlite:{$config['database']}");
-        }
+        self::$instances[$connection] = new PDO("$drive:host=$host;port=$port;dbname=$dbname", $username, $password, $options);
 
         return self::$instances[$connection];
     }
@@ -55,22 +51,13 @@ class Connection
 
         $config = Config::database('connections.' . $connection, []);
 
-        // check driver
-        if (!array_key_exists('driver', $config)) {
-            throw new InvalidArgumentException(sprintf('driver connection required'));
-        }
-
-        if (!in_array($config['driver'], self::$drivers)) throw new ErrorException('unsupported database connection driver');
-
-        if ($config['driver'] !== 'sqlite') {
-            $requireds = ['host', 'port', 'database', 'username', 'password'];
-        } else {
-            $requireds = ['database'];
-        }
+        $requireds = ['driver', 'host', 'port', 'database', 'username', 'password'];
 
         foreach ($requireds as $required) if (!array_key_exists($required, $config)) {
             throw new InvalidArgumentException(sprintf('%s connection required', $required));
         }
+
+        if (!in_array($config['driver'], self::$drivers)) throw new ErrorException('unsupported database connection driver');
 
         return $config;
     }
