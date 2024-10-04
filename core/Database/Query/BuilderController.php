@@ -28,7 +28,7 @@ class BuilderController
 
     protected function executeProcessor(string $command, string $driver)
     {
-        if (!in_array($driver, ['mysql', 'pgsql', 'mariadb'])) {
+        if (!in_array($driver, ['mysql', 'pgsql', 'mariadb','sqlite'])) {
             throw new InvalidArgumentException("Drive not found! ( {$driver} )");
         }
 

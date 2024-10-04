@@ -23,6 +23,7 @@ class Kernel
         define('DIRECTORY_RESOURCES', DIRECTORY_ROOT . DIRECTORY_SEPARATOR . 'resources');
         // define('DIRECTORY_HALEY', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src');
         define('DIRECTORY_HALEY', DIRECTORY_ROOT . DIRECTORY_SEPARATOR . 'core');
+        define('DIRECTORY_STORAGE', DIRECTORY_ROOT . DIRECTORY_SEPARATOR . 'storage');
 
         date_default_timezone_set(Config::app('ini.timezone'));
 

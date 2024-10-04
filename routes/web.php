@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\users;
+use Haley\Database\DB;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
@@ -8,7 +9,7 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
-    Route::get('/', 'HomeController@index');
+    Route::get('/', 'Home@index');
     Route::view('view', 'test');
 
     // unificar classe
@@ -46,7 +47,17 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
         dd($select);
     });
 
-    Route::get('databse', function () {
+    Route::get('database', function () {
         // refaturar connection database e configuracoes
+
+        // dd(DB::connection('sqlite')->prepare('CREATE TABLE t1(a, b UNIQUE);')->execute());
+
+        // $query = DB::connection('sqlite')->prepare('INSERT INTO t1 (`b`) VALUES(?);');
+
+        // $query->bindValue(1,'AAAA');
+
+        // dd($query->execute());
+
+        dd(DB::table('t1')->connection('sqlite')->get());
     });
 });

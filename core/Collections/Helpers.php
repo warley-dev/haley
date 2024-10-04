@@ -251,6 +251,15 @@ if (!function_exists('directoryRoot')) {
     }
 }
 
+if (!function_exists('directoryStorage')) {
+    function directoryStorage(string|null $path = null)
+    {
+        if ($path === null) return DIRECTORY_STORAGE;
+
+        return DIRECTORY_STORAGE . DIRECTORY_SEPARATOR . trim(directorySeparator($path), DIRECTORY_SEPARATOR);
+    }
+}
+
 if (!function_exists('directoryHaley')) {
     function directoryHaley(string|null $path = null)
     {

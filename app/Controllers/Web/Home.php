@@ -6,7 +6,7 @@ class Home
 {
     public function index()
     {
-        return view('home.index', []);
+        return view('home', []);
     }
 
     public function create()

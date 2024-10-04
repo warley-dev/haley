@@ -12,3 +12,5 @@ terminal multipls opcoes
 aprimorar return response('qualquercoisa',200, [
     'headers' => '...'
 ])
+
+remover ou refatorar funcoes directory
