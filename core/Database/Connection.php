@@ -59,6 +59,8 @@ class Connection
 
         if (!in_array($config['driver'], self::$drivers)) throw new ErrorException('unsupported database connection driver');
 
+        $config['quotes'] = $config['driver'] == 'pgsql' ? '"' : '`';
+
         return $config;
     }
 

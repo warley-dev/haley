@@ -49,5 +49,9 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
 
     Route::get('database', function () {
         // refaturar connection database e configuracoes
+
+
+        dd(DB::connection('pgsql'));
+        // dd(DB::connection('mariadb'));
     });
 });
