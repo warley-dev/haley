@@ -14,8 +14,6 @@ class DB
      */
     public static function connection(string|null $connection = null)
     {
-        if ($connection === null) $connection = Config::database('default');
-
         return Connection::instance($connection);
     }
 
@@ -63,6 +61,6 @@ class DB
      * Dump database
      */
     public static function dump(string $path, string|null $connection) {
-        
+
     }
 }
