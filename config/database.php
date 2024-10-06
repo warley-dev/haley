@@ -20,7 +20,7 @@ return [
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, // PDO::FETCH_ASSOC | FETCH_OBJ
                 PDO::ATTR_PERSISTENT => true
-            ]) : [],
+            ]) : []
         ],
 
         'pgsql' => [
@@ -29,7 +29,12 @@ return [
             'port' => env('DB_PORT', 5432),
             'database' => env('DB_DATABASE'),
             'username' => env('DB_USERNAME'),
-            'password' => env('DB_PASSWORD')
+            'password' => env('DB_PASSWORD'),
+
+            'options' => array_filter([
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, // PDO::FETCH_ASSOC | FETCH_OBJ
+                PDO::ATTR_PERSISTENT => true
+            ])
         ],
 
         'mariadb' => [

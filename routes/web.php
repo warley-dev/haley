@@ -50,7 +50,34 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('database', function () {
         // refaturar connection database e configuracoes
 
-        dd(DB::table('teste_table')->get());
+        $count = 1;
+        $data = [];
+
+        // DB::table('helo.teste_table')->delete();
+
+        // while ($count < 86) {
+        //     $data[] = [
+        //         'id' => $count,
+        //         'nome' => 'test'
+        //     ];
+
+        //     $count++;
+        // }
+
+        // DB::table('helo.teste_table')->insert($data);
+
+        $query = DB::table('helo.teste_table');
+
+        // $query->whereCompact(function () use ($query) {
+        //     // $query->where('id', 1);
+        //     // $query->orWhere('id', 2);
+        // });
+
+
+        $query->orderByAsc('id');
+        $query->limit(3, 29);
+
+        dd($query->getQuery(), $query->get());
 
 
         // dd(DB::connection('pgsql'));

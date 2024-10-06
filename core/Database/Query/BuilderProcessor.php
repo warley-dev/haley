@@ -187,7 +187,6 @@ class BuilderProcessor
                 continue;
             }
 
-
             if (!in_array(strtolower($param['operator']), $this->operators) and $param['operator'] != false) {
                 throw new InvalidArgumentException("Invalid operator ( {$param['operator']} )");
             }
@@ -398,11 +397,20 @@ class BuilderProcessor
         $page = $params['page'];
         $limit = $params['limit'];
 
-        if ($page == null) {
-            $this->limit = "LIMIT $limit";
+        if ($this->config['driver'] == 'pgsql') {
+            if ($page == null) {
+                $this->limit = "LIMIT $limit";
+            } else {
+                $page = ($page - 1) * $limit;
+                $this->limit = "LIMIT $limit OFFSET $page";
+            }
         } else {
-            $page = ($page - 1) * $limit;
-            $this->limit = "LIMIT $page,$limit";
+            if ($page == null) {
+                $this->limit = "LIMIT $limit";
+            } else {
+                $page = ($page - 1) * $limit;
+                $this->limit = "LIMIT $page,$limit";
+            }
         }
 
         return;
@@ -587,15 +595,4 @@ class BuilderProcessor
 
         return str_replace([' as ', ' aS ', ' aS '], ' AS ', $string);
     }
-
-
-    // public function phrases(string $value, string $open = '`', string $close = '`')
-    // {
-    //     // Substitui todas as ocorrências de uma palavra (exceto "as" com ou sem variações de maiúsculas/minúsculas) seguida por um espaço em branco por essa palavra entre crases
-    //     $value = preg_replace('/\b(?!as\b)(\w+)\b/i', $open . '$1' . $close, $value);
-    //     // Substitui todas as ocorrências de crases seguidas por um espaço em branco por essa crase seguida por um espaço em branco
-    //     $value = preg_replace('/(' . preg_quote($open) . ')\s/', '$1 ', $value);
-
-    //     return str_replace([' as ', ' aS ', ' aS '], ' AS ', $value);
-    // }
 }

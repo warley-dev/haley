@@ -288,7 +288,7 @@ class Constraint
     /**
      * Set column id - Primary key
      */
-    public function setId(string $table, string $column, string|null $comment)
+    public function setId(string $table, string $column, string|null $comment = null)
     {
         $atual = $this->getPrimaryKey($table);
 
