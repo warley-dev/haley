@@ -8,15 +8,15 @@ use PDO;
 
 class Column
 {
-    private string $connection;
-    private string $driver;
-    private string $database;
+    private array $config = [];
 
-    public function __construct(string $connection, string $drive, string $database)
+    public function __construct(array $config)
     {
-        $this->connection = $connection;
-        $this->driver = $drive;
-        $this->database = $database;
+        $this->config = $config;
+
+        if ($this->config['driver'] == 'pgsql' and !empty($config['search_path'])) {
+            $this->config['database'] = $config['search_path'];
+        }
     }
 
     /**
@@ -26,11 +26,11 @@ class Column
     {
         $data = [];
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT COLUMN_NAME as `column_name` FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?', [$table, $this->database], $this->connection)->fetchAll(PDO::FETCH_OBJ);
-            if (count($query)) foreach ($query as $value) $data[] = $value->column_name;
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?', [$table, $this->config['database']], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
+            if (count($query)) foreach ($query as $value) $data[] = $value['column_name'] ?? $value['COLUMN_NAME'];
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         if (count($data)) return $data;
@@ -43,11 +43,11 @@ class Column
      */
     public function has(string $table, string $column)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?", [$this->database, $table, $column], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?", [$this->config['database'], $table, $column], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return true;
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return false;
@@ -58,11 +58,11 @@ class Column
      */
     public function getSchema(string $table, string $column)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?", [$this->database, $table, $column], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?", [$this->config['database'], $table, $column], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return $query;
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return null;
@@ -74,10 +74,10 @@ class Column
      */
     public function create(string $table, string $column, string $type)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query("ALTER TABLE `{$table}` ADD COLUMN `{$column}` {$type}", connection: $this->connection);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s ADD COLUMN %s %s', $this->quotes($table), $column, $type), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $this->has($table, $column);
@@ -85,29 +85,25 @@ class Column
 
     /**
      * Change column - return array diference
-     * @return array|false
+     * @return bool
      */
-    public function change(string $table, string $column, string $type, string|null $rename = null)
+    public function change(string $table, string $column, string $type)
     {
         if (!$this->has($table, $column));
-
-        if ($rename === null) {
-            $rename = $column;
-        } elseif ($this->has($table, $rename)) {
-            return false;
-        }
 
         $old = $this->getSchema($table, $column);
 
         unset($old['ORDINAL_POSITION']);
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query("ALTER TABLE `{$table}` CHANGE `{$column}` `{$rename}` {$type}", connection: $this->connection);
+        if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s CHANGE %s %s %s', $this->quotes($table), $this->quotes($column), $this->quotes($column), $type), connection: $this->config['name']);
+        } else if ($this->config['driver'] == 'pgsql') {
+            DB::query(sprintf('ALTER TABLE %s ALTER COLUMN %s TYPE %s', $this->quotes($table), $this->quotes($column), $type), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
-        $new = $this->getSchema($table, $rename);
+        $new = $this->getSchema($table, $column);
 
         unset($new['ORDINAL_POSITION']);
 
@@ -117,7 +113,7 @@ class Column
 
         if (!count($difference)) return false;
 
-        return $difference;
+        return true;
     }
 
     /**
@@ -126,10 +122,10 @@ class Column
      */
     public function drop(string $table, string $column)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE %s DROP COLUMN `%s`', $table, $column), connection: $this->connection);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s DROP COLUMN %s', $this->quotes($table), $this->quotes($column)), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return !$this->has($table, $column);
@@ -141,13 +137,21 @@ class Column
      */
     public function rename(string $table, string $column, string $to)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE %s RENAME COLUMN `%s`to `%s`', $table, $column, $to), connection: $this->connection);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s RENAME COLUMN %s to %s', $this->quotes($table), $this->quotes($column), $this->quotes($to)), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $this->has($table, $to);
+    }
+
+    private function quotes(string $string)
+    {
+        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', $this->config['quotes'] . '$1' . $this->config['quotes'], $string);
+        $string = preg_replace('/(' . preg_quote($this->config['quotes']) . ')\s/', '$1 ', $string);
+
+        return $string;
     }
 
     private function driverError(string $driver)

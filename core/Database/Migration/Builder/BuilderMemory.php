@@ -31,7 +31,7 @@ class BuilderMemory
                 'name' => $name,
                 'type' => $type,
                 'options' => [
-                    'NULLABLE' => '',
+                    'NULLABLE' => true,
                     'DEFAULT' => '',
                     'ONUPDATE' => '',
                     'COMMENT' => '',
@@ -74,7 +74,6 @@ class BuilderMemory
 
                 $options = [
                     $value['type'],
-                    $value['options']['NULLABLE'],
                     $value['options']['DEFAULT'],
                     $value['options']['AUTOINCREMENT'],
                     $value['options']['ONUPDATE'],

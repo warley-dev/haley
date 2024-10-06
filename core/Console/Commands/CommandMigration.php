@@ -29,20 +29,20 @@ class CommandMigration
 
             $migration->run($file);
 
-            foreach ($migration->getErrors() as $error) {
-                $start = Shell::normal($error['migration'], true, false);
-                $end = Shell::red($error['message'], true, false);
-
-                if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
-
-                Shell::list($start, $end)->br();
-            }
-
             foreach ($migration->getInfos() as $info) {
                 $start = Shell::normal($info['migration'], true, false);
                 $end = Shell::green($info['message'], true, false);
 
                 if ($info['table']) $start .= Shell::gray('[' . $info['table'] . ']', false, false);
+
+                Shell::list($start, $end)->br();
+            }
+
+            foreach ($migration->getErrors() as $error) {
+                $start = Shell::normal($error['migration'], true, false);
+                $end = Shell::red($error['message'], true, false);
+
+                if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
 
                 Shell::list($start, $end)->br();
             }
@@ -65,20 +65,20 @@ class CommandMigration
 
         $updates = false;
 
-        foreach ($migration->getErrors() as $error) {
-            $start = Shell::normal($error['migration'], true, false);
-            $end = Shell::red($error['message'], true, false);
-
-            if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
-
-            Shell::list($start, $end)->br();
-        }
-
         foreach ($migration->getInfos() as $info) {
             $start = Shell::normal($info['migration'], true, false);
             $end = Shell::green($info['message'], true, false);
 
             if ($info['table']) $start .= Shell::gray('[' . $info['table'] . ']', false, false);
+
+            Shell::list($start, $end)->br();
+        }
+
+        foreach ($migration->getErrors() as $error) {
+            $start = Shell::normal($error['migration'], true, false);
+            $end = Shell::red($error['message'], true, false);
+
+            if ($error['table']) $start .= Shell::gray('[' . $error['table'] . ']', false, false);
 
             Shell::list($start, $end)->br();
         }

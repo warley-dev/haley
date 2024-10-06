@@ -30,6 +30,7 @@ return [
             'database' => env('DB_DATABASE'),
             'username' => env('DB_USERNAME'),
             'password' => env('DB_PASSWORD'),
+            'search_path' => 'public',
 
             'options' => array_filter([
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, // PDO::FETCH_ASSOC | FETCH_OBJ

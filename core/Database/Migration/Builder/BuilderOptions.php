@@ -19,8 +19,10 @@ class BuilderOptions
     {
         $key = array_key_last(BuilderMemory::$columns);
 
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$columns[$key]['options']['NULLABLE'] = $value ? 'NULL' : 'NOT NULL';
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
+            BuilderMemory::$columns[$key]['options']['NULLABLE'] = $value;
+        } else if (BuilderMemory::$config['driver'] == 'pgsql') {
+            BuilderMemory::$columns[$key]['options']['NULLABLE'] = $value;
         }
 
         return $this;
@@ -43,7 +45,7 @@ class BuilderOptions
     {
         $key = array_key_last(BuilderMemory::$columns);
 
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             if (!$raw) $value = "'$value'";
 
             BuilderMemory::$columns[$key]['options']['ONUPDATE'] = 'ON UPDATE ' . $value;
@@ -61,7 +63,7 @@ class BuilderOptions
 
             if ($name === null) $name = 'unq_' . $column;
 
-            BuilderMemory::addConstraint($name, 'UNIQUE', "(`$column`)");
+            BuilderMemory::addConstraint($name, 'UNIQUE', sprintf('(%s)', $this->quotes($column)));
         }
 
         return $this;
@@ -74,7 +76,6 @@ class BuilderOptions
     {
         $key = array_key_last(BuilderMemory::$columns);
         $column = BuilderMemory::$columns[$key]['name'];
-        $table = BuilderMemory::$table;
 
         if ($name === null) $name = 'idx_' . $column;
 
@@ -94,7 +95,7 @@ class BuilderOptions
     {
         $key = array_key_last(BuilderMemory::$columns);
 
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             BuilderMemory::$columns[$key]['options']['POSITION'] = 'FIRST';
         }
 
@@ -108,10 +109,18 @@ class BuilderOptions
     {
         $key = array_key_last(BuilderMemory::$columns);
 
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$columns[$key]['options']['POSITION'] = "AFTER `{$column}`";
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
+            BuilderMemory::$columns[$key]['options']['POSITION'] = sprintf('AFTER %s', $this->quotes($column));
         }
 
         return $this;
+    }
+
+    private function quotes(string $string)
+    {
+        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', BuilderMemory::$config['quotes'] . '$1' . BuilderMemory::$config['quotes'], $string);
+        $string = preg_replace('/(' . preg_quote(BuilderMemory::$config['quotes']) . ')\s/', '$1 ', $string);
+
+        return $string;
     }
 }

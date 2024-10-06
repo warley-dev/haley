@@ -30,11 +30,13 @@ return new class
         $build->time('time')->nullable(true);
         $build->dates();
 
-        $build->set('set', ['um', 'dois', 'tres'])->nullable(true);
-        $build->set('enum', ['um', 'dois', 'tres'])->nullable(true);
+        // $build->set('set', ['um', 'dois', 'tres'])->nullable(true);
+        // $build->enum('enum', ['um', 'dois', 'tres'])->nullable(true);
 
-        $build->varchar('nome')->comment('helo word')->nullable(true)->default('aaaa')->unique('unique_teste');
-        $build->varchar('email')->comment('helo word')->nullable(true);
+        // testar comment nas em postgrs
+
+        $build->varchar('nome')->nullable(true)->default('aaaa')->unique('unique_teste');
+        $build->varchar('email')->nullable(true);
 
         // $build->index(['varchar',  'nome', 'email']);
         $build->foreign('int', 'outro', 'id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
@@ -44,7 +46,7 @@ return new class
         // testar indexs / add and drop (dropar index adicionais)
         // bigint
 
-        $build->dropConstrant('fk_teste');
+        // $build->dropConstrant('fk_teste');
         // $build->dropConstrant('unique_teste');
         // $build->dropColumn(['email','int','nome']);
         // $build->dropTable();

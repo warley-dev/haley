@@ -50,23 +50,25 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('database', function () {
         // refaturar connection database e configuracoes
 
+        dd(DB::scheme()->column()->rename('new', 'text', 'teste'));
+
         $count = 1;
         $data = [];
 
-        // DB::table('helo.teste_table')->delete();
+        DB::table('teste')->delete();
 
-        // while ($count < 86) {
-        //     $data[] = [
-        //         'id' => $count,
-        //         'nome' => 'test'
-        //     ];
+        while ($count < 86) {
+            $data[] = [
+                'id' => $count,
+                'nome' => 'test'
+            ];
 
-        //     $count++;
-        // }
+            $count++;
+        }
 
-        // DB::table('helo.teste_table')->insert($data);
+        DB::table('teste')->insert($data);
 
-        $query = DB::table('helo.teste_table');
+        $query = DB::table('teste');
 
         // $query->whereCompact(function () use ($query) {
         //     // $query->where('id', 1);

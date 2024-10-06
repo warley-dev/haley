@@ -26,7 +26,7 @@ class Connection
 
         $config = self::config($connection);
 
-        $drive = $config['driver'];
+        $driver = $config['driver'];
         $host = $config['host'];
         $port = $config['port'];
         $dbname = $config['database'];
@@ -36,7 +36,9 @@ class Connection
 
         if (array_key_exists('options', $config) and is_array($config['options'])) $options = $config['options'];
 
-        self::$instances[$connection] = new PDO("$drive:host=$host;port=$port;dbname=$dbname", $username, $password, $options);
+        self::$instances[$connection] = new PDO("$driver:host=$host;port=$port;dbname=$dbname", $username, $password, $options);
+
+        if($driver == 'pgsql' and !empty($config['search_path'])) self::instance($config['name'])->exec("SET search_path TO {$config['search_path']}");
 
         return self::$instances[$connection];
     }
@@ -60,6 +62,7 @@ class Connection
         if (!in_array($config['driver'], self::$drivers)) throw new ErrorException('unsupported database connection driver');
 
         $config['quotes'] = $config['driver'] == 'pgsql' ? '"' : '`';
+        $config['name'] = $connection;
 
         return $config;
     }

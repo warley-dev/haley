@@ -72,8 +72,10 @@ class Builder
 
     public function double(string $name, int $m = 10, int $d = 2)
     {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             $type = sprintf('DOUBLE(%s,%s)', $m, $d);
+        } elseif (BuilderMemory::$config['driver'] == 'pgsql') {
+            $type = 'DOUBLE PRECISION NULL';
         } else {
             return $this->typeError('double');
         }
@@ -98,8 +100,10 @@ class Builder
 
     public function float(string $name, int $m = 10, int $d = 2)
     {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             $type = sprintf('FLOAT(%s,%s)', $m, $d);
+        } elseif (BuilderMemory::$config['driver'] == 'pgsql') {
+            $type = 'REAL NULL';
         } else {
             return $this->typeError('float');
         }
@@ -150,8 +154,10 @@ class Builder
 
     public function datetime(string $name)
     {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             $type = 'DATETIME';
+        } elseif (BuilderMemory::$config['driver'] == 'pgsql') {
+            $type = 'TIMESTAMPTZ';
         } else {
             return $this->typeError('datetime');
         }
@@ -163,8 +169,10 @@ class Builder
 
     public function year(string $name)
     {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             $type = 'YEAR';
+        } else if (BuilderMemory::$config['driver'] == 'pgsql') {
+            $type = 'INT';
         } else {
             return $this->typeError('year');
         }
@@ -189,7 +197,7 @@ class Builder
 
     public function set(string $name, array $values)
     {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
 
             foreach ($values as $key => $value) $values[$key] = "'{$value}'";
 
@@ -205,7 +213,7 @@ class Builder
 
     public function enum(string $name, array $values)
     {
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
 
             foreach ($values as $key => $value) $values[$key] = "'{$value}'";
 

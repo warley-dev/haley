@@ -3,6 +3,7 @@
 namespace Haley\Database\Migration;
 
 use Haley\Collections\Config;
+use Haley\Database\Connection;
 use Haley\Database\DB;
 use Haley\Database\Migration\Builder\Builder;
 use Haley\Database\Migration\Builder\BuilderMemory;
@@ -64,9 +65,9 @@ class MigrationRunner
             return;
         }
 
-        $connection = $this->connection($this->migration->connection);
-
-        if (!$connection) return;
+        $this->config = Connection::config($this->migration->connection);
+        $this->connection = $this->config['name'];
+        $this->driver = $this->config['driver'];
 
         BuilderMemory::$connection = $this->connection;
         BuilderMemory::$config = $this->config;
@@ -112,13 +113,27 @@ class MigrationRunner
 
     private function migrationTable()
     {
-        if (!$this->scheme->table()->has('migrations')) $this->scheme->table()->create('migrations', [
-            '`id` int NOT NULL AUTO_INCREMENT',
-            '`migration` varchar(255) DEFAULT NULL UNIQUE',
-            '`count` INT',
-            '`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'PRIMARY KEY (`id`)'
-        ]);
+        if (!$this->scheme->table()->has('migrations')) {
+            if ($this->config['driver'] == 'pgsql') {
+                $columns = [
+                    $this->quotes('id') . ' SERIAL NOT NULL',
+                    $this->quotes('migration') . ' varchar(255) DEFAULT NULL UNIQUE',
+                    $this->quotes('count') . ' INT',
+                    $this->quotes('created_at') . ' timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
+                    'PRIMARY KEY (' . $this->quotes('id') . ')'
+                ];
+            } else {
+                $columns = [
+                    $this->quotes('id') . ' int NOT NULL AUTO_INCREMENT',
+                    $this->quotes('migration') . ' varchar(255) DEFAULT NULL UNIQUE',
+                    $this->quotes('count') . ' INT',
+                    $this->quotes('created_at') . ' timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
+                    'PRIMARY KEY (' . $this->quotes('id') . ')'
+                ];
+            }
+
+            $this->scheme->table()->create('migrations', $columns);
+        }
     }
 
     private function exec()
@@ -161,7 +176,9 @@ class MigrationRunner
         $columns = [];
 
         foreach ($this->build::getColumns() as $value) {
-            $columns[$value['name']] = "`{$value['name']}` {$value['query']}";
+            $nullable = $value['options']['NULLABLE'] ? 'NULL' : 'NOT NULL';
+
+            $columns[$value['name']] = sprintf('%s %s %s', $this->quotes($value['name']), $value['query'], $nullable);
         }
 
         $create = $this->scheme->table()->create($this->build::$table, $columns);
@@ -193,16 +210,26 @@ class MigrationRunner
         foreach ($this->build->getColumns() as $column) {
             if (in_array($column['name'], $this->build::$dropColumn)) continue;
 
-            if ($column['options']['POSITION'] !== null) {
-                $column['query'] .= ' ' . $column['options']['POSITION'];
-            }
+            if ($column['options']['POSITION'] !== null) $column['query'] .= ' ' . $column['options']['POSITION'];
 
             if ($this->scheme->column()->has($this->build::$table, $column['name'])) {
-                $change = $this->scheme->column()->change($this->build::$table, $column['name'], $column['query']);
+                $type = $column['query'];
+
+                if ($this->config['driver'] == 'pgsql') {
+                    $type = sprintf('%s %s', $type, $column['options']['NULLABLE'] ? 'SET NOT NULL' : 'DROP NOT NULL');
+                } else {
+                    $type = sprintf('%s %s', $type, $column['options']['NULLABLE'] ? 'NULL' : 'NOT NULL');
+                }
+
+                $change = $this->scheme->column()->change($this->build::$table, $column['name'], $type);
 
                 if ($change) $this->addInfo("column {$column['name']} changed");
             } else {
-                $create = $this->scheme->column()->create($this->build::$table, $column['name'], $column['query']);
+                $type = $column['query'];
+
+                $type = sprintf('%s %s', $type, $column['options']['NULLABLE'] ? 'NOT' : 'NOT NULL');
+
+                $create = $this->scheme->column()->create($this->build::$table, $column['name'], $type);
 
                 if ($create) $this->addInfo("column {$column['name']} added");
             }
@@ -283,35 +310,35 @@ class MigrationRunner
         ];
     }
 
-    private function connection(string|null $connection = null)
-    {
-        $config = Config::database();
-        $connections = $config['connections'] ?? [];
+    // private function connection(string|null $connection = null)
+    // {
+    //     $config = Config::database();
+    //     $connections = $config['connections'] ?? [];
 
-        if ($connection === null) {
-            $this->connection = $config['default'] ?? null;
-            $this->driver = $connections[$config['default']]['driver'] ?? null;
-            $this->config = $connections[$config['default']] ?? null;
-        } elseif (array_key_exists($connection, $connections)) {
-            $this->connection = $connection ?? null;
-            $this->driver = $connections[$connection]['driver'] ?? null;
-            $this->config = $connections[$connection] ?? null;
-        }
+    //     if ($connection === null) {
+    //         $this->connection = $config['default'] ?? null;
+    //         $this->driver = $connections[$config['default']]['driver'] ?? null;
+    //         $this->config = $connections[$config['default']] ?? null;
+    //     } elseif (array_key_exists($connection, $connections)) {
+    //         $this->connection = $connection ?? null;
+    //         $this->driver = $connections[$connection]['driver'] ?? null;
+    //         $this->config = $connections[$connection] ?? null;
+    //     }
 
-        if (empty($this->connection)) {
-            $this->addError('connection not found');
+    //     if (empty($this->connection)) {
+    //         $this->addError('connection not found');
 
-            return false;
-        }
+    //         return false;
+    //     }
 
-        if (empty($this->driver) or !in_array($this->driver ?? '', ['mysql', 'pgsql', 'mariadb'])) {
-            $this->addError('driver not found or not compatible');
+    //     if (empty($this->driver) or !in_array($this->driver ?? '', ['mysql', 'pgsql', 'mariadb'])) {
+    //         $this->addError('driver not found or not compatible');
 
-            return false;
-        }
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     public function getErrors()
     {
@@ -321,5 +348,13 @@ class MigrationRunner
     public function getInfos()
     {
         return $this->infos;
+    }
+
+    private function quotes(string $string)
+    {
+        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', $this->config['quotes'] . '$1' . $this->config['quotes'], $string);
+        $string = preg_replace('/(' . preg_quote($this->config['quotes']) . ')\s/', '$1 ', $string);
+
+        return $string;
     }
 }

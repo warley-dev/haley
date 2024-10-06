@@ -8,15 +8,15 @@ use PDO;
 
 class Constraint
 {
-    private string $connection;
-    private string $driver;
-    private string $database;
+    private array $config = [];
 
-    public function __construct(string $connection, string $drive, string $database)
+    public function __construct(array $config)
     {
-        $this->connection = $connection;
-        $this->driver = $drive;
-        $this->database = $database;
+        $this->config = $config;
+
+        if ($this->config['driver'] == 'pgsql' and !empty($config['search_path'])) {
+            $this->config['database'] = $config['search_path'];
+        }
     }
 
     /**
@@ -24,11 +24,11 @@ class Constraint
      */
     public function has(string $table, string $name)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?', [$this->config['database'], $table, $name], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return true;
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return false;
@@ -39,11 +39,11 @@ class Constraint
      */
     public function getSchema(string $table, string $name)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?', [$this->config['database'], $table, $name], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
             if (!empty($query)) return $query;
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return null;
@@ -56,11 +56,11 @@ class Constraint
     {
         $names = [];
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT CONSTRAINT_NAME as `constraint_name` FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_TYPE = ?', [$this->database, $table, $type], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
-            if (count($query)) foreach ($query as $value) $names[] = $value['constraint_name'];
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_TYPE = ?', [$this->config['database'], $table, $type], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
+            if (count($query)) foreach ($query as $value) $names[] = $value['constraint_name'] ?? $value['CONSTRAINT_NAME'];
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $names;
@@ -73,12 +73,12 @@ class Constraint
     {
         $names = [];
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT CONSTRAINT_NAME as `constraint_name` FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? AND CONSTRAINT_NAME IS NOT NULL', [$this->database, $table, $column], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? AND CONSTRAINT_NAME IS NOT NULL', [$this->config['database'], $table, $column], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($query)) foreach ($query as $value) $names[] = $value['constraint_name'];
+            if (count($query)) foreach ($query as $value) $names[] = $value['constraint_name'] ?? $value['CONSTRAINT_NAME'];
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $names;
@@ -91,11 +91,11 @@ class Constraint
     {
         $names = [];
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT CONSTRAINT_NAME as `constraint_name` FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?', [$this->database, $table], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
-            if (count($query)) foreach ($query as $value) $names[] = $value['constraint_name'];
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?', [$this->config['database'], $table], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
+            if (count($query)) foreach ($query as $value) $names[] = $value['constraint_name'] ?? $value['CONSTRAINT_NAME'];
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         if (count($names)) return $names;
@@ -109,12 +109,12 @@ class Constraint
      */
     public function drop(string $table, string $name)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             if ($name == 'PRIMARY') return $this->dropPrimaryKey($table);
 
-            DB::query(sprintf('ALTER TABLE `%s` DROP CONSTRAINT `%s`', $table, $name), connection: $this->connection)->fetch(PDO::FETCH_OBJ);
+            DB::query(sprintf('ALTER TABLE %s DROP CONSTRAINT %s', $this->quotes($table), $this->quotes($name)), connection: $this->config['name'])->fetch(PDO::FETCH_OBJ);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return !$this->has($table, $name);
@@ -125,10 +125,10 @@ class Constraint
      */
     public function create(string $table, string $name, string $type, string $value)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE `%s` ADD CONSTRAINT `%s` %s %s', $table, $name, $type, $value), connection: $this->connection);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s ADD CONSTRAINT %s %s %s', $this->quotes($table), $this->quotes($name), $type, $value), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $this->has($table, $name);
@@ -140,11 +140,11 @@ class Constraint
     {
         $old = $this->getSchema($table, $name);
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             if ($this->has($table, $name)) $this->drop($table, $name);
-            DB::query(sprintf('ALTER TABLE `%s` ADD CONSTRAINT `%s` %s %s', $table, $name, $type, $value), connection: $this->connection);
+            DB::query(sprintf('ALTER TABLE %s ADD CONSTRAINT %s %s %s', $this->quotes($table), $this->quotes($name), $type, $value), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         $new = $this->getSchema($table, $name);
@@ -164,10 +164,10 @@ class Constraint
      */
     public function setPrimaryKey(string $table, string $column)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE `%s` ADD PRIMARY KEY `%s`(`%s`)', $table, 'primary_' . $table . '_' . $column, $column), connection: $this->connection);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s ADD PRIMARY KEY %s(%s)', $this->quotes($table), $this->quotes('primary_' . $table . '_' . $column), $this->quotes($column)), connection: $this->config['name']);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $this->getPrimaryKey($table) == $column;
@@ -179,11 +179,12 @@ class Constraint
      */
     public function getPrimaryKey(string $table)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ? AND CONSTRAINT_NAME = ?', [$table, $this->database, 'PRIMARY'], $this->connection)->fetch(PDO::FETCH_OBJ);
-            if (!empty($query)) return $query->COLUMN_NAME;
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query("SELECT column_name FROM information_schema.key_column_usage WHERE table_name = ? AND TABLE_SCHEMA = ? AND constraint_name = (SELECT constraint_name FROM information_schema.table_constraints WHERE table_name = ? AND constraint_type = 'PRIMARY KEY' AND TABLE_SCHEMA = ?)", [$table, $this->config['database'], $table, $this->config['database']],  $this->config['name'])->fetch(PDO::FETCH_ASSOC);
+
+            if (!empty($query)) return $query['COLUMN_NAME'] ?? $query['column_name'];
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return null;
@@ -195,11 +196,9 @@ class Constraint
      */
     public function dropPrimaryKey(string $table)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE `%s` DROP PRIMARY KEY', $table), connection: $this->connection)->fetch(PDO::FETCH_OBJ);
-        } else {
-            $this->driverError($this->driver);
-        }
+        $names = $this->getNamesByType($table, 'PRIMARY KEY');
+
+        foreach ($names as $name) $this->drop($table, $name);
 
         return $this->getPrimaryKey($table) === null;
     }
@@ -209,12 +208,12 @@ class Constraint
      */
     public function hasIndex(string $table, string $name)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $query = DB::query('SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?', [$this->database, $table, $name], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $query = DB::query('SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?', [$this->config['database'], $table, $name], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
 
             if (!empty($query)) return true;
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return false;
@@ -225,10 +224,10 @@ class Constraint
      */
     public function dropIndex(string $table, string $name)
     {
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('DROP INDEX `%s` ON `%s`', $name, $table), [], $this->connection)->fetch(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            DB::query(sprintf('DROP INDEX %s ON %s', $this->quotes($name), $this->quotes($table)), [], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return !$this->hasIndex($table, $name);
@@ -242,22 +241,22 @@ class Constraint
     {
         if (is_string($column)) $column = [$column];
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            foreach ($column as $key => $value) $column[$key] = '`' . $value . '`';
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            foreach ($column as $key => $value) $column[$key] = $this->quotes($value);
 
             $column = implode(',', $column);
 
             if ($type == 'BTREE') {
-                $query = sprintf('CREATE INDEX `%s` ON `%s`(%s)', $name, $table, $column);
+                $query = sprintf('CREATE INDEX %s ON %s(%s)', $this->quotes($name), $this->quotes($table), $column);
             } elseif ($type == 'FULLTEXT') {
-                $query = sprintf('CREATE FULLTEXT INDEX `%s` ON `%s`(%s)', $name, $table, $column);
+                $query = sprintf('CREATE FULLTEXT INDEX %s ON %s(%s)', $this->quotes($name), $this->quotes($table), $column);
             } else if ($type == 'HASH') {
-                $query = sprintf('CREATE INDEX `%s` ON `%s`(%s) USING HASH', $name, $table, $column);
+                $query = sprintf('CREATE INDEX %s ON %s(%s) USING HASH', $this->quotes($name), $this->quotes($table), $column);
             }
 
-            DB::query($query, [], $this->connection)->fetch(PDO::FETCH_ASSOC);
+            DB::query($query, [], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $this->hasIndex($table, $name);
@@ -270,8 +269,8 @@ class Constraint
     {
         $data = [];
 
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            $result = DB::query('SELECT INDEX_NAME, COLUMN_NAME, INDEX_TYPE FROM INFORMATION_SCHEMA.STATISTICS WHERE INDEX_NAME != ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND NULLABLE = ?', ['PRIMARY', $this->database, $table, 'YES'], $this->connection)->fetchAll(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            $result = DB::query('SELECT INDEX_NAME, COLUMN_NAME, INDEX_TYPE FROM INFORMATION_SCHEMA.STATISTICS WHERE INDEX_NAME != ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND NULLABLE = ?', ['PRIMARY', $this->config['database'], $table, 'YES'], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
 
             if (count($result)) foreach ($result as $value) $data[] = [
                 'name' => $value['INDEX_NAME'],
@@ -279,7 +278,7 @@ class Constraint
                 'type' => $value['INDEX_TYPE']
             ];
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $data;
@@ -290,32 +289,53 @@ class Constraint
      */
     public function setId(string $table, string $column, string|null $comment = null)
     {
+        $comment = $comment ? " COMMENT '$comment'" : '';
+
         $atual = $this->getPrimaryKey($table);
 
         if ($atual == $column) return false;
 
-        $has_column = DB::scheme($this->connection)->column()->has($table, $column);
-
-        if (in_array($this->driver, ['mysql', 'pgsql', 'mariadb'])) {
-            if ($atual) {
-                DB::scheme($this->connection)->column()->change($table, $atual, 'INT NOT NULL FIRST');
-                $this->dropPrimaryKey($table);
+        if ($atual) {
+            if ($this->config['driver'] == 'pgsql') {
+                DB::scheme($this->config['name'])->column()->change($table, $atual, 'INT');
+            } else {
+                DB::scheme($this->config['name'])->column()->change($table, $atual, 'INT NOT NULL FIRST');
             }
 
-            $comment = $comment ? " COMMENT '$comment'" : '';
+            $this->dropPrimaryKey($table);
+        }
 
+        $has_column = DB::scheme($this->config['name'])->column()->has($table, $column);
+
+        if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
             if ($has_column) {
-                if ($atual !== $column) $this->setPrimaryKey($table, $column);
+                DB::scheme($this->config['name'])->column()->change($table, $column, 'INT NOT NULL AUTO_INCREMENT FIRST' . $comment);
 
-                DB::scheme($this->connection)->column()->change($table, $column, 'INT NOT NULL AUTO_INCREMENT FIRST' . $comment);
+                if ($atual !== $column) $this->setPrimaryKey($table, $column);
             } else {
-                DB::scheme($this->connection)->column()->create($table, $column, 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST' . $comment);
+                DB::scheme($this->config['name'])->column()->create($table, $column, 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST' . $comment);
+            }
+        } else if ($this->config['driver'] == 'pgsql') {
+            if ($has_column) {
+                DB::scheme($this->config['name'])->column()->change($table, $column, 'SERIAL' . $comment);
+
+                if ($atual !== $column) $this->setPrimaryKey($table, $column);
+            } else {
+                DB::scheme($this->config['name'])->column()->create($table, $column, 'SERIAL PRIMARY KEY' . $comment);
             }
         } else {
-            $this->driverError($this->driver);
+            $this->driverError($this->config['driver']);
         }
 
         return $this->getPrimaryKey($table) == $column;
+    }
+
+    private function quotes(string $string)
+    {
+        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', $this->config['quotes'] . '$1' . $this->config['quotes'], $string);
+        $string = preg_replace('/(' . preg_quote($this->config['quotes']) . ')\s/', '$1 ', $string);
+
+        return $string;
     }
 
     private function driverError(string $driver)
