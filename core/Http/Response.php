@@ -13,13 +13,17 @@ class Response
     {
         try {
             header("$name: $value");
+
+            return true;
         } catch (Throwable) {
         }
+
+        return false;
     }
 
     public static function status(int $status)
     {
-        http_response_code($status);
+        return http_response_code($status);
     }
 
     public static function abort(int $status = 404, string|null $mesage = null)
@@ -31,12 +35,10 @@ class Response
         if ($mesage === null) $mesage = HttpCodes::get($status);
 
         if (defined('ROUTER_NOW')) {
-            if ($action = ROUTER_NOW['error']) {
-                return executeCallable($action, [
-                    'status' => $status,
-                    'mesage' => $mesage
-                ]);
-            }
+            if ($action = ROUTER_NOW['error']) return executeCallable($action, [
+                'status' => $status,
+                'mesage' => $mesage
+            ]);
         }
 
         if (file_exists(directoryResources('views/error/' . $status . '.view.php'))) {

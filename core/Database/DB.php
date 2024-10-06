@@ -22,8 +22,6 @@ class DB
      */
     public static function query(string $query, array $bindparams = [], string|null $connection = null)
     {
-        if ($connection === null) $connection = Config::database('default');
-
         $instance = Connection::instance($connection);
         $query = $instance->prepare($query);
 
@@ -60,7 +58,7 @@ class DB
     /**
      * Dump database
      */
-    public static function dump(string $path, string|null $connection) {
+    // public static function dump(string $path, string|null $connection) {
 
-    }
+    // }
 }

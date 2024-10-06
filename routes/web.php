@@ -50,8 +50,15 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::get('database', function () {
         // refaturar connection database e configuracoes
 
+        dd(DB::table('teste_table')->get());
 
-        dd(DB::connection('pgsql'));
+
+        // dd(DB::connection('pgsql'));
         // dd(DB::connection('mariadb'));
     });
+
+    Route::get('route', function () {
+        // refatorar CONSTANTES route verificar middlewares e criar classe de variaveis do framework
+        // adicionar opcao route no middlewares
+    })->name('route');
 });

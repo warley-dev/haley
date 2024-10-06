@@ -6,8 +6,9 @@ use InvalidArgumentException;
 
 class BuilderProcessor
 {
-    public array $params = [];
-    public array $bindparams = [];
+    private array $config = [];
+    private array $params = [];
+    private array $bindparams = [];
 
     private string $table = '';
     private string $table_raw = '';
@@ -58,6 +59,12 @@ class BuilderProcessor
         '~~*',
         '!~~*'
     ];
+
+    public function __construct(array $config, array $params)
+    {
+        $this->config = $config;
+        $this->params = $params;
+    }
 
     private function table(array $params)
     {
@@ -565,15 +572,18 @@ class BuilderProcessor
         elseif ($command == 'insert') $query = "INSERT $ignore INTO $table $insert";
         elseif ($command == 'update') $query = "UPDATE $ignore $table $join $update $where $raw $limit";
         elseif ($command == 'delete') $query = "DELETE FROM $table $table_raw $join $where $raw $limit";
-        else return '';
+        else $query = '';
 
-        return trim(preg_replace('/( ){2,}/', '$1', $query));
+        return [
+            'query' => trim(preg_replace('/( ){2,}/', '$1', $query)),
+            'bindparams' => $this->bindparams
+        ];
     }
 
-    private function quotes(string $string, string $first = '`', string $last = '`', int|null $limit = null)
+    private function quotes(string $string)
     {
-        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', $first . '$1' . $last, $string);
-        $string = preg_replace('/(' . preg_quote($first) . ')\s/', '$1 ', $string);
+        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', $this->config['quotes'] . '$1' . $this->config['quotes'], $string);
+        $string = preg_replace('/(' . preg_quote($this->config['quotes']) . ')\s/', '$1 ', $string);
 
         return str_replace([' as ', ' aS ', ' aS '], ' AS ', $string);
     }

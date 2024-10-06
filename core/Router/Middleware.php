@@ -22,4 +22,9 @@ class Middleware
 
         return redirect($destination, $status);
     }
+
+    public function route()
+    {
+        // return new 
+    }
 }

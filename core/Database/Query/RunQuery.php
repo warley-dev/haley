@@ -6,7 +6,7 @@ use Haley\Database\Connection;
 
 class RunQuery
 {
-    public function select(string $query, array $bindparams, string $connection, bool $all = true, $count = false)
+    public function select(string $query, array $bindparams, string|null $connection, bool $all = true, $count = false)
     {
         $instance = Connection::instance($connection);
         $query = $instance->prepare($query);
@@ -31,7 +31,7 @@ class RunQuery
         }
     }
 
-    public function insert(string $query, array $bindparams, string $connection, $get_id = false)
+    public function insert(string $query, array $bindparams, string|null $connection, $get_id = false)
     {
         $instance = Connection::instance($connection);
         $query = $instance->prepare($query);
@@ -47,14 +47,12 @@ class RunQuery
 
         $query->execute();
 
-        if ($get_id) {
-            return $instance->lastInsertId();
-        }
+        if ($get_id) return $instance->lastInsertId();
 
         return $query->rowCount();
     }
 
-    public function update(string $query, array $bindparams, string $connection)
+    public function update(string $query, array $bindparams, string|null $connection)
     {
         $instance = Connection::instance($connection);
         $query = $instance->prepare($query);
@@ -73,7 +71,7 @@ class RunQuery
         return $query->rowCount();
     }
 
-    public function delete(string $query, array $bindparams, string $connection)
+    public function delete(string $query, array $bindparams, string|null $connection)
     {
         $instance = Connection::instance($connection);
         $query = $instance->prepare($query);

@@ -2,12 +2,13 @@
 
 namespace Haley\Database\Query;
 
+use Haley\Database\Connection;
 use InvalidArgumentException;
 
 class BuilderController
 {
-    protected string $query;
-    protected array $bindparams = [];
+    // protected string $query;
+    // protected array $bindparams = [];
     protected array $params = [];
 
     protected function add(string $action, mixed $params, bool $array = true)
@@ -26,16 +27,12 @@ class BuilderController
         return array_key_last($this->params[$action]);
     }
 
-    protected function executeProcessor(string $command, string $driver)
+    protected function executeProcessor(string $command, string|null $connection = null)
     {
-        if (!in_array($driver, ['mysql', 'pgsql', 'mariadb'])) {
-            throw new InvalidArgumentException("Drive not found! ( {$driver} )");
-        }
+        $config = Connection::config($connection);
 
-        $syntax = new BuilderProcessor;
-        $syntax->params = $this->params;
+        $builder = new BuilderProcessor($config, $this->params);
 
-        $this->query = $syntax->query($command);
-        $this->bindparams = $syntax->bindparams;
+        return $builder->query($command);
     }
 }
