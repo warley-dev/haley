@@ -74,9 +74,6 @@ class Column
      */
     public function create(string $table, string $column, string $type)
     {
-
-        dd($type);
-
         if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('ALTER TABLE %s ADD COLUMN %s %s', $this->quotes($table), $column, $type), connection: $this->config['name']);
         } else {

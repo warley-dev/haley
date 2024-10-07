@@ -2,7 +2,6 @@
 
 namespace Haley\Database\Migration;
 
-use Haley\Collections\Config;
 use Haley\Database\Connection;
 use Haley\Database\DB;
 use Haley\Database\Migration\Builder\BuildColumn;
@@ -70,16 +69,9 @@ class MigrationRunner
         $this->connection = $this->config['name'];
         $this->column = new BuildColumn($this->config, $this->migration->table);
 
-        BuilderMemory::$connection = $this->connection;
-        BuilderMemory::$config = $this->config;
-        BuilderMemory::$table = $this->migration->table;
-
-        $builder = new Builder();
-
-        $this->build = new BuilderMemory;
-        $this->build::compileForeigns();
-
+        $this->build = new BuilderMemory($this->connection, $this->config, $this->migration->table);
         $this->scheme = DB::scheme($this->build::$connection);
+
         $this->migrationTable();
 
         // check migration db
@@ -100,9 +92,13 @@ class MigrationRunner
             ]);
         }
 
+        $builder = new Builder();
+
         try {
             if ($type === 'up') $this->migration->up($builder);
             if ($type === 'down') $this->migration->down($builder);
+
+            $this->build::compileForeigns();
 
             $this->exec();
         } catch (Throwable $error) {
@@ -133,16 +129,14 @@ class MigrationRunner
                 ];
             }
 
-            $create = $this->scheme->table()->create('migrations', $columns);
-
-            dd($create);
+            $this->scheme->table()->create('migrations', $columns);
         }
     }
 
     private function exec()
     {
         // drop table
-        foreach ($this->build::$dropTable as $table) {
+        foreach ($this->build::$dropTables as $table) {
             if ($this->scheme->table()->has($table)) {
                 try {
                     $drop = $this->scheme->table()->drop($table);
@@ -161,7 +155,7 @@ class MigrationRunner
 
         if ($this->build::$table === null) return;
 
-        if (in_array($this->build::$table, $this->build::$dropTable)) return;
+        if (in_array($this->build::$table, $this->build::$dropTables)) return;
 
         // create or edit
         if (!$this->scheme->table()->has($this->build::$table)) {
@@ -186,8 +180,6 @@ class MigrationRunner
             $others = array_merge($others, $querys['others']);
         }
 
-        // dd($columns);
-
         $create = $this->scheme->table()->create($this->build::$table, $columns);
 
         if ($create) {
@@ -202,7 +194,7 @@ class MigrationRunner
     private function editTable()
     {
         // drop coluns
-        foreach ($this->build::$dropColumn as $column) {
+        foreach ($this->build::$dropColumns as $column) {
             if ($this->scheme->column()->has($this->build::$table, $column)) {
                 try {
                     $drop = $this->scheme->column()->drop($this->build::$table, $column);
@@ -221,12 +213,10 @@ class MigrationRunner
 
         // change or create coluns
         foreach ($this->build->getColumns() as $column) {
-            if (in_array($column['name'], $this->build::$dropColumn)) continue;
+            if (in_array($column['name'], $this->build::$dropColumns)) continue;
 
             if ($this->scheme->column()->has($this->build::$table, $column['name'])) {
                 $querys = $this->column->edit($column['name'], $column['type'], $column['options'], false);
-
-                dd($querys);
 
                 foreach ($querys['columns'] as $type) {
                     $change = $this->scheme->column()->change($this->build::$table, $column['name'], $type);
@@ -237,9 +227,6 @@ class MigrationRunner
                         DB::connection($this->connection)->query($query)->execute();
                     }
                 }
-
-
-
             } else {
                 $querys = $this->column->create($column['name'], $column['type'], $column['options'], false);
 
@@ -258,7 +245,7 @@ class MigrationRunner
         }
 
         // rename columns
-        foreach ($this->build::$rename as $column => $to) {
+        foreach ($this->build::$renames as $column => $to) {
             if ($this->scheme->column()->has($this->build::$table, $column) and !$this->scheme->column()->has($this->build::$table, $to)) {
                 $renamed = $this->scheme->column()->rename($this->build::$table, $column, $to);
 
@@ -269,17 +256,8 @@ class MigrationRunner
 
     private function runConstraints()
     {
-        // column id primary key
-        if (count($this->build::$id)) {
-            if (!in_array($this->build::$id['name'], $this->build::$dropColumn)) {
-                $set = $this->scheme->constraint()->setId($this->build::$table, $this->build::$id['name'], $this->build::$id['comment']);
-
-                if ($set) $this->addInfo("primary key {$this->build::$id['name']} defined");
-            }
-        }
-
         // drop constraints
-        foreach ($this->build::$dropConstraint as $constraint) {
+        foreach ($this->build::$dropConstraints as $constraint) {
             if ($this->scheme->constraint()->has($this->build::$table, $constraint)) {
                 $drop = $this->scheme->constraint()->drop($this->build::$table, $constraint);
 
@@ -287,9 +265,25 @@ class MigrationRunner
             }
         }
 
+        // drop indexs
+        foreach($this->build::$dropIndexs as $index) {
+            $drop = $this->scheme->constraint()->dropIndex($this->build::$table, $index);
+
+            if ($drop) $this->addInfo("index $index droped");
+        }
+
+        // id
+        if ($this->build::$id !== null) {
+            if (!in_array($this->build::$id, $this->build::$dropColumns)) {
+                $set = $this->scheme->constraint()->setId($this->build::$table, $this->build::$id);
+
+                if ($set) $this->addInfo("primary key {$this->build::$id} defined");
+            }
+        }
+
         // set constraints
         foreach ($this->build::$constraints as $constraints) {
-            if (in_array($constraints['name'], $this->build::$dropConstraint)) continue;
+            if (in_array($constraints['name'], $this->build::$dropConstraints)) continue;
 
             if (!$this->scheme->constraint()->has($this->build::$table, $constraints['name'])) {
                 $create = $this->scheme->constraint()->create($this->build::$table, $constraints['name'], $constraints['type'], $constraints['value']);
@@ -301,8 +295,8 @@ class MigrationRunner
         }
 
         // set indexes
-        foreach ($this->build::$index as $index) {
-            if (in_array($index['name'], $this->build::$dropIndex)) continue;
+        foreach ($this->build::$indexs as $index) {
+            if (in_array($index['name'], $this->build::$dropIndexs)) continue;
 
             $has = $this->scheme->constraint()->hasIndex($this->build::$table, $index['name']);
 
@@ -341,8 +335,6 @@ class MigrationRunner
     {
         return $this->infos;
     }
-
-    private function buildColumnCreate() {}
 
     private function quotes(string $string)
     {

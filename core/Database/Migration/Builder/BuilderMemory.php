@@ -6,21 +6,28 @@ class BuilderMemory
 {
     public static string|null $connection = null;
     public static array|null $config = null;
-
     public static string|null $table = null;
 
-    public static array $id = [];
+    public static string|null $id = null;
     public static array $columns = [];
     public static array $constraints = [];
 
-    public static array $rename = [];
-    public static array $foreign = [];
-    public static array $index = [];
+    public static array $renames = [];
+    public static array $foreigns = [];
+    public static array $indexs = [];
 
-    public static array $dropTable = [];
-    public static array $dropIndex = [];
-    public static array $dropColumn = [];
-    public static array $dropConstraint = [];
+    public static array $dropTables = [];
+    public static array $dropIndexs = [];
+    public static array $dropColumns = [];
+    public static array $dropConstraints = [];
+
+
+    public function __construct(string $connection, array $config, string|null $table)
+    {
+        self::$connection = $connection;
+        self::$config = $config;
+        self::$table = $table;
+    }
 
     public static function addColumn(string $name, string $type, int|string|array|null $paramns = null)
     {
@@ -35,9 +42,7 @@ class BuilderMemory
                     'DEFAULT' => null,
                     'ONUPDATE' => null,
                     'COMMENT' => null,
-                    'AUTOINCREMENT' => false,
-                    'POSITION' => null,
-                    'PRIMARY' => false
+                    'POSITION' => null
                 ]
             ];
         }
@@ -45,7 +50,7 @@ class BuilderMemory
 
     static public function compileForeigns()
     {
-        foreach (self::$foreign as $value) {
+        foreach (self::$foreigns as $value) {
             $name = $value['name'];
             $column = $value['column'];
             $reference_table = $value['reference_table'];
@@ -53,12 +58,13 @@ class BuilderMemory
             $on_delete = $value['on_delete'];
             $on_update = $value['on_update'];
 
+
             if (in_array(self::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-                $value = sprintf('(`%s`) REFERENCES `%s`(`%s`)', $column, $reference_table, $reference_column);
+                $value = sprintf('(%s) REFERENCES %s(%s)', self::quotes($column), self::quotes($reference_table), self::quotes($reference_column));
 
                 if ($on_delete !== null) $value .= ' ' . $on_delete;
                 if ($on_update !== null) $value .= ' ' . $on_update;
-                if ($name == null) $name = sprintf('fk_%s_%s', self::$table, $column);
+                if ($name == null) $name = sprintf('foreign_%s', $reference_table);
 
                 self::addConstraint($name, 'FOREIGN KEY', trim(preg_replace('/( ){2,}/', '$1', $value)));
             }
@@ -71,7 +77,7 @@ class BuilderMemory
 
         if (!empty(self::$columns)) {
             foreach (self::$columns as $key => $value) {
-                if (in_array($value['name'], self::$rename)) continue;
+                if (in_array($value['name'], self::$renames)) continue;
 
                 $columns[$key] = $value;
             }
@@ -89,19 +95,27 @@ class BuilderMemory
         ];
     }
 
+    static private function quotes(string $string)
+    {
+        $string = preg_replace('/\b(?!as\b)(\w+)\b/i', BuilderMemory::$config['quotes'] . '$1' . BuilderMemory::$config['quotes'], $string);
+        $string = preg_replace('/(' . preg_quote(BuilderMemory::$config['quotes']) . ')\s/', '$1 ', $string);
+
+        return $string;
+    }
+
     static public function reset()
     {
         self::$connection = null;
         self::$config = null;
         self::$table = null;
-        self::$id = [];
+        self::$id = null;
         self::$columns = [];
         self::$constraints = [];
-        self::$rename = [];
-        self::$foreign = [];
-        self::$index = [];
-        self::$dropTable = [];
-        self::$dropColumn = [];
-        self::$dropConstraint = [];
+        self::$renames = [];
+        self::$foreigns = [];
+        self::$indexs = [];
+        self::$dropTables = [];
+        self::$dropColumns = [];
+        self::$dropConstraints = [];
     }
 }

@@ -110,8 +110,6 @@ class Constraint
     public function drop(string $table, string $name)
     {
         if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            if ($name == 'PRIMARY') return $this->dropPrimaryKey($table);
-
             DB::query(sprintf('ALTER TABLE %s DROP CONSTRAINT %s', $this->quotes($table), $this->quotes($name)), connection: $this->config['name'])->fetch(PDO::FETCH_OBJ);
         } else {
             $this->driverError($this->config['driver']);
@@ -159,13 +157,53 @@ class Constraint
     }
 
     /**
+     * Set column id - Primary key
+     */
+    public function setId(string $table, string $column)
+    {
+        $atual = $this->getPrimaryKey($table);
+
+        if ($atual == $column) return false;
+
+        if ($atual) {
+            if ($this->config['driver'] != 'pgsql') {
+                DB::scheme($this->config['name'])->column()->change($table, $atual, 'INT NOT NULL');
+            } else {
+                // DB::scheme($this->config['name'])->column()->change($table, $atual, 'TYPE SERIAL');
+            }
+
+            $this->dropPrimaryKey($table);
+        }
+
+        $exists = DB::scheme($this->config['name'])->column()->has($table, $column);
+
+        if ($exists) {
+            if ($this->config['driver'] != 'pgsql') {
+                DB::scheme($this->config['name'])->column()->change($table, $column, 'INT NOT NULL AUTO_INCREMENT FIRST');
+                if ($atual !== $column) $this->setPrimaryKey($table, $column);
+            } else {
+                DB::scheme($this->config['name'])->column()->change($table, $column, 'TYPE SERIAL');
+            }
+        } else {
+
+            if ($this->config['driver'] != 'pgsql') {
+                DB::scheme($this->config['name'])->column()->create($table, $column, 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST');
+            } else {
+                DB::scheme($this->config['name'])->column()->create($table, $column, 'SERIAL PRIMARY KEY');
+            }
+        }
+
+        return $this->getPrimaryKey($table) == $column;
+    }
+
+    /**
      * Define primary key of the table
      * @return bool
      */
     public function setPrimaryKey(string $table, string $column)
     {
         if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            DB::query(sprintf('ALTER TABLE %s ADD PRIMARY KEY %s(%s)', $this->quotes($table), $this->quotes('primary_' . $table . '_' . $column), $this->quotes($column)), connection: $this->config['name']);
+            DB::query(sprintf('ALTER TABLE %s ADD PRIMARY KEY %s(%s)', $this->quotes($table), 'PRIMARY', $this->quotes($column)), connection: $this->config['name']);
         } else {
             $this->driverError($this->config['driver']);
         }
@@ -196,9 +234,13 @@ class Constraint
      */
     public function dropPrimaryKey(string $table)
     {
-        $names = $this->getNamesByType($table, 'PRIMARY KEY');
+        if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
+            DB::query(sprintf('ALTER TABLE %s DROP PRIMARY KEY', $this->quotes($table)), [],  $this->config['name'])->fetch(PDO::FETCH_ASSOC);
+        } else if ($this->config['driver'] == 'pgsql') {
+            $names = $this->getNamesByType($table, 'PRIMARY KEY');
 
-        foreach ($names as $name) $this->drop($table, $name);
+            foreach ($names as $name) $this->drop($table, $name);
+        }
 
         return $this->getPrimaryKey($table) === null;
     }
@@ -208,8 +250,12 @@ class Constraint
      */
     public function hasIndex(string $table, string $name)
     {
-        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (in_array($this->config['driver'], ['mysql',  'mariadb'])) {
             $query = DB::query('SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?', [$this->config['database'], $table, $name], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
+
+            if (!empty($query)) return true;
+        } else if ($this->config['driver'] == 'pgsql') {
+            $query = DB::query('SELECT indexname FROM pg_indexes WHERE schemaname = ? AND tablename = ? AND indexname = ?', [$this->config['database'], $table, $name], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
 
             if (!empty($query)) return true;
         } else {
@@ -224,8 +270,12 @@ class Constraint
      */
     public function dropIndex(string $table, string $name)
     {
-        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+        if (!$this->hasIndex($table, $name)) return false;
+
+        if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
             DB::query(sprintf('DROP INDEX %s ON %s', $this->quotes($name), $this->quotes($table)), [], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
+        } else if ($this->config['driver'] == 'pgsql') {
+            DB::query(sprintf('DROP INDEX IF EXISTS %s CASCADE', $this->quotes($name)), [], $this->config['name'])->fetch(PDO::FETCH_ASSOC);
         } else {
             $this->driverError($this->config['driver']);
         }
@@ -269,65 +319,19 @@ class Constraint
     {
         $data = [];
 
-        if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            $result = DB::query('SELECT INDEX_NAME, COLUMN_NAME, INDEX_TYPE FROM INFORMATION_SCHEMA.STATISTICS WHERE INDEX_NAME != ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND NULLABLE = ?', ['PRIMARY', $this->config['database'], $table, 'YES'], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
+        if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
+            $result = DB::query('SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE INDEX_NAME != ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND NULLABLE = ?', ['PRIMARY', $this->config['database'], $table, 'YES'], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($result)) foreach ($result as $value) $data[] = [
-                'name' => $value['INDEX_NAME'],
-                'column' => $value['COLUMN_NAME'],
-                'type' => $value['INDEX_TYPE']
-            ];
+            foreach ($result as $value) $data[] = $value['INDEX_NAME'];
+        } else if ($this->config['driver'] == 'pgsql') {
+            $result = DB::query('SELECT indexname FROM pg_indexes WHERE schemaname = ? AND tablename = ?', [$this->config['database'], $table], $this->config['name'])->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($result as $value)  $data[] = $value['indexname'];
         } else {
             $this->driverError($this->config['driver']);
         }
 
         return $data;
-    }
-
-    /**
-     * Set column id - Primary key
-     */
-    public function setId(string $table, string $column, string|null $comment = null)
-    {
-        $comment = $comment ? " COMMENT '$comment'" : '';
-
-        $atual = $this->getPrimaryKey($table);
-
-        if ($atual == $column) return false;
-
-        if ($atual) {
-            if ($this->config['driver'] == 'pgsql') {
-                DB::scheme($this->config['name'])->column()->change($table, $atual, 'TYPE INT');
-            } else {
-                DB::scheme($this->config['name'])->column()->change($table, $atual, 'INT NOT NULL FIRST');
-            }
-
-            $this->dropPrimaryKey($table);
-        }
-
-        $has_column = DB::scheme($this->config['name'])->column()->has($table, $column);
-
-        if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
-            if ($has_column) {
-                DB::scheme($this->config['name'])->column()->change($table, $column, 'INT NOT NULL AUTO_INCREMENT FIRST' . $comment);
-
-                if ($atual !== $column) $this->setPrimaryKey($table, $column);
-            } else {
-                DB::scheme($this->config['name'])->column()->create($table, $column, 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST' . $comment);
-            }
-        } else if ($this->config['driver'] == 'pgsql') {
-            if ($has_column) {
-                DB::scheme($this->config['name'])->column()->change($table, $column, 'TYPE SERIAL' . $comment);
-
-                if ($atual !== $column) $this->setPrimaryKey($table, $column);
-            } else {
-                DB::scheme($this->config['name'])->column()->create($table, $column, 'SERIAL PRIMARY KEY' . $comment);
-            }
-        } else {
-            $this->driverError($this->config['driver']);
-        }
-
-        return $this->getPrimaryKey($table) == $column;
     }
 
     private function quotes(string $string)

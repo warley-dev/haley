@@ -9,13 +9,12 @@ return new class
 
     public function up(Builder $build)
     {
-        // $build->dropTable(['test','outro','aaa']);
+        // $build->dropTables(['test','outro','aaa']);
 
         // $build->id();
 
-        // $build->int('id')->outoIncrement()->primaryKey()->nullable(false);
+        $build->id('teste_change_id');
         $build->varchar('varchar')->after('id')->comment('comment test')->nullable(false)->unique()->default('test def');
-
 
         $build->varchar('helo_word')->comment('helo_word comment');
 
@@ -47,20 +46,19 @@ return new class
         // $build->index(['varchar',  'nome', 'email']);
         // $build->foreign('int', 'outro', 'id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
 
-
         // continuar:
         // testar indexs / add and drop (dropar index adicionais)
         // bigint
 
         // $build->dropConstrant('fk_teste');
         // $build->dropConstrant('unique_teste');
-        // $build->dropColumn(['email','int','nome']);
-        // $build->dropTable();
+        // $build->dropColumns(['email','int','nome']);
+        // $build->dropTables();
         // $build->rename('varchaae','teste_rename');
     }
 
     public function down(Builder $build)
     {
-        $build->dropTable();
+        $build->dropTables();
     }
 };

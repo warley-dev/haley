@@ -6,16 +6,13 @@ use InvalidArgumentException;
 
 class Builder
 {
-    public function id(string $name = 'id', string|null $comment = null)
+    public function id(string $name = 'id')
     {
-        if (count(BuilderMemory::$id)) {
+        if (BuilderMemory::$id !== null) {
             throw new InvalidArgumentException('Table ' . BuilderMemory::$table . ' must have only one primary key');
         }
 
-        BuilderMemory::$id = [
-            'name' => $name,
-            'comment' => $comment
-        ];
+        BuilderMemory::$id = $name;
     }
 
     public function varchar(string $name, int $size = 255)
@@ -230,7 +227,7 @@ class Builder
     public function foreign(string $column, string $reference_table, string $reference_column)
     {
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$foreign[] = [
+            BuilderMemory::$foreigns[] = [
                 'column' => $column,
                 'reference_table' => $reference_table,
                 'reference_column' => $reference_column,
@@ -266,7 +263,7 @@ class Builder
         if ($name === null) $name = 'idx_query_' . BuilderMemory::$table;
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$index[$name] = [
+            BuilderMemory::$indexs[$name] = [
                 'name' => $name,
                 'type' => $type,
                 'column' => $column
@@ -279,7 +276,7 @@ class Builder
     public function rename(string $column, string $to)
     {
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$rename[$column] = $to;
+            BuilderMemory::$renames[$column] = $to;
         } else {
             return $this->typeError('rename');
         }
@@ -301,43 +298,43 @@ class Builder
         if (is_string($name)) $name = [$name];
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropConstraint = array_merge($name, BuilderMemory::$dropConstraint);
+            BuilderMemory::$dropConstraints = array_merge($name, BuilderMemory::$dropConstraints);
         } else {
             return $this->typeError('dropConstrant');
         }
     }
 
-    public function dropColumn(string|array $column)
+    public function dropColumns(string|array $column)
     {
         if (is_string($column)) $column = [$column];
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropColumn = array_merge($column, BuilderMemory::$dropColumn);
+            BuilderMemory::$dropColumns = array_merge($column, BuilderMemory::$dropColumns);
         } else {
-            return $this->typeError('dropColumn');
+            return $this->typeError('dropColumns');
         }
     }
 
-    public function dropTable(string|array|null $table = null)
+    public function dropTables(string|array|null $table = null)
     {
         if ($table === null) $table = BuilderMemory::$table;
         if (is_string($table)) $table = [$table];
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropTable = array_merge(BuilderMemory::$dropTable, $table);
+            BuilderMemory::$dropTables = array_merge(BuilderMemory::$dropTables, $table);
         } else {
-            return $this->typeError('dropTable');
+            return $this->typeError('dropTables');
         }
     }
 
-    public function dropIndex(string|array $name)
+    public function dropIndexs(string|array $name)
     {
         if (is_string($name)) $name = [$name];
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$dropIndex = array_merge($name, BuilderMemory::$dropIndex);
+            BuilderMemory::$dropIndexs = array_merge($name, BuilderMemory::$dropIndexs);
         } else {
-            return $this->typeError('dropIndex');
+            return $this->typeError('dropIndexs');
         }
     }
 

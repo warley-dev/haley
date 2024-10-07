@@ -14,14 +14,14 @@ return new class
 
         //  $build->varchar('teste_update');
 
-      
 
+        $build->id('id');
 
-        $build->int('teste_update')->primaryKey()->outoIncrement()->after('id')->comment('helo word')->default(0)->nullable(false);
+        $build->varchar('edite_create_test')->comment('comment aa')->after('int')->nullable(false)->unique()->default('test');
     }
 
     public function down(Builder $build)
     {
-        $build->dropTable();
+        $build->dropTables();
     }
 };

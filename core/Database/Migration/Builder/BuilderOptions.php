@@ -4,28 +4,6 @@ namespace Haley\Database\Migration\Builder;
 
 class BuilderOptions
 {
-    public function outoIncrement()
-    {
-        $key = array_key_last(BuilderMemory::$columns);
-
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$columns[$key]['options']['AUTOINCREMENT'] = true;
-        }
-
-        return $this;
-    }
-
-    public function primaryKey()
-    {
-        $key = array_key_last(BuilderMemory::$columns);
-
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$columns[$key]['options']['PRIMARY'] = true;
-        }
-
-        return $this;
-    }
-
     public function comment(string $value)
     {
         $key = array_key_last(BuilderMemory::$columns);
@@ -101,7 +79,7 @@ class BuilderOptions
 
         if ($name === null) $name = 'index_' . $column;
 
-        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) BuilderMemory::$index[$name] = [
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) BuilderMemory::$indexs[$name] = [
             'name' => $name,
             'type' => $type,
             'column' => $column

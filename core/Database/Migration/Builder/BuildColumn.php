@@ -2,8 +2,6 @@
 
 namespace Haley\Database\Migration\Builder;
 
-use InvalidArgumentException;
-
 class BuildColumn
 {
     private array $config = [];
@@ -32,14 +30,6 @@ class BuildColumn
                 $addons['NULLABLE'] = $options['NULLABLE'] ? 'NULL' : 'NOT NULL';
             }
 
-            if (array_key_exists('AUTOINCREMENT', $options) and $options['AUTOINCREMENT']) {
-                $addons['AUTOINCREMENT'] = 'AUTO_INCREMENT';
-            }
-
-            if (array_key_exists('PRIMARY', $options) and $options['PRIMARY']) {
-                $addons['PRIMARY'] = 'PRIMARY KEY';
-            }
-
             if (array_key_exists('DEFAULT', $options) and $options['DEFAULT'] !== null) {
                 $addons['DEFAULT'] = sprintf('DEFAULT %s', $options['DEFAULT']);
             }
@@ -58,18 +48,8 @@ class BuildColumn
         } else if ($this->config['driver'] == 'pgsql') {
             $addons = [];
 
-            if (array_key_exists('AUTOINCREMENT', $options) and $options['AUTOINCREMENT']) {
-                $addons['AUTOINCREMENT'] = 'SERIAL';
-
-                $type = '';
-            }
-
             if (array_key_exists('NULLABLE', $options)) {
                 $addons['NULLABLE'] = $options['NULLABLE'] ? 'NULL' : 'NOT NULL';
-            }
-
-            if (array_key_exists('PRIMARY', $options) and $options['PRIMARY']) {
-                $addons['PRIMARY'] = 'PRIMARY KEY';
             }
 
             if (array_key_exists('DEFAULT', $options) and $options['DEFAULT'] !== null) {
@@ -105,14 +85,6 @@ class BuildColumn
                 $addons['NULLABLE'] = $options['NULLABLE'] ? 'NULL' : 'NOT NULL';
             }
 
-            if (array_key_exists('AUTOINCREMENT', $options) and $options['AUTOINCREMENT']) {
-                $addons['AUTOINCREMENT'] = 'AUTO_INCREMENT';
-            }
-
-            if (array_key_exists('PRIMARY', $options) and $options['PRIMARY']) {
-                $addons['PRIMARY'] = 'PRIMARY KEY';
-            }
-
             if (array_key_exists('DEFAULT', $options) and $options['DEFAULT'] !== null) {
                 $addons['DEFAULT'] = sprintf('DEFAULT %s', $options['DEFAULT']);
             }
@@ -139,10 +111,6 @@ class BuildColumn
 
             if (array_key_exists('NULLABLE', $options)) {
                 $build['others'][] = sprintf('ALTER TABLE %s ALTER COLUMN %s %s', $this->quotes($this->table), $this->quotes($name), $options['NULLABLE'] ? 'DROP NOT NULL' : 'SET NOT NULL');
-            }
-
-            if (array_key_exists('PRIMARY', $options) and $options['PRIMARY']) {
-                $build['others'][] = sprintf('ALTER TABLE %s ADD CONSTRAINT %s PRIMARY KEY (%s)', $this->quotes($this->table), 'PRIMARY', $this->quotes($name));
             }
 
             if (array_key_exists('DEFAULT', $options) and $options['DEFAULT'] !== null) {
