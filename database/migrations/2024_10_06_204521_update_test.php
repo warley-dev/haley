@@ -9,9 +9,15 @@ return new class
 
     public function up(Builder $build)
     {
-        $build->id('outro_id');
-
+        // $build->id();
         // $build->dates();
+
+        //  $build->varchar('teste_update');
+
+      
+
+
+        $build->int('teste_update')->primaryKey()->outoIncrement()->after('id')->comment('helo word')->default(0)->nullable(false);
     }
 
     public function down(Builder $build)

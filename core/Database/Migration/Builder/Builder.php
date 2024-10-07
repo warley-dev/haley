@@ -285,6 +285,17 @@ class Builder
         }
     }
 
+    public function raw(string $column, string $value)
+    {
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::addColumn($column, $value);
+        } else {
+            return $this->typeError('rename');
+        }
+
+        return $this;
+    }
+
     public function dropConstrant(string|array $name)
     {
         if (is_string($name)) $name = [$name];

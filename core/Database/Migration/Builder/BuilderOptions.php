@@ -4,12 +4,34 @@ namespace Haley\Database\Migration\Builder;
 
 class BuilderOptions
 {
+    public function outoIncrement()
+    {
+        $key = array_key_last(BuilderMemory::$columns);
+
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$columns[$key]['options']['AUTOINCREMENT'] = true;
+        }
+
+        return $this;
+    }
+
+    public function primaryKey()
+    {
+        $key = array_key_last(BuilderMemory::$columns);
+
+        if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
+            BuilderMemory::$columns[$key]['options']['PRIMARY'] = true;
+        }
+
+        return $this;
+    }
+
     public function comment(string $value)
     {
         $key = array_key_last(BuilderMemory::$columns);
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
-            BuilderMemory::$columns[$key]['options']['COMMENT'] = "COMMENT '{$value}'";
+            BuilderMemory::$columns[$key]['options']['COMMENT'] = $value;
         }
 
         return $this;
@@ -35,7 +57,7 @@ class BuilderOptions
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             if (!$raw) $value = "'$value'";
 
-            BuilderMemory::$columns[$key]['options']['DEFAULT'] = 'DEFAULT ' . $value;
+            BuilderMemory::$columns[$key]['options']['DEFAULT'] = $value;
         }
 
         return $this;
@@ -48,7 +70,7 @@ class BuilderOptions
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'mariadb'])) {
             if (!$raw) $value = "'$value'";
 
-            BuilderMemory::$columns[$key]['options']['ONUPDATE'] = 'ON UPDATE ' . $value;
+            BuilderMemory::$columns[$key]['options']['ONUPDATE'] = $value;
         }
 
         return $this;
@@ -61,7 +83,7 @@ class BuilderOptions
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             $column = BuilderMemory::$columns[$key]['name'];
 
-            if ($name === null) $name = 'unq_' . $column;
+            if ($name === null) $name = 'unique_' . $column;
 
             BuilderMemory::addConstraint($name, 'UNIQUE', sprintf('(%s)', $this->quotes($column)));
         }
@@ -77,7 +99,7 @@ class BuilderOptions
         $key = array_key_last(BuilderMemory::$columns);
         $column = BuilderMemory::$columns[$key]['name'];
 
-        if ($name === null) $name = 'idx_' . $column;
+        if ($name === null) $name = 'index_' . $column;
 
         if (in_array(BuilderMemory::$config['driver'], ['mysql', 'pgsql', 'mariadb'])) BuilderMemory::$index[$name] = [
             'name' => $name,

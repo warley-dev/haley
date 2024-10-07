@@ -5,6 +5,7 @@ namespace Haley\Database\Migration;
 use Haley\Collections\Config;
 use Haley\Database\Connection;
 use Haley\Database\DB;
+use Haley\Database\Migration\Builder\BuildColumn;
 use Haley\Database\Migration\Builder\Builder;
 use Haley\Database\Migration\Builder\BuilderMemory;
 use Haley\Database\Query\Scheme;
@@ -19,12 +20,12 @@ class MigrationRunner
     private string $file;
 
     private string|null $connection;
-    private string|null $driver = null;
     private array|null $config = null;
 
     private $migration;
     private BuilderMemory|null $build = null;
     private Scheme|null $scheme = null;
+    private BuildColumn|null $column = null;
 
     public function run(string $migration, bool $force = false, $type = 'up')
     {
@@ -67,7 +68,7 @@ class MigrationRunner
 
         $this->config = Connection::config($this->migration->connection);
         $this->connection = $this->config['name'];
-        $this->driver = $this->config['driver'];
+        $this->column = new BuildColumn($this->config, $this->migration->table);
 
         BuilderMemory::$connection = $this->connection;
         BuilderMemory::$config = $this->config;
@@ -132,7 +133,9 @@ class MigrationRunner
                 ];
             }
 
-            $this->scheme->table()->create('migrations', $columns);
+            $create = $this->scheme->table()->create('migrations', $columns);
+
+            dd($create);
         }
     }
 
@@ -174,16 +177,26 @@ class MigrationRunner
     private function createTable()
     {
         $columns = [];
+        $others = [];
 
         foreach ($this->build::getColumns() as $value) {
-            $nullable = $value['options']['NULLABLE'] ? 'NULL' : 'NOT NULL';
+            $querys = $this->column->create($value['name'], $value['type'], $value['options']);
 
-            $columns[$value['name']] = sprintf('%s %s %s', $this->quotes($value['name']), $value['query'], $nullable);
+            $columns = array_merge($columns, $querys['columns']);
+            $others = array_merge($others, $querys['others']);
         }
+
+        // dd($columns);
 
         $create = $this->scheme->table()->create($this->build::$table, $columns);
 
-        $this->addInfo("table {$this->build::$table} created", "create:{$this->build::$table}");
+        if ($create) {
+            $this->addInfo("table {$this->build::$table} created");
+
+            foreach ($others as $query) DB::connection($this->connection)->query($query)->execute();
+        } else {
+            $this->addInfo("failed to create table {$this->build::$table}");
+        }
     }
 
     private function editTable()
@@ -210,28 +223,37 @@ class MigrationRunner
         foreach ($this->build->getColumns() as $column) {
             if (in_array($column['name'], $this->build::$dropColumn)) continue;
 
-            if ($column['options']['POSITION'] !== null) $column['query'] .= ' ' . $column['options']['POSITION'];
-
             if ($this->scheme->column()->has($this->build::$table, $column['name'])) {
-                $type = $column['query'];
+                $querys = $this->column->edit($column['name'], $column['type'], $column['options'], false);
 
-                if ($this->config['driver'] == 'pgsql') {
-                    $type = sprintf('%s %s', $type, $column['options']['NULLABLE'] ? 'SET NOT NULL' : 'DROP NOT NULL');
-                } else {
-                    $type = sprintf('%s %s', $type, $column['options']['NULLABLE'] ? 'NULL' : 'NOT NULL');
+                dd($querys);
+
+                foreach ($querys['columns'] as $type) {
+                    $change = $this->scheme->column()->change($this->build::$table, $column['name'], $type);
+
+                    if ($change) $this->addInfo("column {$column['name']} changed");
+
+                    foreach ($querys['others'] as $query) {
+                        DB::connection($this->connection)->query($query)->execute();
+                    }
                 }
 
-                $change = $this->scheme->column()->change($this->build::$table, $column['name'], $type);
 
-                if ($change) $this->addInfo("column {$column['name']} changed");
+
             } else {
-                $type = $column['query'];
+                $querys = $this->column->create($column['name'], $column['type'], $column['options'], false);
 
-                $type = sprintf('%s %s', $type, $column['options']['NULLABLE'] ? 'NOT' : 'NOT NULL');
+                foreach ($querys['columns'] as $type) {
+                    $create = $this->scheme->column()->create($this->build::$table, $column['name'], $type);
 
-                $create = $this->scheme->column()->create($this->build::$table, $column['name'], $type);
+                    if ($create) {
+                        $this->addInfo("column {$column['name']} added");
 
-                if ($create) $this->addInfo("column {$column['name']} added");
+                        foreach ($querys['others'] as $query) {
+                            DB::connection($this->connection)->query($query)->execute();
+                        }
+                    };
+                }
             }
         }
 
@@ -310,36 +332,6 @@ class MigrationRunner
         ];
     }
 
-    // private function connection(string|null $connection = null)
-    // {
-    //     $config = Config::database();
-    //     $connections = $config['connections'] ?? [];
-
-    //     if ($connection === null) {
-    //         $this->connection = $config['default'] ?? null;
-    //         $this->driver = $connections[$config['default']]['driver'] ?? null;
-    //         $this->config = $connections[$config['default']] ?? null;
-    //     } elseif (array_key_exists($connection, $connections)) {
-    //         $this->connection = $connection ?? null;
-    //         $this->driver = $connections[$connection]['driver'] ?? null;
-    //         $this->config = $connections[$connection] ?? null;
-    //     }
-
-    //     if (empty($this->connection)) {
-    //         $this->addError('connection not found');
-
-    //         return false;
-    //     }
-
-    //     if (empty($this->driver) or !in_array($this->driver ?? '', ['mysql', 'pgsql', 'mariadb'])) {
-    //         $this->addError('driver not found or not compatible');
-
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
-
     public function getErrors()
     {
         return $this->errors;
@@ -349,6 +341,8 @@ class MigrationRunner
     {
         return $this->infos;
     }
+
+    private function buildColumnCreate() {}
 
     private function quotes(string $string)
     {

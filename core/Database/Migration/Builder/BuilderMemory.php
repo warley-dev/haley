@@ -32,11 +32,12 @@ class BuilderMemory
                 'type' => $type,
                 'options' => [
                     'NULLABLE' => true,
-                    'DEFAULT' => '',
-                    'ONUPDATE' => '',
-                    'COMMENT' => '',
-                    'AUTOINCREMENT' => '',
+                    'DEFAULT' => null,
+                    'ONUPDATE' => null,
+                    'COMMENT' => null,
+                    'AUTOINCREMENT' => false,
                     'POSITION' => null,
+                    'PRIMARY' => false
                 ]
             ];
         }
@@ -72,16 +73,7 @@ class BuilderMemory
             foreach (self::$columns as $key => $value) {
                 if (in_array($value['name'], self::$rename)) continue;
 
-                $options = [
-                    $value['type'],
-                    $value['options']['DEFAULT'],
-                    $value['options']['AUTOINCREMENT'],
-                    $value['options']['ONUPDATE'],
-                    $value['options']['COMMENT']
-                ];
-
                 $columns[$key] = $value;
-                $columns[$key]['query'] = trim(preg_replace('/( ){2,}/', '$1', implode(' ', $options)));
             }
         }
 

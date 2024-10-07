@@ -297,7 +297,7 @@ class Constraint
 
         if ($atual) {
             if ($this->config['driver'] == 'pgsql') {
-                DB::scheme($this->config['name'])->column()->change($table, $atual, 'INT');
+                DB::scheme($this->config['name'])->column()->change($table, $atual, 'TYPE INT');
             } else {
                 DB::scheme($this->config['name'])->column()->change($table, $atual, 'INT NOT NULL FIRST');
             }
@@ -317,7 +317,7 @@ class Constraint
             }
         } else if ($this->config['driver'] == 'pgsql') {
             if ($has_column) {
-                DB::scheme($this->config['name'])->column()->change($table, $column, 'SERIAL' . $comment);
+                DB::scheme($this->config['name'])->column()->change($table, $column, 'TYPE SERIAL' . $comment);
 
                 if ($atual !== $column) $this->setPrimaryKey($table, $column);
             } else {

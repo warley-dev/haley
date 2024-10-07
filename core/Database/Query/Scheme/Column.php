@@ -74,6 +74,9 @@ class Column
      */
     public function create(string $table, string $column, string $type)
     {
+
+        dd($type);
+
         if (in_array($this->config['driver'], ['mysql', 'pgsql', 'mariadb'])) {
             DB::query(sprintf('ALTER TABLE %s ADD COLUMN %s %s', $this->quotes($table), $column, $type), connection: $this->config['name']);
         } else {
@@ -98,7 +101,7 @@ class Column
         if (in_array($this->config['driver'], ['mysql', 'mariadb'])) {
             DB::query(sprintf('ALTER TABLE %s CHANGE %s %s %s', $this->quotes($table), $this->quotes($column), $this->quotes($column), $type), connection: $this->config['name']);
         } else if ($this->config['driver'] == 'pgsql') {
-            DB::query(sprintf('ALTER TABLE %s ALTER COLUMN %s TYPE %s', $this->quotes($table), $this->quotes($column), $type), connection: $this->config['name']);
+            DB::query(sprintf('ALTER TABLE %s ALTER COLUMN %s %s', $this->quotes($table), $this->quotes($column), $type), connection: $this->config['name']);
         } else {
             $this->driverError($this->config['driver']);
         }

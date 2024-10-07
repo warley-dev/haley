@@ -11,7 +11,13 @@ return new class
     {
         // $build->dropTable(['test','outro','aaa']);
 
-        $build->id();
+        // $build->id();
+
+        // $build->int('id')->outoIncrement()->primaryKey()->nullable(false);
+        $build->varchar('varchar')->after('id')->comment('comment test')->nullable(false)->unique()->default('test def');
+
+
+        $build->varchar('helo_word')->comment('helo_word comment');
 
         $build->int('int')->nullable(false);
         $build->double('double')->nullable(true);
@@ -39,7 +45,7 @@ return new class
         $build->varchar('email')->nullable(true);
 
         // $build->index(['varchar',  'nome', 'email']);
-        $build->foreign('int', 'outro', 'id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
+        // $build->foreign('int', 'outro', 'id')->onDelete('CASCADE')->onUpdate('CASCADE')->name('fk_teste');
 
 
         // continuar:
