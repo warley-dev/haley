@@ -4,19 +4,19 @@ use Haley\Database\Migration\Builder\Builder;
 
 return new class
 {
-    public string|null $table = 'fore';
+    public string|null $table = 'users';
     public string|null $connection = null;
 
     public function up(Builder $build)
     {
+        $build->id();
 
+        $build->varchar('name')->index();
+        $build->varchar('email')->unique()->index();
+        $build->varchar('password');
+        $build->boolean('active');
 
-        $build->dropIndexs('idx_teste');
-        $build->dropConstrant('fore_delete');
-        // $build->dropColumns('teste');
-
-
-        // $build->rename('teste','teste_renomeado');
+        $build->dates();
     }
 
     public function down(Builder $build)

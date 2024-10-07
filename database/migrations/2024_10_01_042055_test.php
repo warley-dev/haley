@@ -13,7 +13,7 @@ return new class
 
         // $build->id();
 
-        $build->id('teste_change_id');
+        $build->id('id');
         $build->varchar('varchar')->after('id')->comment('comment test')->nullable(false)->unique()->default('test def');
 
         $build->varchar('helo_word')->comment('helo_word comment');

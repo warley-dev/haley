@@ -544,24 +544,24 @@ class BuilderProcessor
 
     public function query(string $command)
     {
-        isset($this->params['explain']) ?  $explain = 'EXPLAIN' : $explain = '';
-        isset($this->params['distinct']) ? $distinct = 'DISTINCT' : $distinct = '';
-        isset($this->params['ignore']) ?  $ignore = 'IGNORE' : $ignore = '';
+        $ignore = array_key_exists('ignore', $this->params) ? true : false;
+        $explain = array_key_exists('explain', $this->params) ? 'EXPLAIN' :  '';
+        $distinct = array_key_exists('distinct', $this->params) ? 'DISTINCT' :  '';
 
-        if (isset($this->params['columns'])) $this->columns($this->params['columns']);
+        if (array_key_exists('columns', $this->params)) $this->columns($this->params['columns']);
         else $this->columns = '*';
 
-        if (isset($this->params['insert'])) $this->insert($this->params['insert']);
-        if (isset($this->params['table'])) $this->table($this->params['table']);
-        if (isset($this->params['table_raw'])) $this->tableRaw($this->params['table_raw']);
-        if (isset($this->params['update'])) $this->update($this->params['update']);
-        if (isset($this->params['join'])) $this->join($this->params['join']);
-        if (isset($this->params['where'])) $this->where($this->params['where']);
-        if (isset($this->params['group'])) $this->groupBy($this->params['group']);
-        if (isset($this->params['having'])) $this->having($this->params['having']);
-        if (isset($this->params['raw'])) $this->raw($this->params['raw']);
-        if (isset($this->params['order'])) $this->order($this->params['order']);
-        if (isset($this->params['limit'])) $this->limit($this->params['limit']);
+        if (array_key_exists('insert', $this->params)) $this->insert($this->params['insert']);
+        if (array_key_exists('table', $this->params)) $this->table($this->params['table']);
+        if (array_key_exists('table_raw', $this->params)) $this->tableRaw($this->params['table_raw']);
+        if (array_key_exists('update', $this->params)) $this->update($this->params['update']);
+        if (array_key_exists('join', $this->params)) $this->join($this->params['join']);
+        if (array_key_exists('where', $this->params)) $this->where($this->params['where']);
+        if (array_key_exists('group', $this->params)) $this->groupBy($this->params['group']);
+        if (array_key_exists('having', $this->params)) $this->having($this->params['having']);
+        if (array_key_exists('raw', $this->params)) $this->raw($this->params['raw']);
+        if (array_key_exists('order', $this->params)) $this->order($this->params['order']);
+        if (array_key_exists('limit', $this->params)) $this->limit($this->params['limit']);
 
         $table = $this->table;
         $table_raw = $this->table_raw;
@@ -576,11 +576,19 @@ class BuilderProcessor
         $insert = $this->insert;
         $update = $this->update;
 
-        if ($command == 'select') $query = "$explain SELECT $distinct $columns FROM $table $table_raw $join $where $group $having $raw $order $limit";
-        elseif ($command == 'insert') $query = "INSERT $ignore INTO $table $insert";
-        elseif ($command == 'update') $query = "UPDATE $ignore $table $join $update $where $raw $limit";
-        elseif ($command == 'delete') $query = "DELETE FROM $table $table_raw $join $where $raw $limit";
-        else $query = '';
+        if ($command == 'select') {
+            $query = "$explain SELECT $distinct $columns FROM $table $table_raw $join $where $group $having $raw $order $limit";
+        } elseif ($command == 'insert') {
+            if ($this->config['driver'] == 'pgsql') {
+                $query = sprintf("INSERT INTO $table $insert %s", $ignore ? 'ON CONFLICT DO NOTHING' : '');
+            } else {
+                $query = sprintf("INSERT %s INTO $table $insert", $ignore ? 'IGNORE' : '');
+            }
+        } elseif ($command == 'update') {
+            $query = "UPDATE $table $join $update $where $raw $limit";
+        } elseif ($command == 'delete') {
+            $query = "DELETE FROM $table $table_raw $join $where $raw $limit";
+        } else $query = '';
 
         return [
             'query' => trim(preg_replace('/( ){2,}/', '$1', $query)),

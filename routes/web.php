@@ -42,49 +42,25 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
 
         // dd($create_or_update);
 
-        $select = users::query()->get();
+        // $create = users::createOrIgnore([
+        //     'nome' => 'test',
+        //     'email' => 'emais'
+        // ]);
+
+        // dd($create);
+
+        // DB::table('users')->insertIgnore([
+        //     'nome' => 'test'
+        // ]);
+
+        $select = users::updateOrCreate(['email' => 'new2@hotmail.com'], [
+            'email' => 'new2@hotmail.com'
+        ]);
 
         dd($select);
     });
 
-    Route::get('database', function () {
-        // refaturar connection database e configuracoes
-
-        dd(DB::scheme()->column()->rename('new', 'text', 'teste'));
-
-        $count = 1;
-        $data = [];
-
-        DB::table('teste')->delete();
-
-        while ($count < 86) {
-            $data[] = [
-                'id' => $count,
-                'nome' => 'test'
-            ];
-
-            $count++;
-        }
-
-        DB::table('teste')->insert($data);
-
-        $query = DB::table('teste');
-
-        // $query->whereCompact(function () use ($query) {
-        //     // $query->where('id', 1);
-        //     // $query->orWhere('id', 2);
-        // });
-
-
-        $query->orderByAsc('id');
-        $query->limit(3, 29);
-
-        dd($query->getQuery(), $query->get());
-
-
-        // dd(DB::connection('pgsql'));
-        // dd(DB::connection('mariadb'));
-    });
+    Route::get('database', function () {});
 
     Route::get('route', function () {
         // refatorar CONSTANTES route verificar middlewares e criar classe de variaveis do framework

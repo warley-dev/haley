@@ -58,9 +58,8 @@ class Builder extends BuilderController
             throw new InvalidArgumentException('Undefined variable $columns');
         }
 
-        if (is_array($columns[0])) {
-            $columns = $columns[0];
-        }
+        if (is_array($columns[0])) $columns = $columns[0];
+
 
         $this->add('columns', [
             'type' => 'column',
@@ -731,19 +730,6 @@ class Builder extends BuilderController
         return (new RunQuery)->update($build['query'], $build['bindparams'], $this->connection);
     }
 
-    public function updateIgnore(array $values)
-    {
-        $this->add('ignore', true, false);
-
-        $this->add('update', [
-            'values' => $values
-        ]);
-
-        $build = $this->executeProcessor('update', $this->connection);
-
-        return (new RunQuery)->update($build['query'], $build['bindparams'], $this->connection);
-    }
-
     /**
      * Execute the insert query
      * @return int rowCount
@@ -831,7 +817,7 @@ class Builder extends BuilderController
 
         $build = $this->executeProcessor('select', $this->connection);
 
-        return (new RunQuery)->insert($build['query'], $build['bindparams'], $this->connection);
+        return (new RunQuery)->select($build['query'], $build['bindparams'], $this->connection);
     }
 
     /**

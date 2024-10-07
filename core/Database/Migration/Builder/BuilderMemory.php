@@ -21,7 +21,6 @@ class BuilderMemory
     public static array $dropColumns = [];
     public static array $dropConstraints = [];
 
-
     public function __construct(string $connection, array $config, string|null $table)
     {
         self::$connection = $connection;

@@ -70,6 +70,13 @@ abstract class Model
         return DB::table(static::$table)->connection(static::$connection)->insertIgnore($data);
     }
 
+    public static function update(string|array $id, array $data)
+    {
+        if (!is_array($id)) $id = [$id];
+
+        return DB::table(static::$table)->connection(static::$connection)->whereIn(static::$id, $id)->update($data);
+    }
+
     public static function updateOrCreate(array $check, array $data)
     {
         foreach ($data as $column => $value) if (!in_array($column, static::$fillable)) unset($data[$column]);
@@ -86,9 +93,9 @@ abstract class Model
         if (count($has)) {
             $ids = [];
 
-            foreach ($has as $value) $ids[] = get_object_vars($value)[static::$id];
+            foreach ($has as $value) $ids[] = self::toArray($value)[static::$id];
 
-            if (count($ids)) return  DB::table(static::$table)->connection(static::$connection)->whereIn(static::$id, $ids)->update($data);
+            if (count($ids)) return DB::table(static::$table)->connection(static::$connection)->whereIn(static::$id, $ids)->update($data);
         } else {
             return DB::table(static::$table)->connection(static::$connection)->insert($data);
         }
@@ -116,5 +123,12 @@ abstract class Model
     public static function count()
     {
         return DB::table(static::$table)->connection(static::$connection)->count();
+    }
+
+    private static function toArray(mixed $value)
+    {
+        if (is_object($value)) return get_object_vars($value);
+
+        return $value;
     }
 }
