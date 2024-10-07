@@ -19,6 +19,8 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
         // aidicionar and nas querys join
         // users::query()->join('acesso','users.id_acesso', 'acesso.id',[]);
 
+
+
         $select = users::updateOrCreate(['email' => 'new2@hotmail.com'], [
             'email' => 'new2@hotmail.com'
         ]);

@@ -188,7 +188,7 @@ class BuilderProcessor
             }
 
             if (!in_array(strtolower($param['operator']), $this->operators) and $param['operator'] != false) {
-                throw new InvalidArgumentException("Invalid operator ( {$param['operator']} )");
+                throw new InvalidArgumentException("Invalid operator({$param['operator']})");
             }
 
             // WHERE
@@ -345,7 +345,7 @@ class BuilderProcessor
     {
         foreach ($params as $join) {
             if (!in_array(strtolower($join['operator']), $this->operators) and $join['operator'] != false) {
-                throw new InvalidArgumentException("Invalid operator ( {$join['operator']} )");
+                throw new InvalidArgumentException("Invalid operator({$join['operator']})");
             }
 
             // JOIN
@@ -567,22 +567,22 @@ class BuilderProcessor
         $table_raw = $this->table_raw;
         $columns = $this->columns;
         $where = $this->where;
-        $limit = $this->limit;
-        $order = $this->order;
         $having = $this->having;
         $group = $this->group;
         $join = $this->join;
-        $raw = $this->raw;
         $insert = $this->insert;
         $update = $this->update;
+        $raw = $this->raw;
+        $limit = $this->limit;
+        $order = $this->order;
 
         if ($command == 'select') {
             $query = "$explain SELECT $distinct $columns FROM $table $table_raw $join $where $group $having $raw $order $limit";
         } elseif ($command == 'insert') {
             if ($this->config['driver'] == 'pgsql') {
-                $query = sprintf("INSERT INTO $table $insert %s", $ignore ? 'ON CONFLICT DO NOTHING' : '');
+                $query = sprintf("INSERT INTO $table $insert %s $raw", $ignore ? 'ON CONFLICT DO NOTHING' : '');
             } else {
-                $query = sprintf("INSERT %s INTO $table $insert", $ignore ? 'IGNORE' : '');
+                $query = sprintf("INSERT %s INTO $table $insert $raw", $ignore ? 'IGNORE' : '');
             }
         } elseif ($command == 'update') {
             $query = "UPDATE $table $join $update $where $raw $limit";
