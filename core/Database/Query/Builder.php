@@ -480,14 +480,20 @@ class Builder extends BuilderController
     /**
      * Add a "join" clause to the query
      */
-    public function join(string $table, string $first, string $second, $operator = '=')
+    public function join(string $table, string $first, string $second, string|array $operator = '=', array|null $and = null)
     {
+        if (is_array($operator) and $and === null) {
+            $and = $operator;
+            $operator = '=';
+        }
+
         $this->add('join', [
             'type' => 'join',
             'table' => $table,
             'first' => $first,
             'second' => $second,
-            'operator' => $operator
+            'operator' => $operator,
+            'and' => $and
         ]);
 
         return $this;

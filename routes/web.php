@@ -16,42 +16,8 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     // app ini configurar
 
     Route::get('model', function () {
-        // $data = [
-        //     [
-        //         'id_acesso' => 1,
-        //         'nome' => 'um',
-        //         'email' => 'um@hotmail.com',
-        //         'ativo' => 1
-        //     ],
-
-        //     [
-        //         'id_acesso' => 1,
-        //         'nome' => 'um',
-        //         'email' => 'um@hotmail.com',
-        //         'ativo' => 1
-        //     ]
-        // ];
-
-        // $create = usuarios::createGetId($data);
-
-        // // dd($create);
-
-        // $create_or_update = usuarios::updateOrCreate(['id' => ['1', '2', '3']], [
-        //     'nome' => 'atualizados'
-        // ]);
-
-        // dd($create_or_update);
-
-        // $create = users::createOrIgnore([
-        //     'nome' => 'test',
-        //     'email' => 'emais'
-        // ]);
-
-        // dd($create);
-
-        // DB::table('users')->insertIgnore([
-        //     'nome' => 'test'
-        // ]);
+        // aidicionar and nas querys join
+        // users::query()->join('acesso','users.id_acesso', 'acesso.id',[]);
 
         $select = users::updateOrCreate(['email' => 'new2@hotmail.com'], [
             'email' => 'new2@hotmail.com'
