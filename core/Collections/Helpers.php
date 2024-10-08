@@ -215,48 +215,12 @@ if (!function_exists('directorySeparator')) {
     }
 }
 
-if (!function_exists('directoryPrivate')) {
-    function directoryPrivate(string|null $path = null)
-    {
-        if ($path === null) return DIRECTORY_PRIVATE;
-
-        return DIRECTORY_PRIVATE . DIRECTORY_SEPARATOR . trim(directorySeparator($path), DIRECTORY_SEPARATOR);
-    }
-}
-
-if (!function_exists('directoryPublic')) {
-    function directoryPublic(string|null $path = null)
-    {
-        if ($path === null) return DIRECTORY_PUBLIC;
-
-        return DIRECTORY_PUBLIC . DIRECTORY_SEPARATOR . trim(directorySeparator($path), DIRECTORY_SEPARATOR);
-    }
-}
-
-if (!function_exists('directoryResources')) {
-    function directoryResources(string|null $path = null)
-    {
-        if ($path === null) return DIRECTORY_RESOURCES;
-
-        return DIRECTORY_RESOURCES . DIRECTORY_SEPARATOR . trim(directorySeparator($path), DIRECTORY_SEPARATOR);
-    }
-}
-
 if (!function_exists('directoryRoot')) {
     function directoryRoot(string|null $path = null)
     {
         if ($path === null) return DIRECTORY_ROOT;
 
         return DIRECTORY_ROOT . DIRECTORY_SEPARATOR . trim(directorySeparator($path), DIRECTORY_SEPARATOR);
-    }
-}
-
-if (!function_exists('directoryStorage')) {
-    function directoryStorage(string|null $path = null)
-    {
-        if ($path === null) return DIRECTORY_STORAGE;
-
-        return DIRECTORY_STORAGE . DIRECTORY_SEPARATOR . trim(directorySeparator($path), DIRECTORY_SEPARATOR);
     }
 }
 

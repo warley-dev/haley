@@ -29,7 +29,7 @@ function url()
     return 'http://' . trim("$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]", '/');
 }
 
-function message($message)
+function WebServerMessage($message)
 {
     $message = json_encode($message) . "\n";
     $stdout = fopen('php://stdout', 'w');
@@ -1276,7 +1276,7 @@ if ($path !== '/' and is_file($root . 'public' . $path)) {
             'size' => filesize($file)
         ];
 
-        message($message);
+        WebServerMessage($message);
 
         return readfile($file);
     }
@@ -1289,5 +1289,5 @@ if ($path !== '/' and is_file($root . 'public' . $path)) {
         'size' => $_SERVER['CONTENT_LENGTH']
     ];
 
-    message($message);
+    WebServerMessage($message);
 }

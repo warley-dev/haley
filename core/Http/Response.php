@@ -41,14 +41,14 @@ class Response
             ]);
         }
 
-        if (file_exists(directoryResources('views/error/' . $status . '.view.php'))) {
+        if (file_exists(directoryRoot('resources/views/error/' . $status . '.view.php'))) {
             return view('error.' . $status, [
                 'status' => $status,
                 'mesage' => $mesage
             ]);
         }
 
-        if (file_exists(directoryResources('views/error/default.view.php'))) {
+        if (file_exists(directoryRoot('resources/views/error/default.view.php'))) {
             return view('error.default', [
                 'status' => $status,
                 'mesage' => $mesage

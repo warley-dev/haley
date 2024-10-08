@@ -13,8 +13,6 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
     Route::view('view', 'test');
 
     // unificar classe
-    // app ini configurar
-
     Route::get('model', function () {
         // aidicionar and nas querys join
         // users::query()->join('acesso','users.id_acesso', 'acesso.id',[]);
@@ -34,4 +32,17 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
         // refatorar CONSTANTES route verificar middlewares e criar classe de variaveis do framework
         // adicionar opcao route no middlewares
     })->name('route');
+
+    Route::get('session', function () {
+
+
+
+        dd(ini_get('upload_max_filesize'));
+
+        request()->session()->set('user',[
+            'token' => 'aaaaaaa'
+        ]);
+
+        dd(request()->session('user'),request()->session()->expire());
+    })->name('session');
 });

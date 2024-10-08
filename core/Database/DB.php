@@ -2,7 +2,6 @@
 
 namespace Haley\Database;
 
-use Haley\Collections\Config;
 use Haley\Database\Connection;
 use Haley\Database\Query\Builder;
 use Haley\Database\Query\Scheme;
@@ -54,11 +53,4 @@ class DB
     {
         return new Scheme($connection);
     }
-
-    /**
-     * Dump database
-     */
-    // public static function dump(string $path, string|null $connection) {
-
-    // }
 }
