@@ -1,6 +1,5 @@
 <?php
 
-use Haley\Collections\Memory;
 use Haley\Collections\Password;
 use Haley\Env\Env;
 use Haley\Exceptions\Debug;
@@ -9,6 +8,7 @@ use Haley\Http\Redirect;
 use Haley\Http\Request;
 use Haley\Http\Response;
 use Haley\Http\Route;
+use Haley\Kernel;
 use Haley\Validator\ValidatorHelper;
 use Haley\View\View;
 
@@ -154,7 +154,7 @@ if (!function_exists('dd')) {
         $line = $backtrace[0]['line'] ?? '';
         $file = $backtrace[0]['file'] ?? '';
 
-        if (Memory::get('kernel') == 'console') {
+        if (Kernel::$type == 'console') {
             foreach (func_get_args() as $arg) var_dump($arg);
 
             return;

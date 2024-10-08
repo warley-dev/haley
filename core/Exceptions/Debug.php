@@ -3,7 +3,6 @@
 namespace Haley\Exceptions;
 
 use Haley\Collections\Config;
-use Haley\Collections\Memory;
 use Haley\Kernel;
 use Haley\Shell\Shell;
 use Throwable;
@@ -23,7 +22,7 @@ class Debug
 
         // get_included_files(), get_required_files(), get_include_path()
 
-        if (Memory::get('kernel') == 'console') {
+        if (Kernel::$type == 'console') {
             Shell::red("{$error->getMessage()} : {$error->getFile()} {$error->getLine()}")->br();
 
             (new Kernel)->terminate();

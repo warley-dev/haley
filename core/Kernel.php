@@ -3,7 +3,6 @@
 namespace Haley;
 
 use Haley\Collections\Config;
-use Haley\Collections\Memory;
 use Haley\Console\Console;
 use Haley\Exceptions\Exceptions;
 use Haley\Router\Route;
@@ -53,7 +52,7 @@ class Kernel
      */
     static public function http()
     {
-        Memory::set('kernel', 'app');
+        self::$type = 'http';
 
         (new Exceptions)->handler(function () {
             // session settings
@@ -96,7 +95,7 @@ class Kernel
      */
     static public function console()
     {
-        Memory::set('kernel', 'console');
+        self::$type = 'console';
 
         (new Exceptions)->handler(function () {
             // load helpers
