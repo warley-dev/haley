@@ -13,7 +13,7 @@ class Kernel
     /**
      * Type of execution http or console
      */
-    static public string|null $type = null;
+    public static string|null $type = null;
 
     /**
      * Framework memories
@@ -28,7 +28,7 @@ class Kernel
     /**
      * Start framework
      */
-    static public function run()
+    public static function run()
     {
         ini_set('display_errors', 1);
         ini_set('display_startup_erros', 1);
@@ -50,7 +50,7 @@ class Kernel
     /**
      * Execute http
      */
-    static public function http()
+    public static function http()
     {
         self::$type = 'http';
 
@@ -78,6 +78,8 @@ class Kernel
             $routes = Config::route('http', []);
 
             if ($routes) foreach ($routes as $name => $config) {
+                // Route::config($name);
+
                 if (!file_exists($config['path'])) continue;
 
                 $config['name'] = $name;
@@ -93,7 +95,7 @@ class Kernel
     /**
      * Execute console
      */
-    static public function console()
+    public static function console()
     {
         self::$type = 'console';
 
@@ -111,7 +113,7 @@ class Kernel
     /**
      * Add callback when script ends
      */
-    static public function onTerminate(string|array|callable $callback)
+    public static function onTerminate(string|array|callable $callback)
     {
         self::$terminators[] = $callback;
     }
@@ -119,7 +121,7 @@ class Kernel
     /**
      * Finish execution
      */
-    static public function terminate()
+    public static function terminate()
     {
         foreach (self::$terminators as $callback) executeCallable($callback);
 
@@ -135,7 +137,7 @@ class Kernel
      *
      * @return mixed
      */
-    static public function setMemory(string|array $keys, mixed $value)
+    public static function setMemory(string|array $keys, mixed $value)
     {
         if (!is_array($keys)) $keys = explode('.', $keys);
 
@@ -157,7 +159,7 @@ class Kernel
      *
      * @return mixed|null
      */
-    static public function getMemory(string|array $keys, mixed $default = null)
+    public static function getMemory(string|array $keys, mixed $default = null)
     {
         if (!is_array($keys)) $keys = explode('.', $keys);
 
@@ -183,7 +185,7 @@ class Kernel
      *
      * @return bool
      */
-    static public function unsetMemory(string|array $keys)
+    public static function unsetMemory(string|array $keys)
     {
         if (!is_array($keys)) $keys = explode('.', $keys);
 

@@ -2,10 +2,23 @@
 
 namespace Haley\Router;
 
+use Haley\Collections\Config;
+use InvalidArgumentException;
+
 class Route
 {
     private static int $group = 0;
     private static array $attributes = [];
+
+    /**
+     * Set route configuration
+     */
+    public static function config(string $name)
+    {
+        $config = Config::route('http.' . $name);
+
+        if (empty($config)) throw new InvalidArgumentException(sprintf('%s route configuration not found', $name));
+    }
 
     /**
      * @return \Haley\Router\RouteOptions
@@ -16,7 +29,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**   
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function get(string $route, string|array|callable $action)
@@ -25,7 +38,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function post(string $route, string|array|callable $action)
@@ -34,7 +47,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function delete(string $route, string|array|callable $action)
@@ -43,7 +56,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function put(string $route, string|array|callable $action)
@@ -52,7 +65,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function patch(string $route, string|array|callable $action)
@@ -61,7 +74,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function copy(string $route, string|array|callable $action)
@@ -70,7 +83,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function options(string $route, string|array|callable $action)
@@ -79,7 +92,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function lock(string $route, string|array|callable $action)
@@ -88,7 +101,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function unlock(string $route, string|array|callable $action)
@@ -97,7 +110,7 @@ class Route
         return new RouteOptions;
     }
 
-    /**  
+    /**
      * @return \Haley\Router\RouteOptions
      */
     public static function match(string|array $methods, string $route, string|array|callable $action)
@@ -185,9 +198,7 @@ class Route
 
         if (is_callable($routes)) call_user_func($routes, $group);
 
-        foreach (self::$attributes[$group] as $name) {
-            RouteMemory::removeAttribute($name);
-        }
+        foreach (self::$attributes[$group] as $name) RouteMemory::removeAttribute($name);
 
         unset(self::$attributes[$group]);
     }

@@ -6,7 +6,6 @@ use ErrorException;
 use Haley\Collections\Config;
 use InvalidArgumentException;
 use PDO;
-use PDOException;
 
 /**
  * Gerencia as conexões com o banco de dados
@@ -38,7 +37,7 @@ class Connection
 
         self::$instances[$connection] = new PDO("$driver:host=$host;port=$port;dbname=$dbname", $username, $password, $options);
 
-        if($driver == 'pgsql' and !empty($config['search_path'])) self::instance($config['name'])->exec("SET search_path TO {$config['search_path']}");
+        if ($driver == 'pgsql' and !empty($config['search_path'])) self::instance($config['name'])->exec("SET search_path TO {$config['search_path']}");
 
         return self::$instances[$connection];
     }

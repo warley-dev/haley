@@ -8,6 +8,19 @@ class Config
 {
     private static array $configs = [];
 
+    /**
+     * @return mixed
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        $keys = $arguments[0] ?? null;
+        $default = null;
+
+        if (array_key_exists(1, $arguments)) $default = $arguments[1];
+
+        return self::get($name, $keys, $default);
+    }
+
     public static function app(string|array|null $key = null, mixed $default = null)
     {
         return self::get('app', $key, $default);
@@ -21,19 +34,6 @@ class Config
     public static function route(string|array|null $key = null, mixed $default = null)
     {
         return self::get('route', $key, $default);
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        $keys = $arguments[0] ?? null;
-        $default = null;
-
-        if (array_key_exists(1, $arguments)) $default = $arguments[1];
-
-        return self::get($name, $keys, $default);
     }
 
     /**
