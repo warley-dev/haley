@@ -9,6 +9,6 @@ define('DIRECTORY_ROOT', dirname(__DIR__));
 
 $kernel = new Kernel;
 
-$kernel->run()->app();
+$kernel->run()->http();
 
 $kernel->terminate();

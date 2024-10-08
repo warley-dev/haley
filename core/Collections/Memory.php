@@ -7,14 +7,14 @@ class Memory
     private static array $memories = [];
 
     public static function get(int|string $key)
-    {     
-        if (array_key_exists($key,self::$memories)) return self::$memories[$key];        
+    {
+        if (array_key_exists($key,self::$memories)) return self::$memories[$key];
 
         return null;
     }
 
     public static function set(int|string $key, mixed $value)
-    {   
+    {
         self::$memories[$key] = $value;
     }
 

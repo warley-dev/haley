@@ -9,9 +9,13 @@
 </head>
 
 <body>
-    <!-- {{-- @include('include.teste'); --}} -->
+    <main>
+        <div class="box-img">
+            <img class="logo" src="/assets/img/haley.png">
+        </div>
 
-
+        <p>HALEY FRAMEWORK</p>
+    </main>
 
     <style>
         * {
@@ -28,14 +32,18 @@
             width: 100%;
             text-align: center;
             padding: 2px;
+            margin-top: 50px;
         }
 
         main {
             min-height: 100vh;
             width: 100%;
             display: flex;
+            flex-direction: column;
             position: relative;
-            align-content: center
+            align-content: center;
+            justify-content: center;
+            padding-bottom: 200px;
         }
 
         .box-img {

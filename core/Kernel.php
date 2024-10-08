@@ -11,9 +11,25 @@ use Haley\Router\RouteMemory;
 
 class Kernel
 {
-    private array $terminators = [];
+    /**
+     * Type of execution http or console
+     */
+    static public string|null $type = null;
 
-    public function run()
+    /**
+     * Framework memories
+     */
+    public static array $memories = [];
+
+    /**
+     * Callbacks to be executed at the end of the script
+     */
+    static private array $terminators = [];
+
+    /**
+     * Start framework
+     */
+    static public function run()
     {
         ini_set('display_errors', 1);
         ini_set('display_startup_erros', 1);
@@ -29,10 +45,13 @@ class Kernel
             foreach (Config::app('ini', []) as $option => $value) ini_set($option, $value);
         });
 
-        return $this;
+        return new self;
     }
 
-    public function app()
+    /**
+     * Execute http
+     */
+    static public function http()
     {
         Memory::set('kernel', 'app');
 
@@ -72,7 +91,10 @@ class Kernel
         });
     }
 
-    public function console()
+    /**
+     * Execute console
+     */
+    static public function console()
     {
         Memory::set('kernel', 'console');
 
@@ -87,19 +109,100 @@ class Kernel
         });
     }
 
-    public function onTerminate(string|array|callable $callback)
+    /**
+     * Add callback when script ends
+     */
+    static public function onTerminate(string|array|callable $callback)
     {
-        $this->terminators[] = $callback;
+        self::$terminators[] = $callback;
     }
 
-    public function terminate()
+    /**
+     * Finish execution
+     */
+    static public function terminate()
     {
-        foreach ($this->terminators as $callback) executeCallable($callback);
+        foreach (self::$terminators as $callback) executeCallable($callback);
 
         if (!defined('HALEY_STOP')) define('HALEY_STOP', microtime(true));
 
         while (ob_get_level() > 0) ob_end_flush();
 
         exit;
+    }
+
+    /**
+     * Set memory
+     *
+     * @return mixed
+     */
+    static public function setMemory(string|array $keys, mixed $value)
+    {
+        if (!is_array($keys)) $keys = explode('.', $keys);
+
+        $current = &self::$memories;
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $current)) $current[$key] = [];
+
+            $current = &$current[$key];
+        }
+
+        $current = $value;
+
+        return $value;
+    }
+
+    /**
+     * Get memory
+     *
+     * @return mixed|null
+     */
+    static public function getMemory(string|array $keys, mixed $default = null)
+    {
+        if (!is_array($keys)) $keys = explode('.', $keys);
+
+        if (!array_key_exists($keys[0], self::$memories)) return $default;
+
+        $value = self::$memories[$keys[0]];
+
+        if (count($keys) === 1) return $value;
+
+        unset($keys[0]);
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $value)) return $default;
+
+            $value = $value[$key];
+        };
+
+        return $value;
+    }
+
+    /**
+     * Remove from memory
+     *
+     * @return bool
+     */
+    static public function unsetMemory(string|array $keys)
+    {
+        if (!is_array($keys)) $keys = explode('.', $keys);
+
+        $memories = &self::$memories;
+        $lastKey = array_pop($keys);
+
+        foreach ($keys as $key) {
+            if (!isset($memories[$key]) || !is_array($memories[$key])) return false;
+
+            $memories = &$memories[$key];
+        }
+
+        if (array_key_exists($lastKey, $memories)) {
+            unset($memories[$lastKey]);
+
+            return true;
+        }
+
+        return false;
     }
 }

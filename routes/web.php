@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\users;
+use Haley\Collections\Memory;
 use Haley\Database\DB;
+use Haley\Kernel;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
@@ -45,4 +47,25 @@ Route::namespace('App\Controllers\Web\\')->name('web')->group(function () {
 
         dd(request()->session('user'),request()->session()->expire());
     })->name('session');
+
+    Route::get('tests', function () {
+        // dd(Memory::$memories);
+
+        Kernel::setMemory('test.um.dois.tres','aaaaaaa');
+
+        Kernel::setMemory('test.um.dois.outrodois','dois value');
+
+        Kernel::setMemory('routes.web', 'dois value');
+
+
+        // Kernel::unsetMemory('test.um.dois.tres');
+
+        dd(Kernel::$memories, Kernel::unsetMemory('test.um.dois.tres'), Kernel::$memories);
+
+        // Kernel::onTerminate(function() {
+
+        // });
+
+    })->name('tests');
+
 });
