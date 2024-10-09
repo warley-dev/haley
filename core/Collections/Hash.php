@@ -6,9 +6,7 @@ class Hash
 {
     public static function createPassword(string $password)
     {
-        $rash = password_hash($password, PASSWORD_DEFAULT);
-
-        return $rash;
+        return password_hash($password, PASSWORD_DEFAULT);
     }
 
     public static function checkPassword(string $password, string $hash)

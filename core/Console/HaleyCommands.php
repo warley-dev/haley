@@ -48,7 +48,6 @@ class HaleyCommands
                 Console::command('process', 'CommandJobs::process')->description('stop or start process ' . self::checkJob());
                 Console::command('list', 'CommandJobs::list')->description('list jobs');
                 Console::command('clock', 'CommandJobs::clock')->description('executes valid jobs');
-
                 Console::command('master', 'CommandJobs::master', false);
                 Console::command('execute {key}', 'CommandJobs::execute', false);
             });
