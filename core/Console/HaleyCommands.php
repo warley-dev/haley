@@ -55,6 +55,7 @@ class HaleyCommands
 
             Console::title('Cleaning')->prefix('clear')->group(function () {
                 Console::command(':views', 'CommandCleaning::views')->description('clear views cache');
+                Console::command(':logs', 'CommandCleaning::logs')->description('clear logs');
             });
         });
     }

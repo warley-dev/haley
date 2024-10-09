@@ -56,7 +56,7 @@ class FileEngine
         $view = $compile_php->run($view);
 
         // formats
-        $view = trim($view);
+        // $view = trim($view);
 
         // save cache
         $cache_json_file = directoryRoot('storage/cache/jsons/views.json');

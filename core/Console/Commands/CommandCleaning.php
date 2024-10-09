@@ -8,16 +8,39 @@ class CommandCleaning
 {
     public function views()
     {
-        $files = directoryRoot('storage/cache/views');
-        $json = directoryRoot('storage/cache/jsons/views.json');
+        $directory = directoryRoot('storage/cache/views');
 
-        deleteDir($files);
-        deleteFile($json);
+        if (file_exists($directory)) {
+            $files = scandir($directory);
+            $files = array_diff($files, array('.', '..'));
 
-        if (!file_exists($files) and !file_exists($json)) {
-            Shell::green('views cache deleted')->br();
-        } else {
-            Shell::red('failed to clear views cache')->br();
+            foreach ($files as $arquivo) {
+                $path = directoryRoot('storage/cache/views/' . $arquivo);
+
+                if (is_file($path)) deleteFile($path);
+            }
         }
+
+        file_put_contents(directoryRoot('storage/cache/jsons/views.json'), json_encode([]));
+
+        Shell::green('views cache deleted')->br();
+    }
+
+    public function logs()
+    {
+        $directory = directoryRoot('storage/logs');
+
+        if (file_exists($directory)) {
+            $files = scandir($directory);
+            $files = array_diff($files, array('.', '..'));
+
+            foreach ($files as $arquivo) {
+                $path = directoryRoot('storage/logs/' . $arquivo);
+
+                if (is_file($path)) deleteFile($path);
+            }
+        }
+
+        Shell::green('logs deleted')->br();
     }
 }

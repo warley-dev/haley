@@ -60,7 +60,7 @@ class Debug
             'headers' => request()->headers(),
         ];
 
-        view('exceptions', $params, true, directoryHaley('Exceptions/views'));
+        view('exception', $params, true, directoryHaley('Exceptions/views'));
 
         (new Kernel)->terminate();
     }
