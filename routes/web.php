@@ -1,10 +1,7 @@
 <?php
 
 use App\Controllers\Web\Home;
-use App\Models\users;
-use Haley\Collections\Config;
 use Haley\Collections\Hash;
-use Haley\Kernel;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
