@@ -97,13 +97,6 @@ if (!function_exists('env')) {
     }
 }
 
-if (!function_exists('password')) {
-    function password()
-    {
-        return new Password;
-    }
-}
-
 if (!function_exists('route')) {
     /**
      * Retorna a URL da rota nomeada.
