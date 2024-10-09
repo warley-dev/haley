@@ -2,16 +2,12 @@
 
 namespace Haley\Router;
 
-use Haley\Collections\Config;
 use Haley\Kernel;
-use InvalidArgumentException;
 
 class Route
 {
     private static string|null $config = null;
-    // private static array $routes = [];
 
-    // private static array $key = [];
     private static int $key = 0;
     private static array $group = [];
     private static array $attributes = [
@@ -231,8 +227,6 @@ class Route
             $route = $prefix . '/' . $route;
         }
 
-        // if (!empty(self::$config['prefix'])) $route = trim(self::$config['prefix'], '/') . '/' . $route;
-
         if (count(self::$attributes['domain'])) {
             foreach (self::$attributes['domain'] as $value) {
                 if (is_string($value)) {
@@ -248,15 +242,13 @@ class Route
         $routes = Kernel::getMemory('route.routes', []);
 
         $routes[] = [
+            'config' => self::$config,
             'route' => $route,
             'action' => $action,
             'methods' => $methods,
             'type' => $type,
-            'config' => self::$config,
-
             'name' => $name,
             'middleware' => self::$attributes['middleware'],
-            // 'prefix' => $prefix,
             'domain' => $domain,
             'namespace' => $namespace,
             'error' => end(self::$attributes['error']) ?? null
@@ -284,12 +276,9 @@ class Route
      */
     public static function finish()
     {
-        // $routes = self::$routes;
-
         self::$config = null;
-
-        // self::$routes = [];
-
+        self::$key = 0;
+        self::$group = [];
         self::$attributes = [
             'name' => [],
             'middleware' => [],
@@ -298,7 +287,5 @@ class Route
             'namespace' => [],
             'error' => []
         ];
-
-        // return $routes;
     }
 }

@@ -21,8 +21,6 @@ class Example
 
     public function search()
     {
-        return dd(request()->headers());
-
-        return response()->json([]);
+        return request()->headers();
     }
 }
