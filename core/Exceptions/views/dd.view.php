@@ -29,7 +29,8 @@
         color: #fff;
         font-family: monospace;
         line-height: 1.2;
-        font-size: 14px
+        font-size: 14px;
+        word-break: break-word;
     }
 
     body {

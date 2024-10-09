@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\users;
-use Haley\Collections\Password;
+use Haley\Collections\Hash;
 
 return new class
 {
@@ -10,12 +10,12 @@ return new class
         users::createOrIgnore([[
             'name' => 'Admin',
             'email' => 'admin@hotmail.com',
-            'password' => Password::create('123456789'),
+            'password' => Hash::createPassword('123456789'),
             'active' => 1
         ],            [
             'name' => 'Client',
             'email' => 'client@hotmail.com',
-            'password' => Password::create('123456789'),
+            'password' => Hash::createPassword('123456789'),
             'active' => 1
         ]]);
     }
