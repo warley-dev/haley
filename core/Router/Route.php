@@ -7,7 +7,6 @@ use Haley\Kernel;
 class Route
 {
     private static string|null $config = null;
-
     private static int $key = 0;
     private static array $group = [];
     private static array $attributes = [

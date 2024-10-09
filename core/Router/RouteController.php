@@ -84,7 +84,7 @@ class RouteController
                 executeCallable($middleware);
             }
 
-            if (!empty($this->configs[$this->current['config']]['csrf']) and !csrf()->check() and !in_array('GET', $this->current['methods'])) {
+            if ($this->configs[$this->current['config']]['csrf']['active'] !== false and !csrf()->check() and !in_array('GET', $this->current['methods'])) {
                 return response()->abort(401);
             }
 

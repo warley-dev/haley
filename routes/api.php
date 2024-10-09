@@ -7,5 +7,9 @@ use Haley\Router\Route;
 // --------------------------------------------------------------------------|
 
 Route::namespace('App\Controllers\Api')->group(function () {
-    Route::get('search','Example@search');
+    Route::get('search', 'Example@search');
+
+    Route::post('test', function () {
+        return request()->headers();
+    });
 });
