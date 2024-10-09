@@ -38,9 +38,7 @@ if (!function_exists('redirect')) {
      */
     function redirect(string|null $destination = null, $status = 302)
     {
-        if ($destination !== null) {
-            return (new Redirect)->destination($destination, $status);
-        }
+        if ($destination !== null) return (new Redirect)->destination($destination, $status);
 
         return new Redirect;
     }

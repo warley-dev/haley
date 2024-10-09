@@ -29,8 +29,8 @@ class Middleware
         return request();
     }
 
-    public function route()
+    public function route(string|null $name = null, string|array|null ...$params)
     {
-        // return new
+        return route($name, $params);
     }
 }

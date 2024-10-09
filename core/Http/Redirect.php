@@ -1,19 +1,20 @@
 <?php
+
 namespace Haley\Http;
 
 class Redirect
 {
     public static function destination(string $destination, int $status = 302)
     {
-        return header('Location: ' . $destination , true, $status);
+        return header('Location: ' . $destination, true, $status);
     }
 
     /**
      * Redirecionar para uma uma rota nomeada
      */
-    public static function route(string $route,int $status = 302)
+    public static function route(string $route, int $status = 302)
     {
-        return header('Location: ' . route($route) , true, $status);
+        return header('Location: ' . route($route), true, $status);
     }
 
     /**
@@ -21,9 +22,9 @@ class Redirect
      */
     public function back(int $status = 302)
     {
-        if(isset($_SERVER['HTTP_REFERER'])){
-            return header('Location: ' . $_SERVER['HTTP_REFERER'] , true, $status);
-        }else{
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            return header('Location: ' . $_SERVER['HTTP_REFERER'], true, $status);
+        } else {
             return response()->abort($status);
         }
     }
