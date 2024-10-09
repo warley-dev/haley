@@ -177,15 +177,15 @@ class Request
      * Busca todos os cabeçalhos HTTP da solicitação atual
      * @return string|array|null
      */
-    public function headers(string $header = null)
+    public function headers(string $name = null)
     {
         if (!function_exists('getallheaders')) return null;
 
         $headers = getallheaders();
 
         if (count($headers) == 0) return null;
-        elseif ($header == null) return $headers;
-        elseif (isset($headers[$header])) return $headers[$header];
+        elseif ($name == null) return $headers;
+        elseif (isset($headers[$name])) return $headers[$name];
 
         return null;
     }

@@ -9,14 +9,11 @@ class Routes extends Middleware
     public function web()
     {
         // ...
-
-        return $this->continue();
     }
 
     public function api()
     {
         response()->header('Access-Control-Allow-Origin', '*');
-
-        $this->continue();
+        response()->header('Content-type', 'application/json; charset=utf-8');
     }
 }

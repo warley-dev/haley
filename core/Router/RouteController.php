@@ -68,28 +68,23 @@ class RouteController
             }
         }
 
-        dd($this->route);
+        // define('ROUTER_PARAMS', $this->params);
+        // define('ROUTER_NAMES', $this->names);
+        // define('ROUTER_NOW', $route_valid);
 
         Kernel::setMemory('route', $this->route);
+        Kernel::setMemory('route.current', $this->current);
+        Kernel::setMemory('route.params', $this->params);
+        Kernel::setMemory('route.names', $this->names);
     }
 
     public function execute()
     {
         if ($this->current and $this->method_valid) {
-            if (!empty($route['middleware'])) {
-                $middlewares = [];
+            foreach ($this->current['middleware'] as $middleware) {
+                if (is_string($middleware)) $middleware = '\App\Middlewares\\' . $middleware;
 
-                foreach ($this->current['middleware'] as $middleware) {
-                    if (is_array($middleware)) {
-                        foreach ($middleware as $value) {
-                            $middlewares[] = $value;
-                        }
-                    } else {
-                        $middlewares[] = $middleware;
-                    }
-                }
-
-                if (!middleware($middlewares)) return response()->abort(403);
+                executeCallable($middleware);
             }
 
             // if (!empty($this->current['config']['csrf'])) {
@@ -108,31 +103,6 @@ class RouteController
                 return view($this->current['action'][0], $this->current['action'][1]);
             }
 
-            // return new RouteAction($route['action']);
-
-
-
-
-
-
-
-            // $namespace = null;
-            // $args = [];
-
-            // if (defined('ROUTER_NOW')) {
-            //     if (!empty(ROUTER_NOW['namespace'])) $namespace = ROUTER_NOW['namespace'] . '\\';
-            // }
-
-            // if (defined('ROUTER_PARAMS')) {
-            //     if (!empty(ROUTER_PARAMS)) $args = ROUTER_PARAMS;
-            // }
-
-            // return $this->result();
-
-
-
-
-
             $result = executeCallable($this->current['action'], $this->params, $this->current['namespace']);
 
             if (is_string($result) || is_numeric($result)) {
@@ -141,10 +111,7 @@ class RouteController
                 if (!is_callable($result)) return response()->json($result);
             }
 
-
-
-
-            // ...
+            Kernel::terminate();
         } else if ($this->current and !$this->method_valid) {
             return response()->abort(405);
         } else {

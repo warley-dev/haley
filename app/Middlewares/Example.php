@@ -8,9 +8,7 @@ class Example extends Middleware
 {
     public function example()
     {
-        if (request()->session()->has('example')) {
-            return $this->continue();
-        }
+        if (request()->session()->has('example')) return;
 
         return $this->abort(403);
     }

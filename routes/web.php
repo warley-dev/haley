@@ -70,8 +70,8 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     })->name('tests');
 
     Route::get('route/{um?}/{dois?}/{tres?}', function () {
-        // ...
-        echo 'get';
+       dd('get',Kernel::getMemory('route'));
+
     })->name('route');
 
     Route::post('route/{um?}/{dois?}/{tres?}', function () {

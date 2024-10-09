@@ -183,31 +183,6 @@ if (!function_exists('formatSize')) {
     }
 }
 
-if (!function_exists('middleware')) {
-    function middleware(string|array $middlewares)
-    {
-        if (is_string($middlewares)) $middlewares = [$middlewares];
-
-        if (is_array($middlewares) and count($middlewares) > 0) {
-            foreach ($middlewares as $middleware) {
-                if (str_contains($middleware, '::')) {
-                    $params = explode('::', $middleware);
-                } elseif (str_contains($middleware, '@')) {
-                    $params = explode('@', $middleware);
-                }
-
-                $class = "\App\Middlewares\\{$params[0]}";
-                $rum = new $class;
-                $rum->{$params[1]}();
-
-                if ($rum->response == false) return false;
-            }
-        }
-
-        return true;
-    }
-}
-
 if (!function_exists('directorySeparator')) {
     function directorySeparator(string $directory)
     {

@@ -4,13 +4,6 @@ namespace Haley\Router;
 
 class Middleware
 {
-    public bool $response = false;
-
-    public function continue()
-    {
-        $this->response = true;
-    }
-
     public function abort(int $status = 403, string|null $mesage = null)
     {
         return response()->abort($status, $mesage);
@@ -18,13 +11,26 @@ class Middleware
 
     public function redirect(string|null $destination = null, $status = 302)
     {
-        $this->response = false;
-
         return redirect($destination, $status);
+    }
+
+    public function headers(string $name = null)
+    {
+        return request()->headers($name);
+    }
+
+    public function session(string $key = null)
+    {
+        return request()->session($key);
+    }
+
+    public function request()
+    {
+        return request();
     }
 
     public function route()
     {
-        // return new 
+        // return new
     }
 }
