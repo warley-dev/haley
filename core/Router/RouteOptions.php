@@ -2,33 +2,46 @@
 
 namespace Haley\Router;
 
+use Haley\Kernel;
+
 class RouteOptions
 {
     public function name(string $value)
     {
-        $key = array_key_last(RouteMemory::$routes);
+        $routes = Kernel::getMemory('route.routes');
+        $key = array_key_last($routes);
 
-        if (empty(RouteMemory::$routes[$key]['name'])) {
-            RouteMemory::$routes[$key]['name'] = $value;
+        if (empty($routes[$key]['name'])) {
+            $routes[$key]['name'] = $value;
         } else {
-            RouteMemory::$routes[$key]['name'] .= '.' . $value;
+            $routes[$key]['name'] .= '.' . $value;
         }
+
+        Kernel::setMemory('route.routes', $routes);
 
         return $this;
     }
 
     public function middleware(string|array $value)
     {
-        $key = array_key_last(RouteMemory::$routes);
-        RouteMemory::$routes[$key]['middleware'][] = $value;
+        $routes = Kernel::getMemory('route.routes');
+        $key = array_key_last($routes);
+
+        $routes[$key]['middleware'][] = $value;
+
+        Kernel::setMemory('route.routes', $routes);
 
         return $this;
     }
 
     public function domain(string $value)
     {
-        $key = array_key_last(RouteMemory::$routes);
-        RouteMemory::$routes[$key]['domain'][] = $value;
+        $routes = Kernel::getMemory('route.routes');
+        $key = array_key_last($routes);
+
+        $routes[$key]['domain'][] = $value;
+
+        Kernel::setMemory('route.routes', $routes);
 
         return $this;
     }

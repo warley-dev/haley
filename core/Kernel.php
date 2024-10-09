@@ -5,8 +5,7 @@ namespace Haley;
 use Haley\Collections\Config;
 use Haley\Console\Console;
 use Haley\Exceptions\Exceptions;
-use Haley\Router\Route;
-use Haley\Router\RouteMemory;
+use Haley\Router\RouteController;
 
 class Kernel
 {
@@ -75,20 +74,9 @@ class Kernel
             foreach (Config::app('helpers', []) as $helper) require_once $helper;
 
             // load routers
-            $routes = Config::route('http', []);
-
-            if ($routes) foreach ($routes as $name => $config) {
-                // Route::config($name);
-
-                if (!file_exists($config['path'])) continue;
-
-                $config['name'] = $name;
-                RouteMemory::resetAttributes();
-                RouteMemory::$config = $config;
-                require_once $config['path'];
-            }
-
-            Route::end();
+            $route =  new RouteController();
+            $route->load();
+            $route->execute();
         });
     }
 
@@ -108,28 +96,6 @@ class Kernel
 
             Console::end();
         });
-    }
-
-    /**
-     * Add callback when script ends
-     */
-    public static function onTerminate(string|array|callable $callback)
-    {
-        self::$terminators[] = $callback;
-    }
-
-    /**
-     * Finish execution
-     */
-    public static function terminate()
-    {
-        foreach (self::$terminators as $callback) executeCallable($callback);
-
-        if (!defined('HALEY_STOP')) define('HALEY_STOP', microtime(true));
-
-        while (ob_get_level() > 0) ob_end_flush();
-
-        exit;
     }
 
     /**
@@ -205,5 +171,27 @@ class Kernel
         }
 
         return false;
+    }
+
+    /**
+     * Add callback when script ends
+     */
+    public static function onTerminate(string|array|callable $callback)
+    {
+        self::$terminators[] = $callback;
+    }
+
+    /**
+     * Finish execution
+     */
+    public static function terminate()
+    {
+        foreach (self::$terminators as $callback) executeCallable($callback);
+
+        if (!defined('HALEY_STOP')) define('HALEY_STOP', microtime(true));
+
+        while (ob_get_level() > 0) ob_end_flush();
+
+        exit;
     }
 }

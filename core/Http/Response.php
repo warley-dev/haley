@@ -35,21 +35,21 @@ class Response
         if ($mesage === null) $mesage = HttpCodes::get($status);
 
         if (defined('ROUTER_NOW')) {
-            if ($action = ROUTER_NOW['error']) return executeCallable($action, [
+            if ($action = ROUTER_NOW['error']) executeCallable($action, [
                 'status' => $status,
                 'mesage' => $mesage
             ]);
         }
 
         if (file_exists(directoryRoot('resources/views/error/' . $status . '.view.php'))) {
-            return view('error.' . $status, [
+            view('error.' . $status, [
                 'status' => $status,
                 'mesage' => $mesage
             ]);
         }
 
         if (file_exists(directoryRoot('resources/views/error/default.view.php'))) {
-            return view('error.default', [
+            view('error.default', [
                 'status' => $status,
                 'mesage' => $mesage
             ]);

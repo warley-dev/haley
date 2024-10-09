@@ -3,21 +3,32 @@
 namespace Haley\Router;
 
 use Haley\Collections\Config;
+use Haley\Kernel;
 use InvalidArgumentException;
 
 class Route
 {
-    private static int $group = 0;
-    private static array $attributes = [];
+    private static string|null $config = null;
+    // private static array $routes = [];
+
+    // private static array $key = [];
+    private static int $key = 0;
+    private static array $group = [];
+    private static array $attributes = [
+        'name' => [],
+        'middleware' => [],
+        'prefix' => [],
+        'domain' => [],
+        'namespace' => [],
+        'error' => []
+    ];
 
     /**
      * Set route configuration
      */
-    public static function config(string $name)
+    public static function config(string $config)
     {
-        $config = Config::route('http.' . $name);
-
-        if (empty($config)) throw new InvalidArgumentException(sprintf('%s route configuration not found', $name));
+        self::$config = $config;
     }
 
     /**
@@ -25,7 +36,7 @@ class Route
      */
     public static function url(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['GET'], 'url');
+        self::add($route, $action, ['GET'], 'url');
         return new RouteOptions;
     }
 
@@ -34,7 +45,7 @@ class Route
      */
     public static function get(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['GET'], 'get');
+        self::add($route, $action, ['GET'], 'get');
         return new RouteOptions;
     }
 
@@ -43,7 +54,7 @@ class Route
      */
     public static function post(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['POST'], 'post');
+        self::add($route, $action, ['POST'], 'post');
         return new RouteOptions;
     }
 
@@ -52,7 +63,7 @@ class Route
      */
     public static function delete(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['DELETE'], 'delete');
+        self::add($route, $action, ['DELETE'], 'delete');
         return new RouteOptions;
     }
 
@@ -61,7 +72,7 @@ class Route
      */
     public static function put(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['PUT'], 'put');
+        self::add($route, $action, ['PUT'], 'put');
         return new RouteOptions;
     }
 
@@ -70,7 +81,7 @@ class Route
      */
     public static function patch(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['PATCH'], 'patch');
+        self::add($route, $action, ['PATCH'], 'patch');
         return new RouteOptions;
     }
 
@@ -79,7 +90,7 @@ class Route
      */
     public static function copy(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['COPY'], 'copy');
+        self::add($route, $action, ['COPY'], 'copy');
         return new RouteOptions;
     }
 
@@ -88,7 +99,7 @@ class Route
      */
     public static function options(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['OPTIONS'], 'options');
+        self::add($route, $action, ['OPTIONS'], 'options');
         return new RouteOptions;
     }
 
@@ -97,7 +108,7 @@ class Route
      */
     public static function lock(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['LOCK'], 'lock');
+        self::add($route, $action, ['LOCK'], 'lock');
         return new RouteOptions;
     }
 
@@ -106,7 +117,7 @@ class Route
      */
     public static function unlock(string $route, string|array|callable $action)
     {
-        RouteMemory::route($route, $action, ['UNLOCK'], 'unlock');
+        self::add($route, $action, ['UNLOCK'], 'unlock');
         return new RouteOptions;
     }
 
@@ -119,7 +130,7 @@ class Route
 
         foreach ($methods as $key => $method) $methods[$key] = strtoupper($method);
 
-        RouteMemory::route($route, $action, $methods, 'match');
+        self::add($route, $action, $methods, 'match');
         return new RouteOptions;
     }
 
@@ -128,7 +139,7 @@ class Route
      */
     public static function redirect(string $route, string $destination, int $status = 302)
     {
-        RouteMemory::route($route, ['destination' => $destination, 'status' => $status], ['GET'], 'redirect');
+        self::add($route, ['destination' => $destination, 'status' => $status], ['GET'], 'redirect');
         return new RouteOptions;
     }
 
@@ -138,76 +149,156 @@ class Route
      */
     public static function view(string $route, string $view, array $params = [])
     {
-        RouteMemory::route($route, [$view, $params], ['GET'], 'view');
+        self::add($route, [$view, $params], ['GET'], 'view');
         return new RouteOptions;
     }
 
     public static function name(string $value)
     {
-        RouteMemory::setAttribute('name', $value);
-        self::$attributes[self::$group][] = 'name';
+        self::setAttribute('name', $value);
+        self::$group[self::$key][] = 'name';
 
         return new self;
     }
 
     public static function middleware(string|array $value)
     {
-        RouteMemory::setAttribute('middleware', $value);
-        self::$attributes[self::$group][] = 'middleware';
+        self::setAttribute('middleware', $value);
+        self::$group[self::$key][] = 'middleware';
 
         return new self;
     }
 
     public static function prefix(string $value)
     {
-        RouteMemory::setAttribute('prefix', $value);
-        self::$attributes[self::$group][] = 'prefix';
+        self::setAttribute('prefix', $value);
+        self::$group[self::$key][] = 'prefix';
 
         return new self;
     }
 
     public static function domain(string|array $value)
     {
-        RouteMemory::setAttribute('domain', $value);
-        self::$attributes[self::$group][] = 'domain';
+        self::setAttribute('domain', $value);
+        self::$group[self::$key][] = 'domain';
 
         return new self;
     }
 
     public static function namespace(string $value)
     {
-        RouteMemory::setAttribute('namespace', trim($value, '\\'));
-        self::$attributes[self::$group][] = 'namespace';
+        self::setAttribute('namespace', trim($value, '\\'));
+        self::$group[self::$key][] = 'namespace';
 
         return new self;
     }
 
     public static function error(callable|array|string $action)
     {
-        RouteMemory::setAttribute('error', $action);
-        self::$attributes[self::$group][] = 'error';
+        self::setAttribute('error', $action);
+        self::$group[self::$key][] = 'error';
 
         return new self;
     }
 
     public static function group(callable $routes)
     {
-        $group = self::$group;
+        $key = self::$key;
 
-        self::$group++;
+        self::$key++;
 
-        if (is_callable($routes)) call_user_func($routes, $group);
+        if (is_callable($routes)) call_user_func($routes, $key);
 
-        foreach (self::$attributes[$group] as $name) RouteMemory::removeAttribute($name);
+        foreach (self::$group[$key] as $name) self::removeAttribute($name);
 
-        unset(self::$attributes[$group]);
+        unset(self::$group[$key]);
+    }
+
+    private static function add(string $route, mixed $action, array $methods, string $type)
+    {
+        $route = trim($route, '/');
+        $name = null;
+        $prefix = null;
+        $namespace = null;
+        $domain = [];
+
+        if (count(self::$attributes['namespace'])) $namespace = implode('\\', self::$attributes['namespace']);
+
+        if (count(self::$attributes['name'])) $name = implode('.', self::$attributes['name']);
+
+        if (count(self::$attributes['prefix'])) {
+            $prefix = implode('/', self::$attributes['prefix']);
+            $route = $prefix . '/' . $route;
+        }
+
+        // if (!empty(self::$config['prefix'])) $route = trim(self::$config['prefix'], '/') . '/' . $route;
+
+        if (count(self::$attributes['domain'])) {
+            foreach (self::$attributes['domain'] as $value) {
+                if (is_string($value)) {
+                    $domain[] = $value;
+                } elseif (is_array($value)) {
+                    foreach ($value as $e) {
+                        if (!empty($e) && is_string($e)) $domain[] = $e;
+                    }
+                }
+            }
+        }
+
+        $routes = Kernel::getMemory('route.routes', []);
+
+        $routes[] = [
+            'route' => $route,
+            'action' => $action,
+            'methods' => $methods,
+            'type' => $type,
+            'config' => self::$config,
+
+            'name' => $name,
+            'middleware' => self::$attributes['middleware'],
+            // 'prefix' => $prefix,
+            'domain' => $domain,
+            'namespace' => $namespace,
+            'error' => end(self::$attributes['error']) ?? null
+        ];
+
+        Kernel::setMemory('route.routes', $routes);
+    }
+
+    public static function setAttribute(string $name, mixed $value)
+    {
+        self::$attributes[$name][] = $value;
+    }
+
+    public static function removeAttribute(string $name)
+    {
+        if (!count(self::$attributes[$name])) return;
+
+        $key = array_key_last(self::$attributes[$name]);
+
+        if ($key !== null) unset(self::$attributes[$name][$key]);
     }
 
     /**
      * Encerrar leitura do router
      */
-    public static function end()
+    public static function finish()
     {
-        return (new RouteResolve)->read(RouteMemory::$routes);
+        // $routes = self::$routes;
+
+        self::$config = null;
+
+        // self::$routes = [];
+
+        self::$attributes = [
+            'name' => [],
+            'middleware' => [],
+            'prefix' => [],
+            'domain' => [],
+            'namespace' => [],
+            'error' => []
+        ];
+
+        // return $routes;
     }
 }
