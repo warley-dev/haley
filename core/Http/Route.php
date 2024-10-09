@@ -2,6 +2,8 @@
 
 namespace Haley\Http;
 
+use Haley\Kernel;
+
 class Route
 {
     /**
@@ -13,26 +15,26 @@ class Route
             if (is_array($params[0])) $params = $params[0];
         }
 
-        if (defined('ROUTER_NAMES') and !empty($params)) {
-            if (isset(ROUTER_NAMES[$name])) {
-                $route = ROUTER_NAMES[$name];
+        $names = Kernel::getMemory('route.names');
 
-                if (count($params)) {
-                    if (preg_match_all('/\{\?\}/', $route, $matches)) {
-                        if (!empty($matches[0])) {
-                            foreach ($matches[0] as $key => $value) {
-                                if ($position = strpos($route, $value)) {
-                                    $route = substr_replace($route, !empty($params[$key]) ? $params[$key] : '', $position, strlen($value));
-                                }
+        if (array_key_exists($name, $names)) {
+            $route = $names[$name];
+
+            if (count($params)) {
+                if (preg_match_all('/\{\?\}/', $route, $matches)) {
+                    if (!empty($matches[0])) {
+                        foreach ($matches[0] as $key => $value) {
+                            if ($position = strpos($route, $value)) {
+                                $route = substr_replace($route, !empty($params[$key]) ? $params[$key] : '', $position, strlen($value));
                             }
                         }
-                    };
-                }
-
-                $route = str_replace(['/{?}', '{?}'], '', $route);
-
-                return request()->url($route);
+                    }
+                };
             }
+
+            $route = str_replace(['/{?}', '{?}'], '', $route);
+
+            return request()->url($route);
         }
 
         return null;
@@ -43,13 +45,11 @@ class Route
      */
     public static function params(string|null $param = null)
     {
-        if (defined('ROUTER_PARAMS') and !empty(ROUTER_PARAMS)) {
-            if ($param == null) return ROUTER_PARAMS;
+        $params = Kernel::getMemory('route.params', []);
 
-            if (array_key_exists($param, ROUTER_PARAMS)) {
-                return ROUTER_PARAMS[$param];
-            }
-        }
+        if ($param == null) return $params;
+
+        if (array_key_exists($param, $params)) return $params[$param];
 
         return null;
     }
@@ -57,10 +57,8 @@ class Route
     /**
      * @return array|null
      */
-    public static function now()
+    public static function current()
     {
-        if (defined('ROUTER_NOW')) return ROUTER_NOW;
-
-        return null;
+        return Kernel::getMemory('route.current');
     }
 }

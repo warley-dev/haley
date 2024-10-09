@@ -32,7 +32,9 @@ class CompilerPHP
         $this->view = $view;
 
         // php tag replace
-        $this->view = str_replace('<?php', '<?php echo \'<?php\' ?>', $this->view);
+        if (str_starts_with($this->view, '<?php')) {
+            $this->view = '<?php echo \'<?php\' ?>' . substr($this->view, strlen('<?php'));
+        }
 
         // comment
         $regex = "/{{--(.*?)--}}/s";

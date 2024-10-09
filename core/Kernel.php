@@ -54,28 +54,22 @@ class Kernel
         self::$type = 'http';
 
         (new Exceptions)->handler(function () {
-            // session settings
-            $session_files = Config::app('session.files', null);
-
-            if ($session_files) createDir(Config::app('session.files'));
-
-            session_save_path($session_files);
-
-            if (!isset($_SESSION)) session_start();
-
-            session_regenerate_id(Config::app('session.regenerate', false));
-
-            if (!request()->session()->has('HALEY')) request()->session()->set('HALEY');
-
             // start ob
             ob_start();
+
+            // start session
+            $session_path = Config::app(['ini', 'session.save_path'], null);
+            if ($session_path) createDir($session_path);
+            session_start();
 
             // load helpers
             foreach (Config::app('helpers', []) as $helper) require_once $helper;
 
             // load routers
-            $route =  new RouteController();
+            $route = new RouteController();
             $route->load();
+
+            // execute route
             $route->execute();
         });
     }

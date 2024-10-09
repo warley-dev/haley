@@ -24,6 +24,7 @@ class CompilerInclude
     protected function loop()
     {
         $regex = "/@include\((.*?)\)/s";
+
         if (preg_match($regex, $this->view, $matches)) {
             return $this->include($matches);
         }

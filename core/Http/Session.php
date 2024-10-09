@@ -4,18 +4,16 @@ namespace Haley\Http;
 
 class Session
 {
-    public static function set(int|string $key, $values = true)
+    public static function set(int|string $key, mixed $data = [])
     {
-        if ($key === 'HALEY') return false;
-
-        $_SESSION[$key] = $values;
+        $_SESSION[$key] = $data;
 
         return true;
     }
 
     public static function replace(int|string $key, $values)
     {
-        if (array_key_exists($key, $_SESSION) and $key !== 'HALEY') {
+        if (array_key_exists($key, $_SESSION)) {
             $original = $_SESSION[$key];
 
             if (is_array($original) and is_array($values)) {
@@ -39,7 +37,7 @@ class Session
      */
     public static function unset(int|string $key)
     {
-        if (array_key_exists($key, $_SESSION) and $key !== 'HALEY') {
+        if (array_key_exists($key, $_SESSION)) {
             unset($_SESSION[$key]);
             return true;
         }
@@ -52,7 +50,7 @@ class Session
      */
     public static function get(string $key)
     {
-        if (array_key_exists($key, $_SESSION) and $key !== 'HALEY') return $_SESSION[$key];
+        if (array_key_exists($key, $_SESSION)) return $_SESSION[$key];
 
         return null;
     }
@@ -63,7 +61,7 @@ class Session
      */
     public static function has(string $key)
     {
-        if (array_key_exists($key, $_SESSION) and $key !== 'HALEY') return true;
+        if (array_key_exists($key, $_SESSION)) return true;
 
         return false;
     }

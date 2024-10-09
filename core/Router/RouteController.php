@@ -10,10 +10,10 @@ class RouteController
     private array $configs = [];
     private array $route = [];
 
-    private array  $names = [];
+    private array $names = [];
+    private array $params = [];
 
     private array|null $current = null;
-    private array|null $params = null;
     private bool $method_valid = false;
 
     public function load()
@@ -68,14 +68,11 @@ class RouteController
             }
         }
 
-        // define('ROUTER_PARAMS', $this->params);
-        // define('ROUTER_NAMES', $this->names);
-        // define('ROUTER_NOW', $route_valid);
-
         Kernel::setMemory('route', $this->route);
         Kernel::setMemory('route.current', $this->current);
         Kernel::setMemory('route.params', $this->params);
         Kernel::setMemory('route.names', $this->names);
+        Kernel::setMemory('route.config', $this->current ? $config = $this->configs[$this->current['config']] : null);
     }
 
     public function execute()
@@ -87,9 +84,9 @@ class RouteController
                 executeCallable($middleware);
             }
 
-            // if (!empty($this->current['config']['csrf'])) {
-            //     if (!csrf()->check() and $this->current['config']['csrf']['active'] === true and !in_array('GET', $this->current['methods'])) return response()->abort(401);
-            // }
+            if (!empty($this->configs[$this->current['config']]['csrf']) and !csrf()->check() and !in_array('GET', $this->current['methods'])) {
+                return response()->abort(401);
+            }
 
             if ($this->current['type'] == 'url' and !empty($_GET)) {
                 return response()->abort(405);
@@ -107,8 +104,8 @@ class RouteController
 
             if (is_string($result) || is_numeric($result)) {
                 echo $result;
-            } else if (is_array($result) || is_object($result)) {
-                if (!is_callable($result)) return response()->json($result);
+            } else if ((is_array($result) or is_object($result)) and !is_callable($result)) {
+                return response()->json($result);
             }
 
             Kernel::terminate();

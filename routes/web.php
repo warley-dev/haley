@@ -2,8 +2,6 @@
 
 use App\Controllers\Web\Home;
 use App\Models\users;
-use Haley\Collections\Memory;
-use Haley\Database\DB;
 use Haley\Kernel;
 use Haley\Router\Route;
 
@@ -14,6 +12,8 @@ use Haley\Router\Route;
 Route::namespace('App\Controllers\Web')->name('web')->group(function () {
     Route::get('/', [Home::class, 'index'])->name('home');
     Route::view('view', 'test');
+
+    // criar pastas de chache automaticamente
 
     // unificar classe
     Route::get('model', function () {
@@ -69,8 +69,8 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
     })->name('tests');
 
-    Route::get('route/{um?}/{dois?}/{tres?}', function () {
-       dd('get',Kernel::getMemory('route'));
+    Route::get('route/{um?}/{dois?}/{tres?}', function ($u) {
+        dd(route()->params(),route()->name('web.route',['aaaa']));
 
     })->name('route');
 
@@ -79,9 +79,9 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
         echo 'post';
     })->name('route');
 
+    Route::view('post','post');
 
-
-
-
-
+    Route::post('post', function() {
+        dd(request()->all());
+    })->name('post');
 });

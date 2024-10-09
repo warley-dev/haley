@@ -211,7 +211,7 @@ if (!function_exists('directoryHaley')) {
 if (!function_exists('createDir')) {
     function createDir(string $path)
     {
-        $path = dirname(directorySeparator($path));
+        $path = directorySeparator($path);
 
         if (file_exists($path)) return true;
 
@@ -222,7 +222,7 @@ if (!function_exists('createDir')) {
 if (!function_exists('deleteDir')) {
     function deleteDir(string $path)
     {
-        $path = dirname(directorySeparator($path));
+        $path = directorySeparator($path);
 
         if (!file_exists($path)) return true;
 

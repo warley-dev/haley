@@ -14,8 +14,6 @@ class CommandCleaning
         deleteDir($files);
         deleteFile($json);
 
-    
-
         if (!file_exists($files) and !file_exists($json)) {
             Shell::green('views cache deleted')->br();
         } else {
