@@ -88,10 +88,6 @@ class RouteController
                 return response()->abort(401);
             }
 
-            if ($this->current['type'] == 'url' and !empty($_GET)) {
-                return response()->abort(405);
-            }
-
             if ($this->current['type'] == 'redirect') {
                 return redirect($this->current['action']['destination'], $this->current['action']['status']);
             }
@@ -104,7 +100,7 @@ class RouteController
 
             if (is_string($result) || is_numeric($result)) {
                 echo $result;
-            } else if ((is_array($result) or is_object($result)) and !is_callable($result)) {
+            } else if (!is_callable($result) and (is_array($result) or is_object($result))) {
                 return response()->json($result);
             }
 

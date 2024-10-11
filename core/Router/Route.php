@@ -14,8 +14,7 @@ class Route
         'middleware' => [],
         'prefix' => [],
         'domain' => [],
-        'namespace' => [],
-        'error' => []
+        'namespace' => []
     ];
 
     /**
@@ -24,15 +23,6 @@ class Route
     public static function config(string $config)
     {
         self::$config = $config;
-    }
-
-    /**
-     * @return \Haley\Router\RouteOptions
-     */
-    public static function url(string $route, string|array|callable $action)
-    {
-        self::add($route, $action, ['GET'], 'url');
-        return new RouteOptions;
     }
 
     /**
@@ -188,14 +178,6 @@ class Route
         return new self;
     }
 
-    public static function error(callable|array|string $action)
-    {
-        self::setAttribute('error', $action);
-        self::$group[self::$key][] = 'error';
-
-        return new self;
-    }
-
     public static function group(callable $routes)
     {
         $key = self::$key;
@@ -249,8 +231,7 @@ class Route
             'name' => $name,
             'middleware' => self::$attributes['middleware'],
             'domain' => $domain,
-            'namespace' => $namespace,
-            'error' => end(self::$attributes['error']) ?? null
+            'namespace' => $namespace
         ];
 
         Kernel::setMemory('route.routes', $routes);
@@ -283,8 +264,7 @@ class Route
             'middleware' => [],
             'prefix' => [],
             'domain' => [],
-            'namespace' => [],
-            'error' => []
+            'namespace' => []
         ];
     }
 }

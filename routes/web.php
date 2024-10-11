@@ -2,6 +2,7 @@
 
 use App\Controllers\Web\Home;
 use Haley\Collections\Hash;
+use Haley\Kernel;
 use Haley\Router\Route;
 
 // --------------------------------------------------------------------------|
@@ -18,6 +19,25 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
         dd($encriptado, Hash::decrypt($encriptado, '12345789'));
     });
+
+    Route::get('route/{um?}/{dois?}/{tres?}', function ($u) {
+        dd(Kernel::getMemory('route'));
+
+        // dd(route()->params(), route()->name('web.route', ['aaaa']));
+    })->name('route');
+
+    Route::redirect('redirect', 'https://www.google.com.br');
+
+
+
+
+
+    // renomear console para commands
+    // mover middleware para Collections
+    // controlador fixo para rotas de erro
+
+
+
 
     // Route::view('view', 'test');
 
@@ -77,10 +97,7 @@ Route::namespace('App\Controllers\Web')->name('web')->group(function () {
 
     // })->name('tests');
 
-    // Route::get('route/{um?}/{dois?}/{tres?}', function ($u) {
-    //     dd(route()->params(),route()->name('web.route',['aaaa']));
 
-    // })->name('route');
 
     // Route::post('route/{um?}/{dois?}/{tres?}', function () {
     //     // ...

@@ -12,9 +12,9 @@ class Redirect
     /**
      * Redirecionar para uma uma rota nomeada
      */
-    public static function route(string $route, int $status = 302)
+    public static function route(string $name, int $status = 302)
     {
-        return header('Location: ' . route($route), true, $status);
+        return header('Location: ' . route($name), true, $status);
     }
 
     /**

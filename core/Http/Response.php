@@ -34,28 +34,19 @@ class Response
 
         if ($mesage === null) $mesage = HttpCodes::get($status);
 
-        if (defined('ROUTER_NOW')) {
-            if ($action = ROUTER_NOW['error']) executeCallable($action, [
-                'status' => $status,
-                'mesage' => $mesage
-            ]);
-        }
-
         if (file_exists(directoryRoot('resources/views/error/' . $status . '.view.php'))) {
             view('error.' . $status, [
                 'status' => $status,
                 'mesage' => $mesage
             ]);
-        }
-
-        if (file_exists(directoryRoot('resources/views/error/default.view.php'))) {
+        } else if (file_exists(directoryRoot('resources/views/error/default.view.php'))) {
             view('error.default', [
                 'status' => $status,
                 'mesage' => $mesage
             ]);
         }
 
-        (new Kernel)->terminate();
+        Kernel::terminate();
     }
 
     public static function json(mixed $value, int|null $status = null)
@@ -64,8 +55,11 @@ class Response
 
         if ($status !== null) self::status($status);
 
-        header('Content-type: application/json; charset=utf-8');
+        self::header('Content-type', 'application/json; charset=utf-8');
+
         print(json_encode($value));
+
+        Kernel::terminate();
     }
 
     public static function download(string $file, string $rename = null, int|null $status = null)
@@ -105,8 +99,8 @@ class Response
 
             $extension = pathinfo($file, PATHINFO_EXTENSION);
 
-            header('Content-type: ' . MimeTypes::get($extension));
-            header('Content-Length: ' . filesize($file));
+            self::header('Content-type', MimeTypes::get($extension));
+            self::header('Content-Length', filesize($file));
 
             if ($status !== null) self::status($status);
 

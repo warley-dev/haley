@@ -1,6 +1,5 @@
 <?php
 
-use Haley\Collections\Password;
 use Haley\Env\Env;
 use Haley\Exceptions\Debug;
 use Haley\Http\Csrf;

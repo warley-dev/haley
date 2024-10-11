@@ -93,9 +93,7 @@ class Server
 
         if (is_callable($routes)) call_user_func($routes, $group);
 
-        foreach (self::$attributes[$group] as $name) {
-            ServerMemory::removeAttribute($name);
-        }
+        foreach (self::$attributes[$group] as $name) ServerMemory::removeAttribute($name);
 
         unset(self::$attributes[$group]);
     }

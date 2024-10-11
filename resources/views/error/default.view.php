@@ -18,7 +18,6 @@
         @endif
     </div>
 
-
     <div class="area">
         <ul class="circles">
             <li></li>
@@ -36,7 +35,6 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css?family=Exo:400,700');
-
 
         * {
             margin: 0px;
@@ -70,7 +68,6 @@
         }
 
         .area {
-            /* background: #1d1e30; */
             background: linear-gradient(to bottom, #1d1e30 8%, #404493 100%);
             width: 100%;
             height: 100vh;
